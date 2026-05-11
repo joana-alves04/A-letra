@@ -1,3 +1,61 @@
+# Git instruções mais claras
+
+# clonar o repositório
+
+git clone https://github.com/joana-alves04/A-letra.git
+
+# criar branch
+git checkout -b [nome da branch]
+
+## dar push na branch
+adiciona novas modificações - git add .
+
+podem dizer o que modificaram e tem um btn azul no canto - git commit
+
+dá o push da branch - git push
+
+## listar branch e ver status
+
+git branch
+
+git status
+
+# colocar na main o conteúdo
+
+## primeira opção
+
+mudam da branch para a main - git checkout main
+
+git pull
+
+mudam da main para a branch - git checkout [nome da branch]
+
+git merge main (resolver conflitos no vscode, e corram o projeto para ver se não matou nada)
+
+git push
+
+(ir ao repositorio do github e fazer um pull request da vossa branch para a main e aceitar)
+
+## segunda opção
+
+git checkout main
+
+git pull
+
+git merge [nome da branch]
+
+(resolver conflitos no vscode, e corram o projeto para ver se não matou nada)
+
+git push
+
+
+
+
+
+
+
+
+
 # Git & GitHub Quick Start
 
 ## One-Time Setup
