@@ -28,7 +28,7 @@ mudam da branch para a main - git checkout main
 
 git pull
 
-mudam da main para a branch git checkout [nome da branch]
+mudam da main para a branch - git checkout [nome da branch]
 
 git merge main (resolver conflitos no vscode, e corram o projeto para ver se não matou nada)
 
