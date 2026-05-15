@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     page.innerHTML = `
       <p class="detail-page__title">${item.label}</p>
-      <p class="detail-page__sub">em construção</p>
+      <p class="detail-page__sub">(conteudo)</p>
       <button class="detail-page__back" onclick="goHome()">← voltar</button>
     `;
 
