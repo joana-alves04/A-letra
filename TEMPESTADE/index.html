@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tempestade num Copo de Água</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      font-family: Georgia, serif;
+    }
+    #cup-anchor {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      transform-origin: center bottom;
+    }
+    #cup-anchor img {
+      display: block;
+      width: 140px;
+      height: 190px;
+      object-fit: contain;
+      background: #ddeeff;
+      border: 2px dashed #8aaacc;
+      border-radius: 4px;
+    }
+    #intro-ui {
+      position: fixed;
+      bottom: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 20;
+      transition: opacity 0.5s ease;
+      white-space: nowrap;
+    }
+    #intro-ui.hidden { opacity: 0; pointer-events: none; }
+    #click-hint { font-size: 13px; color: #aaa; letter-spacing: 0.05em; }
+    #progress-bar-wrap {
+      width: 220px; height: 10px;
+      background: #e0e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%; width: 0%;
+      background: #4a90c4;
+      border-radius: 99px;
+    }
+    #tornado-outer {
+      position: fixed;
+      bottom: 214px;
+      left: 0;
+      width: 100%;
+      height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    #stage {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<div id="cup-anchor">
+  <img src="" alt="copo" draggable="false" />
+</div>
+
+<div id="intro-ui">
+  <div id="click-hint">clica no copo</div>
+  <div id="progress-bar-wrap">
+    <div id="progress-bar"></div>
+  </div>
+</div>
+
+<div id="tornado-outer">
+  <div id="stage"></div>
+</div>
+
+<script>
+const cupAnchor    = document.getElementById('cup-anchor');
+const introUI      = document.getElementById('intro-ui');
+const progressEl   = document.getElementById('progress-bar');
+const tornadoOuter = document.getElementById('tornado-outer');
+const stage        = document.getElementById('stage');
+
+let progress  = 0;
+let launched  = false;
+let lastClick = 0;
+
+// decay começa imediatamente após o clique, muito devagar
+const DECAY_RATE = 9; // % por segundo
+
+/* ── decay loop ── */
+let prevDecayTime = null;
+function decayLoop(now) {
+  if (launched) return;
+  if (prevDecayTime === null) { prevDecayTime = now; }
+  const dt = (now - prevDecayTime) / 1000;
+  prevDecayTime = now;
+
+  if (progress > 0) {
+    progress = Math.max(0, progress - DECAY_RATE * dt);
+    progressEl.style.width = progress + '%';
+  }
+
+  requestAnimationFrame(decayLoop);
+}
+requestAnimationFrame(decayLoop);
+
+/* ── cup spring state for click impulse ── */
+let cupX = 0, cupY = 0, cupRot = 0;
+let cupVx = 0, cupVy = 0, cupVr = 0;
+let clickImpulse = 0; // decays after each click
+
+function applyClickImpulse() {
+  // random kick
+  cupVx += (Math.random() - 0.5) * 10;
+  cupVy += (Math.random() - 0.5) * 4;
+  cupVr += (Math.random() - 0.5) * 6;
+  clickImpulse = 1;
+}
+
+/* ── click handler ── */
+document.addEventListener('click', onClick);
+function onClick() {
+  if (launched) return;
+  lastClick = performance.now();
+  progress = Math.min(progress + 5, 100);
+  progressEl.style.width = progress + '%';
+  applyClickImpulse();
+
+  if (progress >= 100) {
+    launched = true;
+    introUI.classList.add('hidden');
+    document.removeEventListener('click', onClick);
+    setTimeout(initTornado, 300);
+  }
+}
+
+/* ── smooth noise ── */
+function noise(t, seed) {
+  return (
+    Math.sin(t * 1.00 + seed * 1.0) * 0.500 +
+    Math.sin(t * 2.31 + seed * 2.3) * 0.250 +
+    Math.sin(t * 5.17 + seed * 0.7) * 0.125 +
+    Math.sin(t * 9.73 + seed * 3.1) * 0.063 +
+    Math.sin(t * 17.5 + seed * 1.9) * 0.031 +
+    Math.sin(t * 31.3 + seed * 4.7) * 0.016
+  );
+}
+
+/* ── cup animation loop (runs always) ── */
+let lastCupNow = null;
+function cupLoop(now) {
+  if (launched) return;
+  if (!lastCupNow) lastCupNow = now;
+  const dt = Math.min((now - lastCupNow) / 1000, 0.05);
+  lastCupNow = now;
+
+  const t = now / 1000;
+  const idleIntensity = 1.5;
+
+  // idle drift target from noise
+  const tx = noise(t * 0.8, 0)  * idleIntensity;
+  const ty = noise(t * 0.6, 7)  * idleIntensity * 0.4;
+  const tr = noise(t * 0.5, 13) * idleIntensity * 0.8;
+
+  // spring pulls toward idle target, velocity carries click impulse
+  const k = 0.12, damp = 0.78;
+  cupVx = (cupVx + (tx - cupX) * k) * damp;
+  cupVy = (cupVy + (ty - cupY) * k) * damp;
+  cupVr = (cupVr + (tr - cupRot) * k) * damp;
+  cupX += cupVx;
+  cupY += cupVy;
+  cupRot += cupVr;
+
+  cupAnchor.style.transform =
+    `translateX(calc(-50% + ${cupX.toFixed(2)}px)) translateY(${cupY.toFixed(2)}px) rotate(${cupRot.toFixed(3)}deg)`;
+
+  requestAnimationFrame(cupLoop);
+}
+requestAnimationFrame(cupLoop);
+
+/* ── TORNADO ── */
+const phrases = [
+  "Estás sempre a exagerar",
+  "Não é assim tão grave",
+  "Tudo vai correr mal",
+  "Ninguém me ouve",
+  "É uma catástrofe",
+  "Porquê sempre comigo?",
+  "Isto não tem solução",
+  "Toda a gente está contra mim",
+  "Nunca nada funciona",
+  "Estou farto disto",
+  "O mundo está a acabar",
+  "É só uma pequena coisa",
+  "Drama a mais",
+  "Não consigo respirar",
+  "Já não aguento mais",
+  "Mas porquê?!",
+  "Fica calmo, é nada",
+  "Tudo ao contrário",
+  "Uma tempestade num copo",
+];
+
+const TOTAL_TURNS = 10;
+const RADIUS_BOT  = 28;
+const FONT_SIZE   = 14;
+
+function initTornado() {
+  const CUP_H        = 190 + 32 + 14;
+  const TOTAL_HEIGHT = Math.max(window.innerHeight - CUP_H, 200);
+  const CX           = window.innerWidth / 2;
+  const RADIUS_TOP   = Math.min(window.innerWidth / 2 - 20, 310);
+  const TOTAL_ANGLE  = TOTAL_TURNS * Math.PI * 2;
+
+  stage.style.height = TOTAL_HEIGHT + 'px';
+  stage.style.width  = window.innerWidth + 'px';
+
+  const ruler = document.createElement('span');
+  ruler.style.cssText = `position:absolute;visibility:hidden;font-family:Georgia,serif;font-size:${FONT_SIZE}px;white-space:nowrap;letter-spacing:0;`;
+  document.body.appendChild(ruler);
+  const bigLoop = Array(40).fill(phrases).flat();
+  const widths  = bigLoop.map(p => { ruler.textContent = p; return ruler.offsetWidth; });
+  document.body.removeChild(ruler);
+
+  function radiusAt(theta) {
+    return RADIUS_TOP + (RADIUS_BOT - RADIUS_TOP) * Math.min(theta / TOTAL_ANGLE, 1);
+  }
+
+  const allPos = [];
+  let theta = 0, pIdx = 0;
+  while (theta < TOTAL_ANGLE && pIdx < bigLoop.length) {
+    allPos.push({ theta, phraseIndex: pIdx % phrases.length });
+    theta += widths[pIdx] / radiusAt(theta);
+    pIdx++;
+  }
+  const N = allPos.length;
+
+  const spans = allPos.map(({ phraseIndex }) => {
+    const s = document.createElement('span');
+    s.textContent = phrases[phraseIndex];
+    s.style.cssText = `position:absolute;font-size:${FONT_SIZE}px;font-family:Georgia,serif;white-space:nowrap;pointer-events:none;user-select:none;transform-origin:center center;letter-spacing:0;opacity:0;`;
+    stage.appendChild(s);
+    return s;
+  });
+
+  const seeds = allPos.map((_, i) => i * 3.7 + 1.1);
+
+  let revealed = 0;
+  function revealNext() {
+    if (revealed >= N) return;
+    const idx = N - 1 - revealed;
+    spans[idx].style.opacity = '1';
+    revealed++;
+    const topT = allPos[idx].theta / TOTAL_ANGLE;
+    tornadoOuter.style.height = ((1 - topT) * TOTAL_HEIGHT) + 'px';
+    setTimeout(revealNext, 80);
+  }
+  setTimeout(revealNext, 100);
+
+  let swirlSpeed = 0.3;
+  let swirlAngle = 0;
+  let lastNow    = null;
+
+  const spanState = allPos.map(() => ({ ox: 0, oy: 0, vx: 0, vy: 0 }));
+
+  // cup spring continues inside tornado phase
+  let tcupX = 0, tcupY = 0, tcupRot = 0;
+  let tcupVx = 0, tcupVy = 0, tcupVr = 0;
+
+  function render(now) {
+    if (!lastNow) lastNow = now;
+    const dt = Math.min((now - lastNow) / 1000, 0.05);
+    lastNow = now;
+    const t = now / 1000;
+
+    const revealProgress = revealed / N;
+    const stormIntensity = revealProgress < 1 ? 1 : 0.2;
+
+    /* cup during tornado */
+    const tcx = noise(t * 0.8, 0)  * stormIntensity * 4;
+    const tcy = noise(t * 0.6, 7)  * stormIntensity * 1.5;
+    const tcr = noise(t * 0.5, 13) * stormIntensity * 2;
+    const tk = 0.12, td = 0.78;
+    tcupVx = (tcupVx + (tcx - tcupX) * tk) * td;
+    tcupVy = (tcupVy + (tcy - tcupY) * tk) * td;
+    tcupVr = (tcupVr + (tcr - tcupRot) * tk) * td;
+    tcupX += tcupVx; tcupY += tcupVy; tcupRot += tcupVr;
+    cupAnchor.style.transform =
+      `translateX(calc(-50% + ${tcupX.toFixed(2)}px)) translateY(${tcupY.toFixed(2)}px) rotate(${tcupRot.toFixed(3)}deg)`;
+
+    /* vortex */
+    const targetSpeed = 0.55 + noise(t * 0.3, 99) * 0.15;
+    swirlSpeed += (targetSpeed - swirlSpeed) * 0.008;
+    swirlAngle += swirlSpeed * dt;
+
+    const vortexSway = noise(t * 0.7, 42) * 8;
+    const vortexTilt = noise(t * 0.5, 77) * 1.5;
+    tornadoOuter.style.transform = `translateX(${vortexSway}px) rotate(${vortexTilt}deg)`;
+
+    const updraft = 1 + noise(t * 1.2, 55) * 0.06;
+
+    for (let i = 0; i < N; i++) {
+      if (spans[i].style.opacity === '0') continue;
+      const baseTheta = allPos[i].theta;
+      const t_frac    = baseTheta / TOTAL_ANGLE;
+      const r         = radiusAt(baseTheta);
+      const levelSpeed = swirlSpeed * (1 + (1 - t_frac) * 0.6);
+      const thetaNow   = baseTheta + swirlAngle * levelSpeed / swirlSpeed;
+      const pressureWobble = 1 + noise(t * 2.1 + t_frac * 4, seeds[i] * 0.3) * 0.08;
+      const rWobbled = r * pressureWobble;
+      const x = CX + rWobbled * Math.cos(thetaNow);
+      const y = t_frac * TOTAL_HEIGHT * updraft;
+      const turbScale = 3.5 * (1 - t_frac * 0.5);
+      const tx = noise(t * 4.3 + seeds[i],       seeds[i] * 1.1) * turbScale;
+      const ty = noise(t * 3.7 + seeds[i] * 0.5, seeds[i] * 2.3) * turbScale * 0.5;
+      const ss = spanState[i];
+      const sk = 0.22, sd = 0.68;
+      ss.vx = (ss.vx + (tx - ss.ox) * sk) * sd;
+      ss.vy = (ss.vy + (ty - ss.oy) * sk) * sd;
+      ss.ox += ss.vx; ss.oy += ss.vy;
+      const sinVal = Math.sin(thetaNow);
+      const depth  = (sinVal + 1) / 2;
+      const alpha  = 0.07 + 0.93 * depth;
+      const scaleX = 0.70 + 0.30 * depth;
+      const sizeMod = 0.75 + 0.25 * (1 - t_frac);
+      spans[i].style.left      = (x + ss.ox) + 'px';
+      spans[i].style.top       = (y + ss.oy) + 'px';
+      spans[i].style.fontSize  = (FONT_SIZE * sizeMod).toFixed(1) + 'px';
+      spans[i].style.transform = `translateX(-50%) translateY(-50%) scaleX(${scaleX.toFixed(3)})`;
+      spans[i].style.color     = `rgba(0,0,0,${alpha.toFixed(2)})`;
+    }
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+}
+</script>
+</body>
+</html>
