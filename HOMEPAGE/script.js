@@ -66,8 +66,7 @@ function buildExpressoesPage(container) {
       <!-- Fachada + fio (área fixa de cena) -->
       <div class="exp-varanda__scene" id="exp-scene">
         <!-- Imagem de fundo da fachada -->
-          <img src="imgs/  fachada.png" alt="" class="exp-fachada" />
-        <!-- Canvas do fio -->
+<img src="./imgs/fachada.png">
         <canvas id="exp-wire-canvas"></canvas>
 
         <!-- Expressões penduradas -->
