@@ -1,0 +1,81 @@
+body{
+  margin:0;
+  height:100vh;
+  overflow:hidden;
+  background:#111;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Arial;
+  color:white;
+}
+
+.clock-container{
+  text-align:center;
+}
+
+.clock{
+  width:350px;
+  height:350px;
+  border:10px solid white;
+  border-radius:50%;
+  position:relative;
+  transition:1s;
+  background:#1b1b1b;
+}
+
+.center{
+  width:20px;
+  height:20px;
+  background:white;
+  border-radius:50%;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+}
+
+.hand{
+  position:absolute;
+  bottom:50%;
+  left:50%;
+  transform-origin:bottom;
+  background:white;
+}
+
+.hour{
+  width:8px;
+  height:80px;
+}
+
+.minute{
+  width:4px;
+  height:120px;
+}
+
+.food{
+  position:absolute;
+  font-size:2rem;
+}
+
+.food1{ top:20px; left:160px; }
+.food2{ top:150px; right:10px; }
+.food3{ bottom:20px; left:160px; }
+.food4{ top:150px; left:10px; }
+
+#title{
+  margin-top:40px;
+  font-size:3rem;
+  transition:1s;
+}
+
+.hungry{
+  animation:shake .1s infinite;
+  border-color:#ffae00;
+}
+
+@keyframes shake{
+  0%{ transform:translateX(-2px); }
+  50%{ transform:translateX(2px); }
+  100%{ transform:translateX(-2px); }
+}
