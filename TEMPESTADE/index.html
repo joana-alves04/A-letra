@@ -4,97 +4,390 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tempestade num Copo de Água</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Baloo+2:wght@400;500;600&display=swap" rel="stylesheet">
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; font-family: Georgia, serif; }
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
 
-    #cup-anchor {
-      position: fixed; bottom: 32px; left: 50%;
-      transform: translateX(-50%); z-index: 10; transform-origin: center bottom;
-      will-change: transform;
+    html,body{
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      font-family:Georgia,serif;
+      background:#0d1a22;
     }
-    #cup-anchor img {
-      display: block; width: 140px; height: 190px; object-fit: contain;
-      background: #ddeeff; border: 2px dashed #8aaacc; border-radius: 4px;
-    }
-    #intro-ui {
-      position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      z-index: 20; white-space: nowrap; transition: opacity 0.4s ease;
-    }
-    #intro-ui.hidden { opacity: 0; pointer-events: none; }
-    #click-hint { font-size: 13px; color: #aaa; letter-spacing: 0.05em; }
-    #progress-bar-wrap { width: 220px; height: 10px; background: #e0e8f0; border-radius: 99px; overflow: hidden; }
-    #progress-bar { height: 100%; width: 0%; background: #4a90c4; border-radius: 99px; }
 
-    #tornado-outer {
-      position: fixed; bottom: 214px; left: 0; width: 100%; height: 0;
-      overflow: hidden; pointer-events: none; will-change: transform;
+    #bg-video{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:0;
+      pointer-events:none;
     }
-    #stage { position: absolute; bottom: 0; left: 0; width: 100%; }
 
-    .phrase {
-      position: absolute; white-space: nowrap; pointer-events: none;
-      user-select: none; transform-origin: center center;
-      will-change: transform; font-family: Georgia, serif;
+    #cup-anchor{
+      position:fixed;
+      bottom:32px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:10;
+      transform-origin:center bottom;
+      will-change:transform;
+      transition:opacity .7s ease;
     }
-    .phrase .hl { color: #c0392b; font-weight: bold; }
 
-    .ejected {
-      position: fixed; font-family: Georgia, serif; font-size: 13px;
-      line-height: 1.6; pointer-events: none; opacity: 0;
-      max-width: 200px; text-align: center; z-index: 30;
+    #cup-anchor.hidden{
+      opacity:0;
+      pointer-events:none;
     }
-    .ejected.visible { opacity: 1; }
-    .ejected .highlight {
-      font-weight: bold; color: #c0392b; cursor: pointer;
-      pointer-events: all; display: inline-block; font-size: 15px;
-      transition: transform 0.15s ease, color 0.15s ease;
-    }
-    .ejected .highlight:hover { transform: scale(1.15); color: #e74c3c; }
-    .ejected .highlight.used { color: #ccc; cursor: default; pointer-events: none; }
 
-    @keyframes wrongShake {
-      0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)}
+    #cup-anchor img{
+      display:block;
+      width:140px;
+      height:190px;
+      object-fit:contain;
+      background:rgba(180,210,240,0.15);
+      border:2px dashed rgba(140,180,210,0.4);
+      border-radius:4px;
     }
-    .ejected .highlight.wrong { animation: wrongShake 0.35s ease; }
 
-    #answer-bar {
-      position: fixed; top: 0; left: 0; right: 0; height: 52px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: rgba(255,255,255,0.96); border-bottom: 1px solid #eee;
-      z-index: 50; opacity: 0; transition: opacity 0.5s ease;
+    #intro-ui{
+      position:fixed;
+      bottom:250px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+      z-index:20;
+      white-space:nowrap;
+      transition:opacity .4s ease;
     }
-    #answer-bar.visible { opacity: 1; }
-    .answer-slot {
-      font-size: 15px; font-weight: bold; color: #c0392b;
-      min-width: 20px; text-align: center;
-      border-bottom: 2px solid #ddd; padding: 2px 5px;
-      opacity: 0.25; transition: opacity 0.4s ease, transform 0.3s ease, border-color 0.3s ease;
-    }
-    .answer-slot.filled { opacity: 1; transform: translateY(-2px); border-color: #c0392b; }
 
-    #puzzle-hint {
-      position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%);
-      font-size: 13px; color: #aaa; letter-spacing: 0.05em;
-      opacity: 0; transition: opacity 0.6s ease;
-      white-space: nowrap; pointer-events: none; z-index: 20;
+    #intro-ui.hidden{
+      opacity:0;
+      pointer-events:none;
     }
-    #puzzle-hint.visible { opacity: 1; }
+
+    #click-hint{
+      font-size:13px;
+      letter-spacing:.05em;
+      font-family:'Inter',sans-serif;
+      font-weight:500;
+      color:#C9D7E4;
+    }
+
+    #progress-bar-wrap{
+      width:220px;
+      height:10px;
+      background:rgba(201,215,228,0.2);
+      border-radius:99px;
+      overflow:hidden;
+    }
+
+    #progress-bar{
+      height:100%;
+      width:0%;
+      background:#FF5A4F;
+      border-radius:99px;
+    }
+
+    #tornado-outer{
+      position:fixed;
+      bottom:214px;
+      left:0;
+      width:100%;
+      height:0;
+      overflow:hidden;
+      pointer-events:none;
+      will-change:transform;
+      z-index:5;
+    }
+
+    #stage{
+      position:absolute;
+      bottom:0;
+      left:0;
+      width:100%;
+    }
+
+    .phrase{
+      position:absolute;
+      white-space:nowrap;
+      pointer-events:none;
+      user-select:none;
+      transform-origin:center center;
+      will-change:transform;
+      font-family:Georgia,serif;
+      color:#E6E9ED;
+      text-shadow:0px -2px 12px rgba(0,0,0,0.45);
+    }
+
+    .phrase .hl{
+      color:#FF5A4F;
+      font-weight:bold;
+      text-shadow:0px -2px 12px rgba(0,0,0,0.45);
+    }
+
+    .ejected{
+      position:fixed;
+      font-family:Georgia,serif;
+      font-size:14px;
+      line-height:1.7;
+      pointer-events:none;
+      opacity:0;
+      text-align:left;
+      z-index:30;
+      color:#E6E9ED;
+      text-shadow:0px -2px 12px rgba(0,0,0,0.45);
+      white-space:nowrap;
+    }
+
+    .ejected.visible{
+      opacity:1;
+    }
+
+    .ejected .highlight{
+      font-weight:bold;
+      color:#FF5A4F;
+      cursor:pointer;
+      pointer-events:all;
+      display:inline-block;
+      transition:transform .15s ease,opacity .15s ease;
+      text-shadow:0px -2px 12px rgba(0,0,0,0.45);
+    }
+
+    .ejected .highlight:hover{
+      transform:scale(1.12);
+      opacity:.85;
+    }
+
+    .ejected .highlight.used{
+      color:rgba(230,233,237,0.3);
+      text-shadow:none;
+      cursor:default;
+      pointer-events:none;
+    }
+
+    @keyframes wrongShake{
+      0%,100%{transform:translateX(0)}
+      20%{transform:translateX(-6px)}
+      60%{transform:translateX(6px)}
+    }
+
+    .ejected .highlight.wrong{
+      animation:wrongShake .35s ease;
+    }
+
+    #answer-bar{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      height:52px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      z-index:50;
+      opacity:0;
+      transition:opacity .5s ease;
+      background:transparent;
+    }
+
+    #answer-bar.visible{
+      opacity:1;
+    }
+
+    .answer-slot{
+      font-size:0;
+      min-width:32px;
+      height:3px;
+      background:#FF5A4F;
+      border-radius:2px;
+      opacity:.45;
+      transition:opacity .4s ease,font-size .3s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:visible;
+      position:relative;
+    }
+
+    .answer-slot.filled{
+      opacity:1;
+      font-size:13px;
+      font-family:'Inter',sans-serif;
+      font-weight:500;
+      color:#FF5A4F;
+      height:auto;
+      background:transparent;
+      border-bottom:2px solid #FF5A4F;
+      padding-bottom:2px;
+    }
+
+    #puzzle-hint{
+      position:fixed;
+      bottom:250px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:13px;
+      letter-spacing:.04em;
+      font-family:'Inter',sans-serif;
+      font-weight:500;
+      color:#C9D7E4;
+      opacity:0;
+      transition:opacity .6s ease;
+      white-space:nowrap;
+      pointer-events:none;
+      z-index:20;
+    }
+
+    #puzzle-hint.visible{
+      opacity:1;
+    }
+
+    /* FINAL */
+
+    #final-screen{
+      position:fixed;
+      inset:0;
+      z-index:200;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:38px;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .8s ease;
+    }
+
+    #final-screen.visible{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    #final-phrase{
+      font-family:'Inter',sans-serif;
+      font-size:22px;
+      font-weight:500;
+      letter-spacing:.04em;
+      color:#E6E9ED;
+      text-align:center;
+      text-shadow:0px -2px 12px rgba(0,0,0,0.45);
+    }
+
+    #final-phrase .red{
+      color:#FF5A4F;
+      font-weight:600;
+    }
+
+    #final-buttons{
+      display:flex;
+      align-items:center;
+      gap:18px;
+    }
+
+    .btn{
+      font-family:'Baloo 2',sans-serif;
+      background-color:#FF5A4F;
+      color:#ffffff;
+      border:none;
+      border-radius:30px;
+      padding:12px 32px;
+      font-size:0.75rem;
+      font-weight:400;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      cursor:pointer;
+      transition:background-color 0.3s ease, transform 0.2s ease;
+      text-decoration:none;
+      display:inline-block;
+    }
+
+    .btn:hover{
+      background-color:#e14a40;
+      transform:translateY(-2px);
+    }
+
+    .btn-outline{
+      background-color:transparent;
+      border:1.5px solid #FF5A4F;
+      color:#FF5A4F;
+      padding:8px 24px;
+      font-size:0.65rem;
+    }
+
+    .btn-outline:hover{
+      background-color:#FF5A4F;
+      color:#ffffff;
+    }
+
   </style>
 </head>
+
 <body>
 
-<div id="cup-anchor"><img src="" alt="copo" draggable="false"/></div>
+<video id="bg-video" autoplay loop muted playsinline>
+  <source src="tempestade.mp4" type="video/mp4">
+</video>
+
+<div id="cup-anchor">
+  <img src="" alt="copo" draggable="false"/>
+</div>
+
 <div id="intro-ui">
   <div id="click-hint">clica no copo</div>
-  <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+  <div id="progress-bar-wrap">
+    <div id="progress-bar"></div>
+  </div>
 </div>
+
 <div id="puzzle-hint"></div>
+
 <div id="answer-bar"></div>
-<div id="tornado-outer"><div id="stage"></div></div>
+
+<div id="tornado-outer">
+  <div id="stage"></div>
+</div>
+
+<!-- FINAL -->
+<div id="final-screen">
+
+  <div id="final-buttons">
+    <button class="btn">
+      Saber mais sobre a expressão
+    </button>
+
+    <button class="btn btn-outline">
+      Página inicial
+    </button>
+  </div>
+
+</div>
 
 <script>
+
+const bgVideo = document.getElementById('bg-video');
+
+bgVideo.playbackRate = 0.5;
+
+bgVideo.addEventListener('loadedmetadata', () => {
+  bgVideo.playbackRate = 0.5;
+});
+
 const cupEl      = document.getElementById('cup-anchor');
 const introUI    = document.getElementById('intro-ui');
 const barEl      = document.getElementById('progress-bar');
@@ -102,369 +395,801 @@ const outerEl    = document.getElementById('tornado-outer');
 const stageEl    = document.getElementById('stage');
 const answerBar  = document.getElementById('answer-bar');
 const puzzleHint = document.getElementById('puzzle-hint');
+const finalScreen = document.getElementById('final-screen');
 
 let phase = 'fill';
-let progress = 0, lastTime = null;
+let progress = 0;
+let lastTime = null;
 
 function noise(t,s){
-  return Math.sin(t*1.00+s*1.0)*0.500+Math.sin(t*2.31+s*2.3)*0.250+
-         Math.sin(t*5.17+s*0.7)*0.125+Math.sin(t*9.73+s*3.1)*0.063+
-         Math.sin(t*17.5+s*1.9)*0.031+Math.sin(t*31.3+s*4.7)*0.016;
+  return Math.sin(t*1.00+s*1.0)*0.500+
+         Math.sin(t*2.31+s*2.3)*0.250+
+         Math.sin(t*5.17+s*0.7)*0.125+
+         Math.sin(t*9.73+s*3.1)*0.063+
+         Math.sin(t*17.5+s*1.9)*0.031+
+         Math.sin(t*31.3+s*4.7)*0.016;
 }
 
 let cx=0,cy=0,cr=0,cvx=0,cvy=0,cvr=0;
+
 function springCup(tx,ty,tr){
-  cvx=(cvx+(tx-cx)*0.12)*0.78; cvy=(cvy+(ty-cy)*0.12)*0.78; cvr=(cvr+(tr-cr)*0.12)*0.78;
-  cx+=cvx; cy+=cvy; cr+=cvr;
-  cupEl.style.transform=`translateX(calc(-50% + ${cx.toFixed(2)}px)) translateY(${cy.toFixed(2)}px) rotate(${cr.toFixed(3)}deg)`;
+  cvx=(cvx+(tx-cx)*0.12)*0.78;
+  cvy=(cvy+(ty-cy)*0.12)*0.78;
+  cvr=(cvr+(tr-cr)*0.12)*0.78;
+
+  cx+=cvx;
+  cy+=cvy;
+  cr+=cvr;
+
+  cupEl.style.transform=
+    `translateX(calc(-50% + ${cx.toFixed(2)}px))
+     translateY(${cy.toFixed(2)}px)
+     rotate(${cr.toFixed(3)}deg)`;
 }
 
 document.addEventListener('click', e=>{
+
   if(phase!=='fill') return;
+
   if(e.target.classList.contains('highlight')) return;
+
   progress=Math.min(progress+5,100);
+
   barEl.style.width=progress+'%';
-  cvx+=(Math.random()-.5)*10; cvy+=(Math.random()-.5)*4; cvr+=(Math.random()-.5)*6;
-  if(progress>=100){ phase='tornado'; introUI.classList.add('hidden'); buildTornado(); }
+
+  cvx+=(Math.random()-.5)*10;
+  cvy+=(Math.random()-.5)*4;
+  cvr+=(Math.random()-.5)*6;
+
+  if(progress>=100){
+    phase='tornado';
+    introUI.classList.add('hidden');
+    buildTornado();
+  }
+
 });
 
-/* ── TORNADO DATA ── */
 const TORNADO_DATA = [
-  { text:'É preciso fazer barulho por nada',      hlWord:'fazer',       ejectKey:'fazer'      },
-  { text:'Por uma simples gota de chuva',          hlWord:'uma',         ejectKey:'uma'        },
-  { text:'A tempestade existe na tua cabeça',      hlWord:'tempestade',  ejectKey:'tempestade' },
-  { text:'Num instante tudo vira caos',            hlWord:'num',         ejectKey:'num'        },
-  { text:'O copo estava vazio desde sempre',       hlWord:'copo',        ejectKey:'copo'       },
-  { text:'Só de pensar já entro em pânico',        hlWord:'de',          ejectKey:'de'         },
-  { text:'Uma gota de água virou tsunami',         hlWord:'água',        ejectKey:'água'       },
-  { text:'Estás sempre a exagerar tudo',           hlWord:'exagerar',    ejectKey:null },
-  { text:'Não é assim tão grave afinal',           hlWord:'grave',       ejectKey:null },
-  { text:'Tudo vai correr muito mal',              hlWord:'correr',      ejectKey:null },
-  { text:'Ninguém me ouve nunca',                  hlWord:'ninguém',     ejectKey:null },
-  { text:'Porquê sempre comigo isto',              hlWord:'sempre',      ejectKey:null },
-  { text:'Isto não tem solução nenhuma',           hlWord:'solução',     ejectKey:null },
-  { text:'Toda a gente está contra mim',           hlWord:'gente',       ejectKey:null },
-  { text:'Nunca nada funciona bem',                hlWord:'nunca',       ejectKey:null },
-  { text:'O drama cresce sozinho aqui',            hlWord:'drama',       ejectKey:null },
-  { text:'Fica calmo que é nada',                  hlWord:'calmo',       ejectKey:null },
-  { text:'Não consigo parar de pensar',            hlWord:'pensar',      ejectKey:null },
-  { text:'Já não aguento mais isto',               hlWord:'aguento',     ejectKey:null },
-  { text:'Mas porquê sempre assim',                hlWord:'porquê',      ejectKey:null },
-  { text:'Tudo ao contrário do normal',            hlWord:'contrário',   ejectKey:null },
-  { text:'O mundo vai acabar hoje',                hlWord:'mundo',       ejectKey:null },
-  { text:'É só uma pequena coisa mesmo',           hlWord:'pequena',     ejectKey:null },
-  { text:'O caos instalou-se aqui dentro',         hlWord:'caos',        ejectKey:null },
-  { text:'Nada faz sentido neste momento',         hlWord:'sentido',     ejectKey:null },
-  { text:'A ansiedade cresce sem parar',           hlWord:'ansiedade',   ejectKey:null },
-  { text:'Tudo parece maior do que é',             hlWord:'maior',       ejectKey:null },
-  { text:'O vento leva tudo consigo',              hlWord:'vento',       ejectKey:null },
-  { text:'A chuva não para de cair',               hlWord:'chuva',       ejectKey:null },
-  { text:'O silêncio pesa mais que tudo',          hlWord:'silêncio',    ejectKey:null },
+  { text:'É preciso fazer barulho por nada', hlWord:'fazer', ejectKey:'fazer' },
+  { text:'Por uma simples gota de chuva', hlWord:'uma', ejectKey:'uma' },
+  { text:'A tempestade existe na tua cabeça', hlWord:'tempestade', ejectKey:'tempestade' },
+  { text:'Num instante tudo vira caos', hlWord:'num', ejectKey:'num' },
+  { text:'O copo estava vazio desde sempre', hlWord:'copo', ejectKey:'copo' },
+  { text:'Só de pensar já entro em pânico', hlWord:'de', ejectKey:'de' },
+  { text:'Uma gota de água virou tsunami', hlWord:'água', ejectKey:'água' },
+
+  { text:'Estás sempre a exagerar tudo', hlWord:'exagerar', ejectKey:null },
+  { text:'Não é assim tão grave afinal', hlWord:'grave', ejectKey:null },
+  { text:'Tudo vai correr muito mal', hlWord:'correr', ejectKey:null },
+  { text:'Ninguém me ouve nunca', hlWord:'ninguém', ejectKey:null },
+  { text:'Porquê sempre comigo isto', hlWord:'sempre', ejectKey:null },
+  { text:'Isto não tem solução nenhuma', hlWord:'solução', ejectKey:null },
+  { text:'Toda a gente está contra mim', hlWord:'gente', ejectKey:null },
+  { text:'Nunca nada funciona bem', hlWord:'nunca', ejectKey:null },
+  { text:'O drama cresce sozinho aqui', hlWord:'drama', ejectKey:null },
+  { text:'Fica calmo que é nada', hlWord:'calmo', ejectKey:null },
+  { text:'Não consigo parar de pensar', hlWord:'pensar', ejectKey:null },
+  { text:'Já não aguento mais isto', hlWord:'aguento', ejectKey:null },
+  { text:'Mas porquê sempre assim', hlWord:'porquê', ejectKey:null },
+  { text:'Tudo ao contrário do normal', hlWord:'contrário', ejectKey:null },
+  { text:'O mundo vai acabar hoje', hlWord:'mundo', ejectKey:null },
+  { text:'É só uma pequena coisa mesmo', hlWord:'pequena', ejectKey:null },
+  { text:'O caos instalou-se aqui dentro', hlWord:'caos', ejectKey:null },
+  { text:'Nada faz sentido neste momento', hlWord:'sentido', ejectKey:null },
+  { text:'A ansiedade cresce sem parar', hlWord:'ansiedade', ejectKey:null },
+  { text:'Tudo parece maior do que é', hlWord:'maior', ejectKey:null },
+  { text:'O vento leva tudo consigo', hlWord:'vento', ejectKey:null },
+  { text:'A chuva não para de cair', hlWord:'chuva', ejectKey:null },
+  { text:'O silêncio pesa mais que tudo', hlWord:'silêncio', ejectKey:null },
 ];
 
-// exactly 20 to eject: the 7 targets + 13 fillers picked randomly
-const TARGET_DATA  = TORNADO_DATA.filter(d=>d.ejectKey!==null);
-const FILLER_DATA  = TORNADO_DATA.filter(d=>d.ejectKey===null);
+const TARGET_DATA = TORNADO_DATA.filter(d=>d.ejectKey!==null);
+const FILLER_DATA = TORNADO_DATA.filter(d=>d.ejectKey===null);
 
-function buildPhraseHTML(text, hlWord){
+function buildPhraseHTML(text,hlWord){
   if(!hlWord) return text;
-  const re=new RegExp(`(${hlWord})`,'i');
-  return text.replace(re,'<span class="hl">$1</span>');
+
+  return text.replace(
+    new RegExp(`(${hlWord})`,'i'),
+    '<span class="hl">$1</span>'
+  );
 }
 
-const TARGET_WORDS=['fazer','uma','tempestade','num','copo','de','água'];
+function buildEjectedHTML(d){
 
-const TURNS=10, FSIZE=14;
+  return d.text.split(' ').map(w=>{
+
+    const clean=w.replace(/[^a-záàâãéêíóôõúüçñ]/gi,'');
+
+    if(d.hlWord && clean.toLowerCase()===d.hlWord.toLowerCase()){
+
+      return `<span class="highlight"
+              data-word="${d.ejectKey||'__filler__'}">${w}</span>`;
+    }
+
+    return w;
+
+  }).join(' ');
+}
+
+const TARGET_WORDS=[
+  'fazer',
+  'uma',
+  'tempestade',
+  'num',
+  'copo',
+  'de',
+  'água'
+];
+
+const TURNS=10;
+const FSIZE=14;
+
 let TH,CX,RTOP,RBOT=28,TANG;
 let N=0,pos=[],spns=[],seeds=[],sst=[],fontSizes=[];
-let swirlSpd=0.3,swirlA=0;
-let revealProgress=0,revealSmooth=0,descendProgress=1;
 
-function rAt(th){return RTOP+(RBOT-RTOP)*Math.min(th/TANG,1);}
+let swirlSpd=0.3;
+let swirlA=0;
+
+let revealProgress=0;
+let revealSmooth=0;
+let descendProgress=1;
+
+function rAt(th){
+  return RTOP+(RBOT-RTOP)*Math.min(th/TANG,1);
+}
 
 function buildTornado(){
+
   TH=Math.max(window.innerHeight-(190+32+14),200);
+
   CX=window.innerWidth/2;
+
   RTOP=Math.min(window.innerWidth/2-20,310);
+
   TANG=TURNS*Math.PI*2;
+
   stageEl.style.height=TH+'px';
   stageEl.style.width=window.innerWidth+'px';
+
   stageEl.innerHTML='';
 
   const ruler=document.createElement('span');
-  ruler.style.cssText=`position:absolute;visibility:hidden;font-size:${FSIZE}px;font-family:Georgia,serif;white-space:nowrap;`;
+
+  ruler.style.cssText=
+    `position:absolute;
+     visibility:hidden;
+     font-size:${FSIZE}px;
+     font-family:Georgia,serif;
+     white-space:nowrap;`;
+
   document.body.appendChild(ruler);
-  const texts=TORNADO_DATA.map(d=>d.text);
-  const big=Array(40).fill(texts).flat();
-  const W=big.map(p=>{ruler.textContent=p;return ruler.offsetWidth;});
+
+  const big=Array(40).fill(TORNADO_DATA.map(d=>d.text)).flat();
+
+  const W=big.map(p=>{
+    ruler.textContent=p;
+    return ruler.offsetWidth;
+  });
+
   document.body.removeChild(ruler);
 
-  pos=[]; let th=0,pi=0;
+  pos=[];
+
+  let th=0;
+  let pi=0;
+
   while(th<TANG && pi<big.length){
     pos.push({th,di:pi%TORNADO_DATA.length});
-    th+=W[pi]/rAt(th); pi++;
+    th+=W[pi]/rAt(th);
+    pi++;
   }
+
   N=pos.length;
-  fontSizes=pos.map(({th})=>(FSIZE*(0.75+0.25*(1-th/TANG))).toFixed(1)+'px');
+
+  fontSizes=pos.map(({th})=>
+    (FSIZE*(0.75+0.25*(1-th/TANG))).toFixed(1)+'px'
+  );
+
   seeds=pos.map((_,i)=>i*3.7+1.1);
-  sst=pos.map(()=>({ox:0,oy:0,vx:0,vy:0}));
+
+  sst=pos.map(()=>({
+    ox:0,
+    oy:0,
+    vx:0,
+    vy:0
+  }));
+
   spns=pos.map(({di},i)=>{
+
     const d=TORNADO_DATA[di];
+
     const s=document.createElement('span');
+
     s.innerHTML=buildPhraseHTML(d.text,d.hlWord);
+
     s.className='phrase';
+
     s.style.fontSize=fontSizes[i];
+
     s.style.display='none';
+
     stageEl.appendChild(s);
+
     return s;
   });
-  revealProgress=0; revealSmooth=0;
+
+  revealProgress=0;
+  revealSmooth=0;
+
   startReveal();
 }
 
 let revealIdx=0;
+
 function startReveal(){
+
   revealIdx=0;
+
   function step(){
+
     if(phase!=='tornado') return;
+
     revealIdx=Math.min(revealIdx+1,N);
+
     revealProgress=revealIdx/N;
-    if(revealIdx<N) setTimeout(step,80);
-    else setTimeout(startEject,1500);
+
+    if(revealIdx<N){
+      setTimeout(step,80);
+    }else{
+      setTimeout(startEject,1500);
+    }
   }
+
   setTimeout(step,80);
 }
 
-/* ── EJECT ── */
 let ejectedEls=[];
 let nextTarget=0;
 
 function startEject(){
+
   phase='eject';
 
   for(let i=0;i<TARGET_WORDS.length;i++){
+
     const slot=document.createElement('div');
+
     slot.className='answer-slot';
+
     slot.textContent='_';
+
     slot.id='slot-'+i;
+
     answerBar.appendChild(slot);
   }
+
   answerBar.classList.add('visible');
 
-  // pick exactly 13 random fillers
-  const shuffledFillers=[...FILLER_DATA].sort(()=>Math.random()-0.5).slice(0,13);
-  const toEject=[...TARGET_DATA, ...shuffledFillers];
+  const shuffledFillers=[...FILLER_DATA]
+    .sort(()=>Math.random()-0.5)
+    .slice(0,13);
+
+  const toEject=[
+    ...TARGET_DATA,
+    ...shuffledFillers
+  ];
+
   shuffleArray(toEject);
 
-  // get non-overlapping positions for all 20
-  const positions = placeWithoutOverlap(toEject.length, 200, 44);
-
-  toEject.forEach(({...d}, idx)=>{
-    const di=TORNADO_DATA.indexOf(TORNADO_DATA.find(x=>x.text===d.text));
-    const spanIdx=findSpanForDi(di);
-    const startPos=spanIdx>=0?getSpanScreenPos(spanIdx):{x:CX,y:window.innerHeight-214};
+  const sizers=toEject.map(d=>{
 
     const el=document.createElement('div');
+
     el.className='ejected';
 
-    const words=d.text.split(' ');
-    el.innerHTML=words.map(w=>{
-      const clean=w.replace(/[^a-záàâãéêíóôõúüçñ]/gi,'');
-      if(d.hlWord && clean.toLowerCase()===d.hlWord.toLowerCase()){
-        return `<span class="highlight" data-word="${d.ejectKey||'__filler__'}">${w}</span>`;
-      }
-      return w;
-    }).join(' ');
+    el.style.cssText=
+      `position:fixed;
+       visibility:hidden;
+       left:-9999px;
+       top:-9999px;
+       white-space:nowrap;
+       opacity:0;`;
+
+    el.innerHTML=buildEjectedHTML(d);
+
+    document.body.appendChild(el);
+
+    return el;
+  });
+
+  const sizes=sizers.map(el=>{
+
+    const r=el.getBoundingClientRect();
+
+    return{
+      w:Math.ceil(r.width)+4,
+      h:Math.ceil(r.height)+4
+    };
+  });
+
+  sizers.forEach(el=>document.body.removeChild(el));
+
+  const positions=placeWithoutOverlap(sizes);
+
+  toEject.forEach((d,idx)=>{
+
+    const di=TORNADO_DATA.findIndex(x=>x.text===d.text);
+
+    const spanIdx=findSpanForDi(di);
+
+    const startPos=
+      spanIdx>=0
+      ? getSpanScreenPos(spanIdx)
+      : {x:CX,y:window.innerHeight-214};
+
+    const el=document.createElement('div');
+
+    el.className='ejected';
+
+    el.style.whiteSpace='nowrap';
+
+    el.innerHTML=buildEjectedHTML(d);
 
     el.style.left=startPos.x+'px';
     el.style.top=startPos.y+'px';
+
     el.style.opacity='0';
+
     el.style.transform='scale(0.3)';
+
     document.body.appendChild(el);
+
     ejectedEls.push(el);
 
     const dest=positions[idx];
+
     setTimeout(()=>{
-      el.style.transition=`left 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
-                            top 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
-                            opacity 0.5s ease,
-                            transform 0.8s cubic-bezier(0.175,0.885,0.32,1.275)`;
+
+      el.style.transition=
+        `left .8s cubic-bezier(0.25,0.46,0.45,0.94),
+         top .8s cubic-bezier(0.25,0.46,0.45,0.94),
+         opacity .5s ease,
+         transform .8s cubic-bezier(0.175,0.885,0.32,1.275)`;
+
       el.style.left=dest.x+'px';
       el.style.top=dest.y+'px';
+
       el.style.opacity='1';
+
       el.style.transform='scale(1)';
-    }, idx*60);
+
+    },idx*60);
+
   });
 
   setTimeout(()=>{
-    document.querySelectorAll('.highlight').forEach(s=>s.addEventListener('click',onHighlightClick));
-    puzzleHint.textContent='carrega nas palavras a vermelho pela ordem certa';
+
+    document
+      .querySelectorAll('.ejected .highlight')
+      .forEach(s=>s.addEventListener('click',onHighlightClick));
+
+    puzzleHint.textContent=
+      'carrega nas palavras a vermelho pela ordem certa';
+
     puzzleHint.classList.add('visible');
+
     phase='descend';
+
     descendProgress=1;
-  }, toEject.length*60+900);
+
+  },toEject.length*60+900);
 }
 
-/* ── non-overlapping placement ── */
-function placeWithoutOverlap(count, boxW, boxH){
-  const slotH    = 60;
-  const margin   = 14;
-  const cupTop   = window.innerHeight - 190 - 32 - 70;
-  const safeTop  = slotH + margin;
-  const safeBot  = cupTop;
-  const safeLeft = margin;
-  const safeRight= window.innerWidth - margin;
-  const placed   = [];
-  const maxTries = 300;
+function placeWithoutOverlap(sizes){
 
-  for(let i=0; i<count; i++){
-    let best=null, attempts=0;
-    while(attempts<maxTries){
-      const x = safeLeft + Math.random()*(safeRight-safeLeft-boxW);
-      const y = safeTop  + Math.random()*(safeBot-safeTop-boxH);
-      const rect={x,y,w:boxW,h:boxH};
-      const overlap = placed.some(p=>
-        rect.x < p.x+p.w+margin &&
-        rect.x+rect.w+margin > p.x &&
-        rect.y < p.y+p.h+margin &&
-        rect.y+rect.h+margin > p.y
+  const MIN_GAP = 40;
+  const slotH   = 52;
+  const marginH = 24;
+  const marginV = 16;
+
+  const cupTop  = window.innerHeight - 190 - 32 - 90;
+
+  const safeT   = slotH + marginV;
+  const safeB   = cupTop - marginV;
+  const safeL   = marginH;
+  const safeR   = window.innerWidth - marginH;
+
+  const areaW   = safeR - safeL;
+  const areaH   = safeB - safeT;
+
+  const count   = sizes.length;
+
+  const cols    = Math.ceil(Math.sqrt(count * (areaW / areaH)));
+  const rows    = Math.ceil(count / cols);
+
+  const cellW   = areaW / cols;
+  const cellH   = areaH / rows;
+
+  const zones   = Array.from({length: cols * rows}, (_,i) => i);
+
+  shuffleArray(zones);
+
+  const placed  = [];
+
+  return sizes.map(({w, h}, i) => {
+
+    const zone  = zones[i % zones.length];
+
+    const col   = zone % cols;
+    const row   = Math.floor(zone / cols);
+
+    const pad   = MIN_GAP / 2;
+
+    const cellX = safeL + col * cellW;
+    const cellY = safeT + row * cellH;
+
+    const minX  = cellX + pad;
+    const minY  = cellY + pad;
+
+    const maxX  = Math.max(minX, cellX + cellW - w - pad);
+    const maxY  = Math.max(minY, cellY + cellH - h - pad);
+
+    let x = minX + Math.random() * Math.max(0, maxX - minX);
+    let y = minY + Math.random() * Math.max(0, maxY - minY);
+
+    x = Math.max(safeL, Math.min(safeR - w, x));
+    y = Math.max(safeT, Math.min(safeB - h, y));
+
+    for(let a=0; a<80; a++){
+
+      const overlaps = placed.some(p=>
+
+        x < p.x+p.w+MIN_GAP &&
+        x+w+MIN_GAP > p.x &&
+
+        y < p.y+p.h+MIN_GAP &&
+        y+h+MIN_GAP > p.y
       );
-      if(!overlap){ best={x,y}; break; }
-      attempts++;
+
+      if(!overlaps) break;
+
+      x = minX + Math.random() * Math.max(0, maxX - minX);
+      y = minY + Math.random() * Math.max(0, maxY - minY);
+
+      x = Math.max(safeL, Math.min(safeR - w, x));
+      y = Math.max(safeT, Math.min(safeB - h, y));
     }
-    // fallback: just place it even if overlapping (shouldn't happen with 20 items)
-    if(!best){
-      const col = i % 4;
-      const row = Math.floor(i/4);
-      const cellW=(safeRight-safeLeft)/4;
-      const cellH=(safeBot-safeTop)/5;
-      best={ x:safeLeft+col*cellW+margin, y:safeTop+row*cellH+margin };
-    }
-    placed.push({x:best.x, y:best.y, w:boxW, h:boxH});
-  }
-  return placed.map(p=>({x:p.x,y:p.y}));
+
+    placed.push({x, y, w, h});
+
+    return {x, y};
+  });
 }
 
 function findSpanForDi(di){
+
   for(let i=N-1;i>=0;i--){
-    if(pos[i].di===di && spns[i].style.display!=='none') return i;
+
+    if(pos[i].di===di && spns[i].style.display!=='none'){
+      return i;
+    }
   }
+
   return -1;
 }
 
 function getSpanScreenPos(i){
-  const bt=pos[i].th,tf=bt/TANG,r=rAt(bt);
+
+  const bt=pos[i].th;
+  const tf=bt/TANG;
+
+  const r=rAt(bt);
+
   const tn=bt+swirlA;
-  const x=CX+r*Math.cos(tn);
-  const y=tf*TH;
-  return {x, y:window.innerHeight-214-TH+y};
+
+  return{
+    x:CX+r*Math.cos(tn),
+    y:window.innerHeight-214-TH+(tf*TH)
+  };
 }
 
 function onHighlightClick(e){
-  if(phase!=='descend'&&phase!=='puzzle') return;
+
+  if(phase!=='descend' && phase!=='puzzle') return;
+
   if(phase==='descend') phase='puzzle';
+
   const word=e.target.dataset.word;
-  if(!word||word==='__filler__'){ flashWrong(e.target); return; }
-  if(word!==TARGET_WORDS[nextTarget]){ flashWrong(e.target); return; }
+
+  if(!word || word==='__filler__'){
+    flashWrong(e.target);
+    return;
+  }
+
+  if(word!==TARGET_WORDS[nextTarget]){
+    flashWrong(e.target);
+    return;
+  }
+
   e.target.classList.add('used');
+
   const slot=document.getElementById('slot-'+nextTarget);
-  if(slot){slot.textContent=word; slot.classList.add('filled');}
+
+  if(slot){
+    slot.textContent=word;
+    slot.classList.add('filled');
+  }
+
   nextTarget++;
-  if(nextTarget===TARGET_WORDS.length) onComplete();
+
+  if(nextTarget===TARGET_WORDS.length){
+    onComplete();
+  }
 }
 
 function flashWrong(el){
+
   el.classList.remove('wrong');
+
   void el.offsetWidth;
+
   el.classList.add('wrong');
-  el.addEventListener('animationend',()=>el.classList.remove('wrong'),{once:true});
+
+  el.addEventListener('animationend',()=>{
+
+    el.classList.remove('wrong');
+
+  },{once:true});
 }
 
 function onComplete(){
+
   phase='done';
+
   puzzleHint.classList.remove('visible');
-  ejectedEls.forEach((el,i)=>setTimeout(()=>{el.style.opacity='0';},i*60));
+
+  ejectedEls.forEach((el,i)=>{
+
+    setTimeout(()=>{
+
+      el.style.opacity='0';
+
+    },i*60);
+
+  });
+
+  cupEl.classList.add('hidden');
+
+  setTimeout(()=>{
+
+    finalScreen.classList.add('visible');
+
+  },800);
 }
 
 function shuffleArray(arr){
+
   for(let i=arr.length-1;i>0;i--){
+
     const j=Math.floor(Math.random()*(i+1));
+
     [arr[i],arr[j]]=[arr[j],arr[i]];
   }
 }
 
-/* ── MAIN LOOP ── */
 function loop(now){
+
   requestAnimationFrame(loop);
-  const dt=lastTime?Math.min((now-lastTime)/1000,0.05):0.016;
-  lastTime=now; const t=now/1000;
+
+  const dt=lastTime
+    ? Math.min((now-lastTime)/1000,0.05)
+    : 0.016;
+
+  lastTime=now;
+
+  const t=now/1000;
 
   if(phase==='fill'){
+
     progress=Math.max(0,progress-4*dt);
+
     barEl.style.width=progress+'%';
-    springCup(noise(t*.8,0)*1.5,noise(t*.6,7)*.6,noise(t*.5,13)*1.2);
+
+    springCup(
+      noise(t*.8,0)*1.5,
+      noise(t*.6,7)*.6,
+      noise(t*.5,13)*1.2
+    );
+
     return;
   }
+
   if(phase==='done') return;
 
-  swirlSpd+=(0.55+noise(t*.3,99)*.15-swirlSpd)*0.008;
-  swirlA+=swirlSpd*dt;
+  swirlSpd +=
+    (0.55+noise(t*.3,99)*.15-swirlSpd)*0.008;
+
+  swirlA += swirlSpd*dt;
 
   if(phase==='tornado'){
-    revealSmooth+=(revealProgress-revealSmooth)*0.1;
+
+    revealSmooth +=
+      (revealProgress-revealSmooth)*0.1;
+
     const vis=Math.round(revealSmooth*N);
-    outerEl.style.height=vis>0?((1-pos[N-vis].th/TANG)*TH)+'px':'0px';
-    outerEl.style.transform=`translateX(${(noise(t*.7,42)*8*revealSmooth).toFixed(2)}px) rotate(${(noise(t*.5,77)*1.5*revealSmooth).toFixed(3)}deg)`;
-    springCup(noise(t*.8,0)*revealSmooth*4,noise(t*.6,7)*revealSmooth*1.5,noise(t*.5,13)*revealSmooth*2);
-    renderSpans(t,revealSmooth,vis); return;
+
+    outerEl.style.height=
+      vis>0
+      ? ((1-pos[N-vis].th/TANG)*TH)+'px'
+      : '0px';
+
+    outerEl.style.transform=
+      `translateX(${(noise(t*.7,42)*8*revealSmooth).toFixed(2)}px)
+       rotate(${(noise(t*.5,77)*1.5*revealSmooth).toFixed(3)}deg)`;
+
+    springCup(
+      noise(t*.8,0)*revealSmooth*4,
+      noise(t*.6,7)*revealSmooth*1.5,
+      noise(t*.5,13)*revealSmooth*2
+    );
+
+    renderSpans(t,revealSmooth,vis);
+
+    return;
   }
+
   if(phase==='eject'){
+
     outerEl.style.height=TH+'px';
-    outerEl.style.transform=`translateX(${(noise(t*.7,42)*5).toFixed(2)}px) rotate(${(noise(t*.5,77)*1).toFixed(3)}deg)`;
-    springCup(noise(t*.8,0)*3,noise(t*.6,7)*1.2,noise(t*.5,13)*1.5);
-    renderSpans(t,1,N); return;
+
+    outerEl.style.transform=
+      `translateX(${(noise(t*.7,42)*5).toFixed(2)}px)
+       rotate(${(noise(t*.5,77)*1).toFixed(3)}deg)`;
+
+    springCup(
+      noise(t*.8,0)*3,
+      noise(t*.6,7)*1.2,
+      noise(t*.5,13)*1.5
+    );
+
+    renderSpans(t,1,N);
+
+    return;
   }
-  if(phase==='descend'||phase==='puzzle'){
-    descendProgress=Math.max(0,descendProgress-0.003);
-    outerEl.style.height=(descendProgress*TH)+'px';
-    outerEl.style.transform=`translateX(${(noise(t*.7,42)*8*descendProgress).toFixed(2)}px) rotate(${(noise(t*.5,77)*1.5*descendProgress).toFixed(3)}deg)`;
-    springCup(noise(t*.8,0)*descendProgress*3,noise(t*.6,7)*descendProgress*1.2,noise(t*.5,13)*descendProgress*1.5);
-    renderSpans(t,descendProgress,Math.round(descendProgress*N));
-    if(descendProgress<=0){outerEl.style.height='0px';outerEl.style.transform='';if(phase==='descend')phase='puzzle';}
+
+  if(phase==='descend' || phase==='puzzle'){
+
+    descendProgress=Math.max(
+      0,
+      descendProgress-0.003
+    );
+
+    outerEl.style.height=
+      (descendProgress*TH)+'px';
+
+    outerEl.style.transform=
+      `translateX(${(noise(t*.7,42)*8*descendProgress).toFixed(2)}px)
+       rotate(${(noise(t*.5,77)*1.5*descendProgress).toFixed(3)}deg)`;
+
+    springCup(
+      noise(t*.8,0)*descendProgress*3,
+      noise(t*.6,7)*descendProgress*1.2,
+      noise(t*.5,13)*descendProgress*1.5
+    );
+
+    renderSpans(
+      t,
+      descendProgress,
+      Math.round(descendProgress*N)
+    );
+
+    if(descendProgress<=0){
+
+      outerEl.style.height='0px';
+
+      outerEl.style.transform='';
+
+      if(phase==='descend'){
+        phase='puzzle';
+      }
+    }
+
     return;
   }
 }
 
 function renderSpans(t,intensity,visCount){
+
   const updraft=1+noise(t*1.2,55)*0.06;
+
   const updates=[];
+
   for(let i=0;i<N;i++){
-    if(i<(N-visCount)){updates.push(null);continue;}
-    const bt=pos[i].th,tf=bt/TANG,r=rAt(bt);
+
+    if(i<(N-visCount)){
+      updates.push(null);
+      continue;
+    }
+
+    const bt=pos[i].th;
+    const tf=bt/TANG;
+
+    const r=rAt(bt);
+
     const ls=swirlSpd*(1+(1-tf)*0.6);
+
     const tn=bt+swirlA*(ls/swirlSpd);
-    const pw=1+noise(t*2.1+tf*4,seeds[i]*.3)*.08;
-    const x=CX+r*pw*Math.cos(tn),y=tf*TH*updraft;
-    const tux=noise(t*4.3+seeds[i],seeds[i]*1.1)*3.5*(1-tf*.5)*Math.min(intensity,1);
-    const tuy=noise(t*3.7+seeds[i]*.5,seeds[i]*2.3)*1.5*(1-tf*.5)*Math.min(intensity,1);
+
+    const pw=
+      1+noise(t*2.1+tf*4,seeds[i]*.3)*.08;
+
+    const x=CX+r*pw*Math.cos(tn);
+
+    const y=tf*TH*updraft;
+
+    const tux=
+      noise(t*4.3+seeds[i],seeds[i]*1.1)
+      *3.5*(1-tf*.5)
+      *Math.min(intensity,1);
+
+    const tuy=
+      noise(t*3.7+seeds[i]*.5,seeds[i]*2.3)
+      *1.5*(1-tf*.5)
+      *Math.min(intensity,1);
+
     const ss=sst[i];
-    ss.vx=(ss.vx+(tux-ss.ox)*.22)*.68; ss.vy=(ss.vy+(tuy-ss.oy)*.22)*.68;
-    ss.ox+=ss.vx; ss.oy+=ss.vy;
+
+    ss.vx=(ss.vx+(tux-ss.ox)*.22)*.68;
+    ss.vy=(ss.vy+(tuy-ss.oy)*.22)*.68;
+
+    ss.ox+=ss.vx;
+    ss.oy+=ss.vy;
+
     const dep=(Math.sin(tn)+1)/2;
-    updates.push({x:(x+ss.ox).toFixed(1),y:(y+ss.oy).toFixed(1),
-      alpha:(0.07+0.93*dep).toFixed(2),scaleX:(0.70+0.30*dep).toFixed(3)});
+
+    updates.push({
+      x:(x+ss.ox).toFixed(1),
+      y:(y+ss.oy).toFixed(1),
+      alpha:(0.15+0.85*dep).toFixed(2),
+      scaleX:(0.70+0.30*dep).toFixed(3)
+    });
   }
+
   for(let i=0;i<N;i++){
-    const u=updates[i],s=spns[i];
-    if(!u){if(s.style.display!=='none')s.style.display='none';continue;}
-    if(s.style.display==='none')s.style.display='';
-    s.style.left=u.x+'px'; s.style.top=u.y+'px';
-    s.style.transform=`translateX(-50%) translateY(-50%) scaleX(${u.scaleX})`;
-    s.style.color=`rgba(0,0,0,${u.alpha})`;
+
+    const u=updates[i];
+    const s=spns[i];
+
+    if(!u){
+
+      if(s.style.display!=='none'){
+        s.style.display='none';
+      }
+
+      continue;
+    }
+
+    if(s.style.display==='none'){
+      s.style.display='';
+    }
+
+    s.style.left=u.x+'px';
+    s.style.top=u.y+'px';
+
+    s.style.transform=
+      `translateX(-50%)
+       translateY(-50%)
+       scaleX(${u.scaleX})`;
+
+    s.style.color=
+      `rgba(230,233,237,${u.alpha})`;
   }
 }
 
 requestAnimationFrame(loop);
+
 </script>
+
 </body>
 </html>
