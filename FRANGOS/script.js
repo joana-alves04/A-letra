@@ -72,4 +72,38 @@ btn.addEventListener("click", () => {
     `;
   }
 
+ if(years >= 70 && !document.querySelector(".end-buttons")){
+
+  // ESCONDER ELEMENTOS
+  frango.style.display = "none";
+
+  btn.style.display = "none";
+
+  counter.style.display = "none";
+
+  // CRIAR BOTÕES
+  const buttons = document.createElement("div");
+
+  buttons.classList.add("end-buttons");
+
+  buttons.innerHTML = `
+
+    <button 
+      class="final-btn"
+      onclick="window.location.href='sobre_frangos.html'"
+    >
+      SABER MAIS SOBRE A EXPRESSÃO
+    </button>
+
+    <button 
+      class="final-btn"
+      onclick="window.location.href='../HOMEPAGE/expressoes.html'"
+    >
+      PÁGINA INICIAL
+    </button>
+
+  `;
+
+  document.querySelector(".scene").appendChild(buttons);
+}
 });
