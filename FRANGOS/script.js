@@ -5,19 +5,24 @@ const counter = document.getElementById("counter");
 let years = 0;
 let rotation = 0;
 
+let virouFrango = false;
+
 btn.addEventListener("click", () => {
 
   years++;
 
   rotation += 360;
 
-  // roda o contentor
+  // RODAR
   frango.style.transform = `rotate(${rotation}deg)`;
 
-  counter.innerHTML = `${years} anos a virar frangos`;
+  // TEXTO NORMAL
+  if(years < 50){
+    counter.innerHTML = `${years} anos a virar frangos`;
+  }
 
-  // MUDA PARA GALINHA
-  if(years === 10){
+  // PINTO -> GALINHA
+  if(years === 15){
 
     frango.innerHTML = `
       <img 
@@ -29,21 +34,42 @@ btn.addEventListener("click", () => {
     `;
   }
 
-  // MUDA PARA CHICKEN LITTLE
-  if(years === 50){
+  // CHICKEN LITTLE APENAS UMA VEZ
+  if(years >= 50){
 
-    counter.innerHTML = "TU ÉS O FRANGO";
+    // muda imagem só uma vez
+    if(!virouFrango){
 
-    frango.innerHTML = `
-      <img 
-        src="../imgs/chicken_little.png"
-        alt="Chicken Little"
-        class="animal"
-        draggable="false"
-      >
+      virouFrango = true;
+
+      frango.innerHTML = `
+        <img 
+          src="../imgs/chicken_little.png"
+          alt="Chicken Little"
+          class="animal"
+          draggable="false"
+        >
+      `;
+
+      document.body.classList.add("insane");
+
+      frango.style.transition = "transform 0.15s linear";
+    }
+
+    // TEXTO FINAL
+    counter.innerHTML = `
+      <div class="final-text">
+
+        <span class="main">
+          VIRASTE UM FRANGO
+        </span>
+
+        <span class="years">
+          ${years} anos a virar frangos
+        </span>
+
+      </div>
     `;
-
-    document.body.classList.add("insane");
   }
 
 });
