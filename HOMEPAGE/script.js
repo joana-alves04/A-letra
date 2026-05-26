@@ -59,8 +59,7 @@ function initEstendalScrollytelling() {
      let scrollPercent = scrollTop / docHeight;
      if(isNaN(scrollPercent) || docHeight === 0) scrollPercent = 0; 
      
-     // 1. LÓGICA DA OPACIDADE (Aparecer os cartões)
-     // Mal passes de 3% do scroll, os cartões fazem fade in.
+     // 1. LÓGICA DA OPACIDADE
      if (scrollPercent > 0.03) {
          track.classList.add('cards-visible');
      } else {
@@ -76,14 +75,14 @@ function initEstendalScrollytelling() {
      let hPercent = (scrollPercent - phase1End) / (1 - phase1End);
      hPercent = Math.min(1, Math.max(0, hPercent)); 
 
-     // O .toFixed(1) arredonda os valores para evitar o tal salto/tremor no final
+     // Arredondamento para evitar saltos visuais (tremor)
      const currentY = (vPercent * maxVerticalMove).toFixed(1);
      const currentX = (hPercent * horizontalMoveMax).toFixed(1);
 
      facadeWrapper.style.transform = `translateY(-${currentY}px)`;
      track.style.transform = `translateX(-${currentX}px)`;
 
-     // --- Lógica das Cartas em Destaque (Zoom) ---
+     // --- Lógica das Cartas em Destaque ---
      const cards = track.querySelectorAll('.estendal-card-scrolly');
      let centerIndex = 0;
      let minDistance = Infinity;
@@ -125,7 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
   
-  if (!link || link.classList.contains('estendal-card-scrolly') || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
+  // REMOVI a exclusão de 'estendal-card-scrolly' para permitir a navegação nos cards
+  if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
 
   e.preventDefault();
   if (isAnimating) return;
