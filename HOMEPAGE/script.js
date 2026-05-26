@@ -17,18 +17,40 @@ function initObservers() {
   }
 }
 
-// O MOTOR DO ESTENDAL HORIZONTAL
-function initEstendalScroll() {
-  const page = document.querySelector('.page');
+// ── O MOTOR DO ESTENDAL PERFEITO (Afinado) ─────────────────────────────────
+function initEstendalScrollytelling() {
+  const page = document.querySelector('.estendal-page-scrolly');
+  const facadeWrapper = document.getElementById('facade-wrapper');
   const track = document.getElementById('clothesline-track');
+  const fachadaImg = document.getElementById('fachada-img');
   
-  if (!track || !page) return;
-
-  const viewportWidth = window.innerWidth;
+  if (!page || !facadeWrapper || !track || !fachadaImg) return;
 
   if (window.handleEstendalScroll) {
-    page.removeEventListener('scroll', window.handleEstendalScroll);
+      page.removeEventListener('scroll', window.handleEstendalScroll);
+      window.removeEventListener('resize', window.calculateEstendalDimensions);
   }
+
+  let maxVerticalMove = 0;
+  let horizontalMoveMax = 0;
+  let viewportWidth = window.innerWidth;
+  let viewportHeight = window.innerHeight;
+
+  window.calculateEstendalDimensions = function() {
+      viewportWidth = window.innerWidth;
+      viewportHeight = window.innerHeight;
+
+      setTimeout(() => {
+          const imgHeight = fachadaImg.getBoundingClientRect().height;
+          
+          maxVerticalMove = imgHeight - viewportHeight;
+          if (maxVerticalMove < 0) maxVerticalMove = 0;
+
+          horizontalMoveMax = track.scrollWidth - viewportWidth;
+          
+          window.handleEstendalScroll();
+      }, 100);
+  };
 
   window.handleEstendalScroll = function() {
      const scrollTop = page.scrollTop; 
@@ -37,17 +59,35 @@ function initEstendalScroll() {
      let scrollPercent = scrollTop / docHeight;
      if(isNaN(scrollPercent) || docHeight === 0) scrollPercent = 0; 
      
-     const trackWidth = track.scrollWidth;
-     const horizontalMove = (trackWidth - viewportWidth) * scrollPercent;
-     
-     // Move a corda. Note-se a remoção do translateY(-50%) para manter o alinhamento da mola
-     track.style.transform = `translateX(-${horizontalMove}px)`;
+     // 1. LÓGICA DA OPACIDADE (Aparecer os cartões)
+     // Mal passes de 3% do scroll, os cartões fazem fade in.
+     if (scrollPercent > 0.03) {
+         track.classList.add('cards-visible');
+     } else {
+         track.classList.remove('cards-visible');
+     }
 
-     const cards = track.querySelectorAll('.estendal-card');
+     // 2. LÓGICA DO MOVIMENTO
+     const phase1End = 0.15;
+
+     let vPercent = scrollPercent / phase1End;
+     vPercent = Math.min(1, Math.max(0, vPercent)); 
+
+     let hPercent = (scrollPercent - phase1End) / (1 - phase1End);
+     hPercent = Math.min(1, Math.max(0, hPercent)); 
+
+     // O .toFixed(1) arredonda os valores para evitar o tal salto/tremor no final
+     const currentY = (vPercent * maxVerticalMove).toFixed(1);
+     const currentX = (hPercent * horizontalMoveMax).toFixed(1);
+
+     facadeWrapper.style.transform = `translateY(-${currentY}px)`;
+     track.style.transform = `translateX(-${currentX}px)`;
+
+     // --- Lógica das Cartas em Destaque (Zoom) ---
+     const cards = track.querySelectorAll('.estendal-card-scrolly');
      let centerIndex = 0;
      let minDistance = Infinity;
 
-     // Deteta a carta mais perto do centro do ecrã
      cards.forEach((card, index) => {
          const rect = card.getBoundingClientRect();
          const cardCenter = rect.left + rect.width / 2;
@@ -60,22 +100,24 @@ function initEstendalScroll() {
          }
      });
 
-     // Destaca a carta do centro
      cards.forEach(c => c.classList.remove('is-active'));
      if(cards[centerIndex]) cards[centerIndex].classList.add('is-active');
   };
 
+  window.addEventListener('resize', window.calculateEstendalDimensions);
   page.addEventListener('scroll', window.handleEstendalScroll);
-  window.handleEstendalScroll(); 
+  
+  window.calculateEstendalDimensions();
 }
 
+// ── SISTEMA GERAL DE NAVEGAÇÃO ───────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
-  initEstendalScroll(); 
+  initEstendalScrollytelling(); 
   
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
-    const pageEl = document.querySelector('.page');
+    const pageEl = document.querySelector('.page, .estendal-page-scrolly');
     if (pageEl) pageEl.scrollTop = parseInt(savedScroll, 10);
   }
 });
@@ -83,8 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
   
-  // Ignora o router se for link dos cartões ou link externo
-  if (!link || link.classList.contains('estendal-card') || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
+  if (!link || link.classList.contains('estendal-card-scrolly') || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
 
   e.preventDefault();
   if (isAnimating) return;
@@ -95,7 +136,7 @@ document.addEventListener("click", async (e) => {
   const isBack = link.classList.contains('nav-link-back');
   const container = document.getElementById('horizontal-container');
 
-  const currentPageEl = document.querySelector('.page');
+  const currentPageEl = document.querySelector('.page, .estendal-page-scrolly');
   if (currentPageEl) {
     sessionStorage.setItem('scroll_' + window.location.pathname, currentPageEl.scrollTop);
   }
@@ -107,7 +148,7 @@ document.addEventListener("click", async (e) => {
     const htmlText = await response.text();
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlText, 'text/html');
-    const newPage = doc.querySelector('.page');
+    const newPage = doc.querySelector('.page, .estendal-page-scrolly');
     
     if (!newPage) throw new Error('HTML inválido');
 
@@ -140,7 +181,7 @@ document.addEventListener("click", async (e) => {
         container.style.transform = 'translateX(0vw)';
       }
       initObservers();
-      initEstendalScroll(); 
+      initEstendalScrollytelling(); 
       isAnimating = false;
     }, 800);
 
