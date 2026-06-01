@@ -17,82 +17,106 @@ function initObservers() {
   }
 }
 
-// ── O MOTOR DO ESTENDAL PERFEITO (Afinado) ─────────────────────────────────
+// ── MOTOR DO ESTENDAL (Com Zona de Segurança Aumentada) ─────────────────
 function initEstendalScrollytelling() {
   const page = document.querySelector('.estendal-page-scrolly');
-  const facadeWrapper = document.getElementById('facade-wrapper');
   const track = document.getElementById('clothesline-track');
-  const fachadaImg = document.getElementById('fachada-img');
   
-  if (!page || !facadeWrapper || !track || !fachadaImg) return;
+  if (!page || !track) return;
 
   if (window.handleEstendalScroll) {
       page.removeEventListener('scroll', window.handleEstendalScroll);
       window.removeEventListener('resize', window.calculateEstendalDimensions);
+      page.removeEventListener('wheel', window.stopSnap);
+      page.removeEventListener('touchstart', window.stopSnap);
   }
 
-  let maxVerticalMove = 0;
   let horizontalMoveMax = 0;
   let viewportWidth = window.innerWidth;
-  let viewportHeight = window.innerHeight;
+
+  let scrollTimeout;
+  let isSnapping = false;
+  let snapAnimationId;
+
+  const ajusteHorizontal = 0; 
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function customSmoothScroll(target, duration) {
+      const start = page.scrollTop;
+      const distance = target - start;
+      let startTime = null;
+
+      function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const progress = timestamp - startTime;
+          const percentage = Math.min(progress / duration, 1);
+          
+          page.scrollTop = start + distance * easeOutCubic(percentage);
+
+          if (progress < duration) snapAnimationId = requestAnimationFrame(step);
+          else isSnapping = false;
+      }
+      cancelAnimationFrame(snapAnimationId);
+      snapAnimationId = requestAnimationFrame(step);
+  }
+
+  window.stopSnap = function() {
+      if (isSnapping) {
+          cancelAnimationFrame(snapAnimationId);
+          isSnapping = false;
+      }
+  };
+  page.addEventListener('wheel', window.stopSnap, { passive: true });
+  page.addEventListener('touchstart', window.stopSnap, { passive: true });
 
   window.calculateEstendalDimensions = function() {
       viewportWidth = window.innerWidth;
-      viewportHeight = window.innerHeight;
 
       setTimeout(() => {
-          const imgHeight = fachadaImg.getBoundingClientRect().height;
-          
-          maxVerticalMove = imgHeight - viewportHeight;
-          if (maxVerticalMove < 0) maxVerticalMove = 0;
-
-          horizontalMoveMax = track.scrollWidth - viewportWidth;
-          
+          horizontalMoveMax = Math.max(0, track.scrollWidth - viewportWidth);
           window.handleEstendalScroll();
-      }, 100);
+      }, 150);
   };
 
   window.handleEstendalScroll = function() {
      const scrollTop = page.scrollTop; 
      const docHeight = page.scrollHeight - page.clientHeight; 
      
+     if (docHeight <= 0) return;
      let scrollPercent = scrollTop / docHeight;
-     if(isNaN(scrollPercent) || docHeight === 0) scrollPercent = 0; 
      
-     // 1. LÓGICA DA OPACIDADE
-     if (scrollPercent > 0.03) {
-         track.classList.add('cards-visible');
-     } else {
+     // 1. VISIBILIDADE DE FERRO (Só desaparece se bateres nos últimos 5 píxeis)
+     if (scrollTop <= 5) {
          track.classList.remove('cards-visible');
+     } else {
+         track.classList.add('cards-visible');
      }
 
-     // 2. LÓGICA DO MOVIMENTO
-     const phase1End = 0.15;
+     // 2. A ZONA MORTA GIGANTE (Aumentada para 15%)
+     // Isto cria um "para-choques" em que o 1º cartão fica centrado sem fugir
+     const moveStart = 0.15; 
+     let hPercent = 0;
+     
+     if (scrollPercent > moveStart) {
+         hPercent = (scrollPercent - moveStart) / (1 - moveStart);
+     }
+     hPercent = Math.min(1, Math.max(0, hPercent));
 
-     let vPercent = scrollPercent / phase1End;
-     vPercent = Math.min(1, Math.max(0, vPercent)); 
-
-     let hPercent = (scrollPercent - phase1End) / (1 - phase1End);
-     hPercent = Math.min(1, Math.max(0, hPercent)); 
-
-     // Arredondamento para evitar saltos visuais (tremor)
-     const currentY = (vPercent * maxVerticalMove).toFixed(1);
-     const currentX = (hPercent * horizontalMoveMax).toFixed(1);
-
-     facadeWrapper.style.transform = `translateY(-${currentY}px)`;
+     const currentX = Math.floor(hPercent * horizontalMoveMax);
      track.style.transform = `translateX(-${currentX}px)`;
 
-     // --- Lógica das Cartas em Destaque ---
      const cards = track.querySelectorAll('.estendal-card-scrolly');
      let centerIndex = 0;
      let minDistance = Infinity;
+     
+     const targetScreenCenter = (viewportWidth / 2) + ajusteHorizontal;
 
      cards.forEach((card, index) => {
          const rect = card.getBoundingClientRect();
          const cardCenter = rect.left + rect.width / 2;
-         const screenCenter = viewportWidth / 2;
-         const dist = Math.abs(cardCenter - screenCenter);
-
+         const dist = Math.abs(cardCenter - targetScreenCenter);
+         
          if (dist < minDistance) {
              minDistance = dist;
              centerIndex = index;
@@ -101,15 +125,45 @@ function initEstendalScrollytelling() {
 
      cards.forEach(c => c.classList.remove('is-active'));
      if(cards[centerIndex]) cards[centerIndex].classList.add('is-active');
+
+     // 3. EFEITO ÍMAN (Protegido pela Zona Morta)
+     if (!isSnapping && horizontalMoveMax > 0 && scrollTop > 5) {
+         clearTimeout(scrollTimeout);
+         
+         scrollTimeout = setTimeout(() => {
+             if (isAnimating) return;
+             
+             const activeCard = cards[centerIndex];
+             if (!activeCard) return;
+
+             const rect = activeCard.getBoundingClientRect();
+             const cardCenter = rect.left + rect.width / 2;
+             const diff = cardCenter - targetScreenCenter;
+
+             // O snap só atua se passares a Zona Morta. Se estiveres na zona morta, ele deixa o cartão em paz!
+             if (Math.abs(diff) > 2 && scrollPercent >= moveStart) {
+                 isSnapping = true;
+                 
+                 let targetX = currentX + diff;
+                 targetX = Math.max(0, Math.min(targetX, horizontalMoveMax)); 
+                 
+                 let targetHPercent = targetX / horizontalMoveMax;
+                 
+                 let targetScrollPercent = (targetHPercent * (1 - moveStart)) + moveStart;
+                 let targetScrollTop = targetScrollPercent * docHeight;
+
+                 customSmoothScroll(targetScrollTop, 800);
+             }
+         }, 150);
+     }
   };
 
   window.addEventListener('resize', window.calculateEstendalDimensions);
   page.addEventListener('scroll', window.handleEstendalScroll);
-  
   window.calculateEstendalDimensions();
 }
 
-// ── SISTEMA GERAL DE NAVEGAÇÃO ───────────────────────────────────────────
+// ── SISTEMA DE NAVEGAÇÃO SUAVE ──────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
   initEstendalScrollytelling(); 
@@ -123,8 +177,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
-  
-  // REMOVI a exclusão de 'estendal-card-scrolly' para permitir a navegação nos cards
   if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
 
   e.preventDefault();
@@ -133,8 +185,8 @@ document.addEventListener("click", async (e) => {
 
   const targetUrl = link.href;
   const targetPath = new URL(targetUrl, window.location.origin).pathname;
-  const isBack = link.classList.contains('nav-link-back');
   const container = document.getElementById('horizontal-container');
+  const isBack = link.classList.contains('nav-link-back');
 
   const currentPageEl = document.querySelector('.page, .estendal-page-scrolly');
   if (currentPageEl) {
@@ -146,8 +198,7 @@ document.addEventListener("click", async (e) => {
     if (!response.ok) throw new Error('Erro');
     
     const htmlText = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
+    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
     const newPage = doc.querySelector('.page, .estendal-page-scrolly');
     
     if (!newPage) throw new Error('HTML inválido');
@@ -161,7 +212,6 @@ document.addEventListener("click", async (e) => {
       container.style.transition = 'none';
       container.style.transform = 'translateX(-100vw)';
       container.getBoundingClientRect(); 
-      
       container.style.transition = 'transform 800ms cubic-bezier(0.77, 0, 0.175, 1)';
       container.style.transform = 'translateX(0vw)';
     } else {
@@ -185,9 +235,7 @@ document.addEventListener("click", async (e) => {
       isAnimating = false;
     }, 800);
 
-  } catch (err) {
-    window.location.href = targetUrl;
-  }
+  } catch (err) { window.location.href = targetUrl; }
 });
 
 window.addEventListener("popstate", () => window.location.reload());
