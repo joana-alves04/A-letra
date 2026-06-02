@@ -28,7 +28,7 @@ body.insane { background: var(--bg-insane); }
 
 .scene { text-align: center; display: flex; flex-direction: column; align-items: center; }
 
-/* FRANGO */
+/* JOGO DO FRANGO (Mantido intacto) */
 .frango {
   width: clamp(200px, 40vw, 350px);
   height: clamp(200px, 40vw, 350px);
@@ -44,7 +44,6 @@ body.insane { background: var(--bg-insane); }
   filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.2));
 }
 
-/* BOTÃO VIRAR */
 #turnBtn {
   margin-top: 40px; padding: 14px 36px; border: 2px solid white;
   border-radius: 50px; background: white; color: var(--bg-color);
@@ -54,7 +53,6 @@ body.insane { background: var(--bg-insane); }
 }
 #turnBtn:hover { background: transparent; color: white; transform: translateY(-3px); }
 
-/* TEXTO */
 h1 { margin-top: 30px; font-family: var(--font-serif); font-weight: 400; font-size: 2rem; }
 
 .final-text { display: flex; flex-direction: column; gap: 10px; align-items: center; }
@@ -72,9 +70,10 @@ h1 { margin-top: 30px; font-family: var(--font-serif); font-weight: 400; font-si
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* SCROLLYTELLING SOBRE A EXPRESSÃO */
+
+/* --- SCROLLYTELLING (Narrativa e Vídeo) --- */
 .page-sobre { 
-    background-color: #ae7039 !important; 
+    background-color: var(--bg-color) !important; 
     overflow-y: auto !important; 
     height: 100vh !important;
     width: 100% !important;
@@ -90,15 +89,16 @@ h1 { margin-top: 30px; font-family: var(--font-serif); font-weight: 400; font-si
     box-sizing: border-box;
 }
 
+/* O texto narrativo */
 .page-sobre .reveal {
     color: white !important; 
     font-family: "Averia Serif Libre", serif;
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-size: clamp(2.2rem, 5vw, 4rem);
     text-align: center;
     line-height: 1.2;
     opacity: 0;
     transform: translateY(50px);
-    transition: all 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 1.2s ease, transform 1.2s ease;
 }
 
 .page-sobre .reveal.is-visible {
@@ -106,20 +106,56 @@ h1 { margin-top: 30px; font-family: var(--font-serif); font-weight: 400; font-si
     transform: translateY(0);
 }
 
+/* O Showcase do Vídeo Real */
+.video-showcase {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+.video-context {
+    font-family: var(--font-sans);
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.video-frame {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    background: #000;
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.video-frame video {
+    width: 100%;
+    display: block;
+}
+
+.video-caption {
+    margin-top: 15px;
+    font-family: var(--font-sans);
+    font-size: 1.2rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+/* Botão Voltar */
 .page-sobre .btn-voltar {
-    margin-top: 40px;
+    margin-top: 50px;
     padding: 15px 30px;
     border: 2px solid white !important;
     color: white !important;
     background: transparent !important;
     text-decoration: none;
     border-radius: 50px;
-    font-family: "Baloo 2", sans-serif;
+    font-family: var(--font-sans);
     font-weight: 600;
     text-transform: uppercase;
+    transition: all 0.3s ease;
 }
-
-.page-sobre .btn-voltar:hover {
-    background: white !important;
-    color: #ae7039 !important;
-}
+.page-sobre .btn-voltar:hover { background: white !important; color: #ae7039 !important; }

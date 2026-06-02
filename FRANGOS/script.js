@@ -6,7 +6,7 @@ let years = 0;
 let rotation = 0;
 let virouFrango = false;
 
-// 1. Lógica do Jogo
+// ── 1. LÓGICA DO JOGO DO FRANGO ──
 if (btn) {
     btn.addEventListener("click", () => {
         years++;
@@ -31,22 +31,28 @@ if (btn) {
             frango.style.display = "none"; btn.style.display = "none"; counter.style.display = "none";
             const buttons = document.createElement("div");
             buttons.classList.add("end-buttons");
-            buttons.innerHTML = `<button class="final-btn" onclick="window.location.href='sobre_frangos.html'">SABER MAIS</button><button class="final-btn" onclick="window.location.href='../HOMEPAGE/expressoes.html'">VOLTAR</button>`;
+            buttons.innerHTML = `<button class="final-btn" onclick="window.location.href='sobre_frangos.html'">Saber mais sobre a expressão</button><button class="final-btn" onclick="window.location.href='../HOMEPAGE/expressoes.html'">Página Inicial</button>`;
             document.querySelector(".scene").appendChild(buttons);
         }
     });
 }
 
-// 2. Motor de Scrollytelling (Observador)
+// ── 2. MOTOR DE SCROLLYTELLING ──
 function initObservers() {
     const elements = document.querySelectorAll('.reveal');
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('is-visible');
-            else entry.target.classList.remove('is-visible');
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+            } else {
+                entry.target.classList.remove('is-visible');
+            }
         });
     }, { threshold: 0.5 });
     elements.forEach(el => obs.observe(el));
 }
 
-document.addEventListener("DOMContentLoaded", initObservers);
+// Inicializa o Scrollytelling quando a página carrega
+document.addEventListener("DOMContentLoaded", () => {
+    initObservers();
+});
