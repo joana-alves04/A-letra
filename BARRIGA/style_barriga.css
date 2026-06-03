@@ -1,81 +1,398 @@
-body{
-  margin:0;
-  height:100vh;
-  overflow:hidden;
-  background:#111;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family:Arial;
-  color:white;
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-.clock-container{
-  text-align:center;
+:root {
+  --font-serif: "Averia Serif Libre", Georgia, serif;
+  --font-sans: "Baloo 2", system-ui, sans-serif;
+  --text-color: #111;
+  --bg-dynamic: rgb(244, 235, 216);
 }
 
-.clock{
-  width:350px;
-  height:350px;
-  border:10px solid white;
-  border-radius:50%;
-  position:relative;
-  transition:1s;
-  background:#1b1b1b;
+/* ========================================= */
+/* ESTILOS GERAIS E DA PÁGINA PRINCIPAL      */
+/* ========================================= */
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--text-color);
+  background-color: var(--bg-dynamic);
+  transition: color 0.3s ease;
 }
 
-.center{
-  width:20px;
-  height:20px;
-  background:white;
-  border-radius:50%;
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%, -50%);
+body.hungry-mode {
+  color: white;
 }
 
-.hand{
-  position:absolute;
-  bottom:50%;
-  left:50%;
-  transform-origin:bottom;
-  background:white;
+#corner-gear-wrapper {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: clamp(120px, 15vw, 200px);
+  height: clamp(120px, 15vw, 200px);
+  z-index: 100;
+  cursor: grab;
+  color: currentColor;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.3));
+  transform-origin: center center;
+  will-change: transform;
 }
 
-.hour{
-  width:8px;
-  height:80px;
+#corner-gear-wrapper:active {
+  cursor: grabbing;
 }
 
-.minute{
-  width:4px;
-  height:120px;
+#corner-gear-wrapper:hover {
+  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) scale(1.03);
+  transition: filter 0.2s, transform 0.2s;
 }
 
-.food{
-  position:absolute;
-  font-size:2rem;
+.gear-hint {
+  position: fixed;
+  bottom: calc(40px + (clamp(120px, 15vw, 200px) / 2) - 10px);
+  right: calc(40px + clamp(120px, 15vw, 200px) + 20px);
+  font-family: var(--font-sans);
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: currentColor;
+  opacity: 0.7;
+  z-index: 100;
+  pointer-events: none;
+  animation: pointToGear 1.5s infinite alternate ease-in-out;
 }
 
-.food1{ top:20px; left:160px; }
-.food2{ top:150px; right:10px; }
-.food3{ bottom:20px; left:160px; }
-.food4{ top:150px; left:10px; }
+@keyframes pointToGear {
+  0% {
+    transform: translateX(0);
+  }
 
-#title{
-  margin-top:40px;
-  font-size:3rem;
-  transition:1s;
+  100% {
+    transform: translateX(10px);
+  }
 }
 
-.hungry{
-  animation:shake .1s infinite;
-  border-color:#ffae00;
+#time-background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-sans);
+  font-size: clamp(8rem, 25vw, 25rem);
+  font-weight: 800;
+  opacity: 0.06;
+  z-index: 0;
+  pointer-events: none;
+  letter-spacing: -5px;
+  white-space: nowrap;
 }
 
-@keyframes shake{
-  0%{ transform:translateX(-2px); }
-  50%{ transform:translateX(2px); }
-  100%{ transform:translateX(-2px); }
+.page-barriga {
+  height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+  scrollbar-width: none;
+}
+
+.page-barriga::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 10%;
+  box-sizing: border-box;
+}
+
+.reveal {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  text-align: center;
+  line-height: 1.3;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 1s ease, transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.emphasis {
+  font-family: var(--font-sans);
+  font-size: clamp(3.5rem, 7vw, 6rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-top: 15px;
+  margin-bottom: 40px;
+  line-height: 1.1;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.hungry-mode .emphasis {
+  color: #ffd700;
+}
+
+.end-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 30px;
+  align-items: center;
+  width: 100%;
+}
+
+.final-btn {
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: all 0.3s ease;
+  color: white !important;
+  text-align: center;
+  text-decoration: none;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.final-btn:first-child {
+  background-color: #AC4A44 !important;
+  font-size: 1.1rem;
+  padding: 18px 32px;
+  width: 340px;
+  max-width: 450px;
+}
+
+.final-btn:last-child {
+  background-color: #CE968A !important;
+  font-size: 0.95rem;
+  padding: 14px 28px;
+  width: 220px;
+  max-width: 300px;
+}
+
+.final-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ========================================= */
+/* ESTILOS EXCLUSIVOS DA PÁGINA "SOBRE"      */
+/* ========================================= */
+
+body.sobre-page {
+  overflow-y: auto !important;
+  background-color: rgb(244, 235, 216);
+}
+
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  animation: slideUpFade 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+@keyframes slideUpFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header-title {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.header-title h3 {
+  font-family: var(--font-sans);
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.header-title h1 {
+  font-family: var(--font-sans);
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  color: #B86508;
+  text-transform: uppercase;
+  margin: 0;
+  line-height: 1.1;
+  text-shadow: 2px 2px 0px rgba(184, 101, 8, 0.1);
+}
+
+.info-card {
+  background: white;
+  border-radius: 20px;
+  padding: 35px 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border-left: 8px solid #B86508;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:not(.curiosity-card):hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(184, 101, 8, 0.15);
+}
+
+.info-card h2 {
+  font-family: var(--font-sans);
+  color: #B86508;
+  margin-top: 0;
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+
+.info-card p {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: #444;
+  line-height: 1.7;
+  margin-bottom: 0;
+}
+
+.card-secondary {
+  border-left-color: #E89C53;
+}
+
+.card-secondary h2 {
+  color: #E89C53;
+}
+
+.video-section {
+  margin: 50px 0;
+  padding: 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-caption {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: #777;
+  margin-top: 20px;
+  font-style: italic;
+}
+
+/* --- CAIXA SURPRESA (BUG DO "TRAÇO ESTICADO" RESOLVIDO) --- */
+.curiosity-card {
+  --reveal-progress: 0;
+  background-color: #fffaf0;
+  border: none;
+  /* Remove a borda antiga que causava o erro visual */
+  /* Substituímos a borda nativa por um SVG inteligente que recria os traços na perfeição a cada milímetro que a caixa cresce! */
+  background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='20' stroke='%23E89C53' stroke-width='4' stroke-dasharray='12%2c 16' stroke-linecap='round'/%3E%3C/svg%3E");
+  overflow: hidden;
+}
+
+.curiosity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.curiosity-title h2 {
+  margin: 0;
+}
+
+.curiosity-action {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.mini-gear {
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  flex-shrink: 0;
+  /* Garante que a engrenagem NUNCA é esmagada no telemóvel */
+  color: #B86508;
+  cursor: grab;
+  transform: rotate(calc(var(--reveal-progress) * 360deg));
+}
+
+.mini-gear:active {
+  cursor: grabbing;
+}
+
+.click-hint {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: #E89C53;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: calc(1 - var(--reveal-progress));
+}
+
+.pulse-text {
+  animation: pulseHint 1.5s infinite alternate;
+}
+
+@keyframes pulseHint {
+  0% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.curiosity-content {
+  max-height: calc(var(--reveal-progress) * 350px);
+  opacity: var(--reveal-progress);
+  margin-top: calc(var(--reveal-progress) * 25px);
+  overflow: hidden;
+}
+
+.curiosity-card.is-snapping .mini-gear,
+.curiosity-card.is-snapping .curiosity-content,
+.curiosity-card.is-snapping .click-hint {
+  transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
