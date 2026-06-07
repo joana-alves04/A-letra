@@ -4,56 +4,91 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tempestade num Copo de Água</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Baloo+2:wght@400&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; font-family: Georgia, serif; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden; font-family: Georgia, serif; background: #0d1a22;
+    }
+    #bg-video {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0; pointer-events: none;
+      transition: filter 4s ease, transform 5s ease;
+      transform-origin: center center;
+    }
+    #bg-video.ending { filter: brightness(0.3) blur(5px); transform: scale(1.06); }
 
     #cup-anchor {
-      position: fixed; bottom: 32px; left: 50%;
+      position: fixed; bottom: 15px; left: 50%;
       transform: translateX(-50%); z-index: 10; transform-origin: center bottom;
-      will-change: transform;
+      will-change: transform; transition: opacity 2s ease;
+      width: 140px; height: 190px;
     }
+    #cup-anchor.fade-out { opacity: 0; pointer-events: none; }
     #cup-anchor img {
-      display: block; width: 140px; height: 190px; object-fit: contain;
-      background: #ddeeff; border: 2px dashed #8aaacc; border-radius: 4px;
+      display: block; width: 160px; height: 210px;
+      object-fit: contain; margin-left: -10px; margin-top: -10px;
     }
+
     #intro-ui {
-      position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%);
+      position: fixed; bottom: 200px; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center; gap: 16px;
       z-index: 20; white-space: nowrap; transition: opacity 0.4s ease;
     }
     #intro-ui.hidden { opacity: 0; pointer-events: none; }
-    #click-hint { font-size: 13px; color: #aaa; letter-spacing: 0.05em; }
-    #progress-bar-wrap { width: 220px; height: 10px; background: #e0e8f0; border-radius: 99px; overflow: hidden; }
-    #progress-bar { height: 100%; width: 0%; background: #4a90c4; border-radius: 99px; }
+    #click-hint {
+      font-size: clamp(11px, 1.5vw, 13px); letter-spacing: 0.05em;
+      font-family: 'Inter', sans-serif; font-weight: 500; color: #C9D7E4;
+    }
+    #progress-bar-wrap {
+      width: clamp(140px, 40vw, 220px); height: 10px; background: rgba(201,215,228,0.2);
+      border-radius: 99px; overflow: hidden;
+    }
+    #progress-bar { height: 100%; width: 0%; background: #FF5A4F; border-radius: 99px; }
 
     #tornado-outer {
       position: fixed; bottom: 214px; left: 0; width: 100%; height: 0;
-      overflow: hidden; pointer-events: none; will-change: transform;
+      overflow: hidden; pointer-events: none; will-change: transform; z-index: 5;
+      transition: opacity 2s ease;
     }
+    #tornado-outer.fade-out { opacity: 0; }
     #stage { position: absolute; bottom: 0; left: 0; width: 100%; }
 
     .phrase {
       position: absolute; white-space: nowrap; pointer-events: none;
       user-select: none; transform-origin: center center;
-      will-change: transform; font-family: Georgia, serif;
+      will-change: transform; font-family: Georgia, serif; color: #E6E9ED;
+      text-shadow: 0px -2px 12px rgba(0,0,0,0.45);
     }
-    .phrase .hl { color: #c0392b; font-weight: bold; }
+    .phrase .hl { color: #FF5A4F; font-weight: bold; }
 
     .ejected {
-      position: fixed; font-family: Georgia, serif; font-size: 13px;
-      line-height: 1.6; pointer-events: none; opacity: 0;
-      max-width: 200px; text-align: center; z-index: 30;
+      position: fixed; font-family: Georgia, serif;
+      font-size: clamp(11px, 1.8vw, 14px);
+      line-height: 1.7; pointer-events: none;
+      text-align: left; z-index: 30;
+      color: #E6E9ED; text-shadow: 0px -2px 12px rgba(0,0,0,0.45);
+      white-space: nowrap; opacity: 0;
+      will-change: transform, opacity;
+      transition: opacity 0s;
+      transform-origin: center center;
     }
-    .ejected.visible { opacity: 1; }
+    .ejected.completing { transition: opacity 1s ease !important; }
+    .ejected.landed { pointer-events: all; }
     .ejected .highlight {
-      font-weight: bold; color: #c0392b; cursor: pointer;
-      pointer-events: all; display: inline-block; font-size: 15px;
-      transition: transform 0.15s ease, color 0.15s ease;
+      font-weight: bold; color: #FF5A4F; cursor: pointer;
+      pointer-events: all; display: inline-block;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+      text-shadow: 0px -2px 12px rgba(0,0,0,0.45);
     }
-    .ejected .highlight:hover { transform: scale(1.15); color: #e74c3c; }
-    .ejected .highlight.used { color: #ccc; cursor: default; pointer-events: none; }
-
+    .ejected .highlight:hover { transform: scale(1.12); opacity: 0.85; }
+    .ejected .highlight.used {
+      color: rgba(230,233,237,0.3); text-shadow: none;
+      cursor: default; pointer-events: none;
+    }
     @keyframes wrongShake {
       0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 60%{transform:translateX(6px)}
     }
@@ -61,31 +96,118 @@
 
     #answer-bar {
       position: fixed; top: 0; left: 0; right: 0; height: 52px;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: rgba(255,255,255,0.96); border-bottom: 1px solid #eee;
-      z-index: 50; opacity: 0; transition: opacity 0.5s ease;
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: clamp(6px, 1.5vw, 12px);
+      padding: 0 12px;
+      z-index: 50; opacity: 0; transition: opacity 0.5s ease; background: transparent;
     }
     #answer-bar.visible { opacity: 1; }
+    #answer-bar.fade-out { opacity: 0; pointer-events: none; transition: opacity 2s ease; }
     .answer-slot {
-      font-size: 15px; font-weight: bold; color: #c0392b;
-      min-width: 20px; text-align: center;
-      border-bottom: 2px solid #ddd; padding: 2px 5px;
-      opacity: 0.25; transition: opacity 0.4s ease, transform 0.3s ease, border-color 0.3s ease;
+      font-size: 0; min-width: 28px; height: 3px;
+      background: #E6E9ED; border-radius: 2px; opacity: 0.45;
+      transition: opacity 0.4s ease, font-size 0.3s ease;
+      display: flex; align-items: center; justify-content: center;
     }
-    .answer-slot.filled { opacity: 1; transform: translateY(-2px); border-color: #c0392b; }
+    .answer-slot.filled {
+      opacity: 1; font-size: clamp(10px, 1.4vw, 13px);
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      color: #E6E9ED; height: auto; background: transparent;
+      border-bottom: 2px solid #E6E9ED; padding-bottom: 2px;
+    }
 
     #puzzle-hint {
-      position: fixed; bottom: 250px; left: 50%; transform: translateX(-50%);
-      font-size: 13px; color: #aaa; letter-spacing: 0.05em;
+      position: fixed; bottom: 200px; left: 50%; transform: translateX(-50%);
+      font-size: clamp(10px, 1.4vw, 13px); letter-spacing: 0.04em;
+      font-family: 'Inter', sans-serif; font-weight: 500; color: #C9D7E4;
       opacity: 0; transition: opacity 0.6s ease;
       white-space: nowrap; pointer-events: none; z-index: 20;
     }
     #puzzle-hint.visible { opacity: 1; }
+    #puzzle-hint.fade-out { opacity: 0; transition: opacity 1.5s ease; }
+
+    #ending {
+      position: fixed; inset: 0; z-index: 100;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      pointer-events: none; opacity: 0; transition: opacity 2.5s ease;
+      padding: clamp(24px, 5vw, 60px) clamp(20px, 6vw, 80px);
+      overflow: hidden;
+    }
+    #ending.visible { opacity: 1; pointer-events: all; }
+
+    #ending-inner {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; max-width: min(680px, 92vw);
+    }
+
+    #ending-phrase {
+      font-family: 'Inter', sans-serif; font-weight: 400;
+      font-size: clamp(15px, 3.5vw, 28px);
+      color: #E6E9ED; letter-spacing: 0.10em; text-align: center;
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 2.5s ease, transform 2.5s ease;
+      white-space: normal; word-break: break-word;
+    }
+    #ending-phrase.visible { opacity: 1; transform: translateY(0); }
+
+    #ending-meaning {
+      width: 100%; text-align: center;
+      font-family: 'Inter', sans-serif; font-weight: 400;
+      font-size: clamp(11px, 1.3vw, 14px);
+      color: rgba(230,233,237,0.65);
+      line-height: 1.85; letter-spacing: 0.02em;
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 2s ease, transform 2s ease;
+      margin-top: clamp(20px, 3vw, 32px);
+    }
+    #ending-meaning.visible { opacity: 1; transform: translateY(0); }
+    #ending-meaning .kw { color: #FF5A4F; }
+    #ending-meaning p { margin-bottom: 1.1em; }
+    #ending-meaning p:last-child { margin-bottom: 0; }
+
+    .btn {
+      font-family: 'Baloo 2', sans-serif;
+      background-color: #FF5A4F; color: #ffffff;
+      border: none; border-radius: 30px;
+      padding: 12px 32px; font-size: 0.75rem;
+      font-weight: 400; letter-spacing: 0.12em;
+      text-transform: uppercase; cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      text-decoration: none; display: inline-block;
+    }
+    .btn:hover { background-color: #e04840; transform: translateY(-2px); }
+    .btn-outline {
+      background-color: transparent; border: 1.5px solid #FF5A4F;
+      color: #FF5A4F; padding: 8px 24px; font-size: 0.65rem;
+    }
+    .btn-outline:hover { background-color: #FF5A4F; color: #ffffff; }
+
+    #ending-btn {
+      margin-top: clamp(24px, 3vw, 36px);
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 1.8s ease, transform 1.8s ease;
+      pointer-events: none; display: flex; justify-content: center;
+    }
+    #ending-btn.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+    @media (max-width: 480px) {
+      #cup-anchor { width: 100px; height: 140px; bottom: 20px; }
+      #cup-anchor img { width: 118px; height: 158px; }
+      #tornado-outer { bottom: 168px; }
+      #intro-ui { bottom: 190px; }
+      #puzzle-hint { bottom: 190px; white-space: normal; text-align: center; width: 90vw; }
+      .ejected { font-size: 10px; }
+    }
   </style>
 </head>
 <body>
 
-<div id="cup-anchor"><img src="" alt="copo" draggable="false"/></div>
+<video id="bg-video" autoplay loop muted playsinline>
+  <source src="tempestade.mp4" type="video/mp4">
+</video>
+
+<div id="cup-anchor"><img src="copo.png" alt="copo" draggable="false"/></div>
 <div id="intro-ui">
   <div id="click-hint">clica no copo</div>
   <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
@@ -94,14 +216,32 @@
 <div id="answer-bar"></div>
 <div id="tornado-outer"><div id="stage"></div></div>
 
+<div id="ending">
+  <div id="ending-inner">
+    <div id="ending-phrase"></div>
+    <div id="ending-meaning"></div>
+    <div id="ending-btn">
+      <a href="#" class="btn btn-outline">página inicial</a>
+    </div>
+  </div>
+</div>
+
 <script>
-const cupEl      = document.getElementById('cup-anchor');
-const introUI    = document.getElementById('intro-ui');
-const barEl      = document.getElementById('progress-bar');
-const outerEl    = document.getElementById('tornado-outer');
-const stageEl    = document.getElementById('stage');
-const answerBar  = document.getElementById('answer-bar');
-const puzzleHint = document.getElementById('puzzle-hint');
+const bgVideo      = document.getElementById('bg-video');
+const cupEl        = document.getElementById('cup-anchor');
+const introUI      = document.getElementById('intro-ui');
+const barEl        = document.getElementById('progress-bar');
+const outerEl      = document.getElementById('tornado-outer');
+const stageEl      = document.getElementById('stage');
+const answerBar    = document.getElementById('answer-bar');
+const puzzleHint   = document.getElementById('puzzle-hint');
+const endingEl     = document.getElementById('ending');
+const endingPhrase = document.getElementById('ending-phrase');
+const endingMeaning= document.getElementById('ending-meaning');
+const endingBtn    = document.getElementById('ending-btn');
+
+bgVideo.playbackRate = 0.5;
+bgVideo.addEventListener('loadedmetadata', ()=>{ bgVideo.playbackRate = 0.5; });
 
 let phase = 'fill';
 let progress = 0, lastTime = null;
@@ -128,7 +268,6 @@ document.addEventListener('click', e=>{
   if(progress>=100){ phase='tornado'; introUI.classList.add('hidden'); buildTornado(); }
 });
 
-/* ── TORNADO DATA ── */
 const TORNADO_DATA = [
   { text:'É preciso fazer barulho por nada',      hlWord:'fazer',       ejectKey:'fazer'      },
   { text:'Por uma simples gota de chuva',          hlWord:'uma',         ejectKey:'uma'        },
@@ -150,29 +289,39 @@ const TORNADO_DATA = [
   { text:'Não consigo parar de pensar',            hlWord:'pensar',      ejectKey:null },
   { text:'Já não aguento mais isto',               hlWord:'aguento',     ejectKey:null },
   { text:'Mas porquê sempre assim',                hlWord:'porquê',      ejectKey:null },
-  { text:'Tudo ao contrário do normal',            hlWord:'contrário',   ejectKey:null },
-  { text:'O mundo vai acabar hoje',                hlWord:'mundo',       ejectKey:null },
-  { text:'É só uma pequena coisa mesmo',           hlWord:'pequena',     ejectKey:null },
-  { text:'O caos instalou-se aqui dentro',         hlWord:'caos',        ejectKey:null },
-  { text:'Nada faz sentido neste momento',         hlWord:'sentido',     ejectKey:null },
-  { text:'A ansiedade cresce sem parar',           hlWord:'ansiedade',   ejectKey:null },
-  { text:'Tudo parece maior do que é',             hlWord:'maior',       ejectKey:null },
-  { text:'O vento leva tudo consigo',              hlWord:'vento',       ejectKey:null },
-  { text:'A chuva não para de cair',               hlWord:'chuva',       ejectKey:null },
-  { text:'O silêncio pesa mais que tudo',          hlWord:'silêncio',    ejectKey:null },
 ];
 
-// exactly 20 to eject: the 7 targets + 13 fillers picked randomly
 const TARGET_DATA  = TORNADO_DATA.filter(d=>d.ejectKey!==null);
 const FILLER_DATA  = TORNADO_DATA.filter(d=>d.ejectKey===null);
+const TARGET_WORDS = ['fazer','uma','tempestade','num','copo','de','água'];
+const EXPR_WORDS   = new Set(['fazer','uma','tempestade','num','copo','de','água']);
 
-function buildPhraseHTML(text, hlWord){
+function buildPhraseHTML(text,hlWord){
   if(!hlWord) return text;
-  const re=new RegExp(`(${hlWord})`,'i');
-  return text.replace(re,'<span class="hl">$1</span>');
+  return text.replace(new RegExp(`(${hlWord})`,'i'),'<span class="hl">$1</span>');
+}
+function buildEjectedHTML(d){
+  return d.text.split(' ').map(w=>{
+    const clean=w.replace(/[^a-záàâãéêíóôõúüçñ]/gi,'');
+    if(d.hlWord&&clean.toLowerCase()===d.hlWord.toLowerCase())
+      return `<span class="highlight" data-word="${d.ejectKey||'__filler__'}">${w}</span>`;
+    return w;
+  }).join(' ');
+}
+function buildMeaningHTML(text){
+  return text.split(/(\s+)/).map(token=>{
+    const clean=token.replace(/[^a-záàâãéêíóôõúüçñ]/gi,'').toLowerCase();
+    if(EXPR_WORDS.has(clean))
+      return token.replace(new RegExp(`(${clean})`,'i'),'<span class="kw">$1</span>');
+    return token;
+  }).join('');
 }
 
-const TARGET_WORDS=['fazer','uma','tempestade','num','copo','de','água'];
+const MEANING_TEXT=`A expressão é usada para falar de situações em que um problema pequeno acaba por ser tratado como se fosse algo muito sério ou complicado. Em vez de se resolver a situação de forma simples e calma, a pessoa acaba por exagerar na reação, criando tensão ou conflito por algo que, na realidade, não tem grande importância.
+
+Esta expressão funciona como uma metáfora: uma tempestade representa algo forte, caótico e intenso, enquanto um copo de água é algo pequeno, limitado e tranquilo. Ao juntar estas duas ideias, percebe-se o contraste e a ironia da situação, mostrando como é possível transformar algo mínimo num "grande drama".
+
+No dia a dia, esta expressão é muito usada para chamar a atenção para reações exageradas, por exemplo em discussões por detalhes ou mal-entendidos que poderiam ser facilmente resolvidos.`;
 
 const TURNS=10, FSIZE=14;
 let TH,CX,RTOP,RBOT=28,TANG;
@@ -184,23 +333,18 @@ function rAt(th){return RTOP+(RBOT-RTOP)*Math.min(th/TANG,1);}
 
 function buildTornado(){
   TH=Math.max(window.innerHeight-(190+32+14),200);
-  CX=window.innerWidth/2;
-  RTOP=Math.min(window.innerWidth/2-20,310);
+  CX=window.innerWidth/2; RTOP=Math.min(window.innerWidth/2-20,310);
   TANG=TURNS*Math.PI*2;
-  stageEl.style.height=TH+'px';
-  stageEl.style.width=window.innerWidth+'px';
+  stageEl.style.height=TH+'px'; stageEl.style.width=window.innerWidth+'px';
   stageEl.innerHTML='';
-
   const ruler=document.createElement('span');
   ruler.style.cssText=`position:absolute;visibility:hidden;font-size:${FSIZE}px;font-family:Georgia,serif;white-space:nowrap;`;
   document.body.appendChild(ruler);
-  const texts=TORNADO_DATA.map(d=>d.text);
-  const big=Array(40).fill(texts).flat();
+  const big=Array(40).fill(TORNADO_DATA.map(d=>d.text)).flat();
   const W=big.map(p=>{ruler.textContent=p;return ruler.offsetWidth;});
   document.body.removeChild(ruler);
-
   pos=[]; let th=0,pi=0;
-  while(th<TANG && pi<big.length){
+  while(th<TANG&&pi<big.length){
     pos.push({th,di:pi%TORNADO_DATA.length});
     th+=W[pi]/rAt(th); pi++;
   }
@@ -212,14 +356,10 @@ function buildTornado(){
     const d=TORNADO_DATA[di];
     const s=document.createElement('span');
     s.innerHTML=buildPhraseHTML(d.text,d.hlWord);
-    s.className='phrase';
-    s.style.fontSize=fontSizes[i];
-    s.style.display='none';
-    stageEl.appendChild(s);
-    return s;
+    s.className='phrase'; s.style.fontSize=fontSizes[i]; s.style.display='none';
+    stageEl.appendChild(s); return s;
   });
-  revealProgress=0; revealSmooth=0;
-  startReveal();
+  revealProgress=0; revealSmooth=0; startReveal();
 }
 
 let revealIdx=0;
@@ -227,145 +367,201 @@ function startReveal(){
   revealIdx=0;
   function step(){
     if(phase!=='tornado') return;
-    revealIdx=Math.min(revealIdx+1,N);
-    revealProgress=revealIdx/N;
+    revealIdx=Math.min(revealIdx+1,N); revealProgress=revealIdx/N;
     if(revealIdx<N) setTimeout(step,80);
     else setTimeout(startEject,1500);
   }
   setTimeout(step,80);
 }
 
-/* ── EJECT ── */
-let ejectedEls=[];
-let nextTarget=0;
+let ejectedEls=[], nextTarget=0;
+
+/* ══════════════════════════════════════════════════════════════
+   PLACEMENT SYSTEM
+   — grelha invisível garante separação mínima entre frases
+   — cada frase fica deslocada aleatoriamente dentro da sua célula
+   — rotação aleatória suave (-6° a +6°) para aspeto orgânico
+   — tamanho de fonte varia ligeiramente entre frases
+   — só a atribuição de frase a célula é aleatória
+══════════════════════════════════════════════════════════════ */
+function buildSlots(count) {
+  const TOP_PAD  = 64;
+  const BOT_PAD  = 270;
+  const SIDE_PAD = 28;
+  const areaTop   = TOP_PAD;
+  const areaBot   = window.innerHeight - BOT_PAD;
+  const areaLeft  = SIDE_PAD;
+  const areaRight = window.innerWidth - SIDE_PAD;
+  const areaW     = areaRight - areaLeft;
+  const areaH     = areaBot   - areaTop;
+
+  // min row height so lines never collapse on top of each other
+  const MIN_ROW_H = 58;
+  const MAX_ROW_H = 115;
+  let rows = Math.round(areaH / ((MIN_ROW_H + MAX_ROW_H) / 2));
+  rows = Math.max(2, Math.min(rows, Math.floor(areaH / MIN_ROW_H)));
+  let cols = Math.ceil(count / rows);
+  rows = Math.ceil(count / cols);
+
+  const cellW = areaW / cols;
+  const cellH = areaH / rows;
+
+  const cells = [];
+  for(let r=0; r<rows; r++){
+    for(let c=0; c<cols; c++){
+      if(cells.length >= count) break;
+      cells.push({
+        cx: areaLeft + c*cellW + cellW/2,
+        cy: areaTop  + r*cellH + cellH/2,
+        cellW, cellH,
+      });
+    }
+  }
+  return cells;
+}
 
 function startEject(){
   phase='eject';
-
   for(let i=0;i<TARGET_WORDS.length;i++){
     const slot=document.createElement('div');
-    slot.className='answer-slot';
-    slot.textContent='_';
-    slot.id='slot-'+i;
+    slot.className='answer-slot'; slot.textContent='_'; slot.id='slot-'+i;
     answerBar.appendChild(slot);
   }
   answerBar.classList.add('visible');
 
-  // pick exactly 13 random fillers
-  const shuffledFillers=[...FILLER_DATA].sort(()=>Math.random()-0.5).slice(0,13);
-  const toEject=[...TARGET_DATA, ...shuffledFillers];
+  const TOTAL = 20;
+  const shuffledFillers=[...FILLER_DATA].sort(()=>Math.random()-0.5)
+                        .slice(0, TOTAL - TARGET_DATA.length);
+  const toEject=[...TARGET_DATA,...shuffledFillers];
   shuffleArray(toEject);
 
-  // get non-overlapping positions for all 20
-  const positions = placeWithoutOverlap(toEject.length, 200, 44);
+  const slots = buildSlots(toEject.length);
 
-  toEject.forEach(({...d}, idx)=>{
-    const di=TORNADO_DATA.indexOf(TORNADO_DATA.find(x=>x.text===d.text));
-    const spanIdx=findSpanForDi(di);
-    const startPos=spanIdx>=0?getSpanScreenPos(spanIdx):{x:CX,y:window.innerHeight-214};
+  // measure sizes
+  const ruler = document.createElement('span');
+  ruler.style.cssText='position:fixed;visibility:hidden;left:-9999px;top:-9999px;white-space:nowrap;font-family:Georgia,serif;line-height:1.7;pointer-events:none;';
+  document.body.appendChild(ruler);
 
-    const el=document.createElement('div');
-    el.className='ejected';
+  // each phrase gets a slightly different font size for organic feel
+  const fontVariants = toEject.map(()=> {
+    // base 13px ±1.5px
+    return (12 + Math.random() * 3).toFixed(1) + 'px';
+  });
 
-    const words=d.text.split(' ');
-    el.innerHTML=words.map(w=>{
-      const clean=w.replace(/[^a-záàâãéêíóôõúüçñ]/gi,'');
-      if(d.hlWord && clean.toLowerCase()===d.hlWord.toLowerCase()){
-        return `<span class="highlight" data-word="${d.ejectKey||'__filler__'}">${w}</span>`;
-      }
-      return w;
-    }).join(' ');
+  const sizes = toEject.map((d, i) => {
+    ruler.style.fontSize = fontVariants[i];
+    ruler.innerHTML = buildEjectedHTML(d);
+    const r = ruler.getBoundingClientRect();
+    return { w: Math.ceil(r.width), h: Math.ceil(r.height) };
+  });
+  document.body.removeChild(ruler);
 
-    el.style.left=startPos.x+'px';
-    el.style.top=startPos.y+'px';
-    el.style.opacity='0';
-    el.style.transform='scale(0.3)';
+  // each phrase gets a random rotation: small, max ±6deg
+  // biased toward smaller values so most are subtle
+  const rotations = toEject.map(()=> {
+    const mag = Math.random() * Math.random() * 6; // quadratic bias → mostly small
+    return (Math.random() < 0.5 ? 1 : -1) * mag;
+  });
+
+  // convert cell centre → top-left, with generous jitter inside cell
+  const destinations = slots.map((slot, i) => {
+    const { w, h } = sizes[i];
+    // jitter: up to 35% of the free space inside the cell
+    const freeX = Math.max(0, slot.cellW - w);
+    const freeY = Math.max(0, slot.cellH - h);
+    const jx = (Math.random() - 0.5) * freeX * 0.7;
+    const jy = (Math.random() - 0.5) * freeY * 0.7;
+    let x = slot.cx - w/2 + jx;
+    let y = slot.cy - h/2 + jy;
+    x = Math.max(28, Math.min(window.innerWidth  - w - 28, x));
+    y = Math.max(64, Math.min(window.innerHeight - 270 - h, y));
+    return { x, y, rot: rotations[i], fontSize: fontVariants[i] };
+  });
+
+  toEject.forEach((d, idx) => {
+    const di = TORNADO_DATA.findIndex(x=>x.text===d.text);
+    const spanIdx = findSpanForDi(di);
+    const launch = spanIdx>=0 ? getSpanScreenPos(spanIdx) : {x:CX, y:window.innerHeight-300};
+
+    const el = document.createElement('div');
+    el.className = 'ejected';
+    el.style.whiteSpace = 'nowrap';
+    el.style.fontSize = destinations[idx].fontSize;
+    el.innerHTML = buildEjectedHTML(d);
+    el.style.left='0px'; el.style.top='0px'; el.style.opacity='0';
     document.body.appendChild(el);
     ejectedEls.push(el);
 
-    const dest=positions[idx];
-    setTimeout(()=>{
-      el.style.transition=`left 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
-                            top 0.8s cubic-bezier(0.25,0.46,0.45,0.94),
-                            opacity 0.5s ease,
-                            transform 0.8s cubic-bezier(0.175,0.885,0.32,1.275)`;
-      el.style.left=dest.x+'px';
-      el.style.top=dest.y+'px';
-      el.style.opacity='1';
-      el.style.transform='scale(1)';
-    }, idx*60);
+    setTimeout(()=>launchPhrase(el, launch, destinations[idx]), idx*110 + Math.random()*50);
   });
 
+  const totalTime = toEject.length*110 + 800 + 500;
   setTimeout(()=>{
-    document.querySelectorAll('.highlight').forEach(s=>s.addEventListener('click',onHighlightClick));
-    puzzleHint.textContent='carrega nas palavras a vermelho pela ordem certa';
+    document.querySelectorAll('.ejected .highlight').forEach(s=>s.addEventListener('click', onHighlightClick));
+    puzzleHint.textContent = 'carrega nas palavras a vermelho pela ordem certa';
     puzzleHint.classList.add('visible');
-    phase='descend';
-    descendProgress=1;
-  }, toEject.length*60+900);
+    phase='descend'; descendProgress=1;
+  }, totalTime);
 }
 
-/* ── non-overlapping placement ── */
-function placeWithoutOverlap(count, boxW, boxH){
-  const slotH    = 60;
-  const margin   = 14;
-  const cupTop   = window.innerHeight - 190 - 32 - 70;
-  const safeTop  = slotH + margin;
-  const safeBot  = cupTop;
-  const safeLeft = margin;
-  const safeRight= window.innerWidth - margin;
-  const placed   = [];
-  const maxTries = 300;
+function launchPhrase(el, from, to){
+  const dur = 650 + Math.random()*350;
+  const startT = performance.now();
+  // spin during flight, then settle to final rotation
+  const spinAmt = (Math.random()-0.5)*28;
+  const scaleFrom = 0.15 + Math.random()*0.2;
+  const midX = (from.x+to.x)/2 + (Math.random()-0.5)*180;
+  const midY = Math.min(from.y,to.y) - 70 - Math.random()*100;
+  const finalRot = to.rot; // settle to the pre-assigned organic rotation
 
-  for(let i=0; i<count; i++){
-    let best=null, attempts=0;
-    while(attempts<maxTries){
-      const x = safeLeft + Math.random()*(safeRight-safeLeft-boxW);
-      const y = safeTop  + Math.random()*(safeBot-safeTop-boxH);
-      const rect={x,y,w:boxW,h:boxH};
-      const overlap = placed.some(p=>
-        rect.x < p.x+p.w+margin &&
-        rect.x+rect.w+margin > p.x &&
-        rect.y < p.y+p.h+margin &&
-        rect.y+rect.h+margin > p.y
-      );
-      if(!overlap){ best={x,y}; break; }
-      attempts++;
+  function qb(t,p0,p1,p2){return (1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
+  function eOut(t){return 1-(1-t)*(1-t)*(1-t);}
+
+  function frame(now){
+    const raw = Math.min((now-startT)/dur, 1);
+    const t   = eOut(raw);
+    const x   = qb(t, from.x, midX, to.x);
+    const y   = qb(t, from.y, midY, to.y);
+    // rotation: spins during flight then blends into finalRot
+    const rot = raw < 0.75
+      ? spinAmt * Math.sin(raw * Math.PI)
+      : spinAmt * Math.sin(0.75*Math.PI) * (1-(raw-0.75)/0.25) + finalRot * ((raw-0.75)/0.25);
+    const scale = raw < 0.6
+      ? scaleFrom + (1-scaleFrom)*eOut(raw/0.6)
+      : 1 + 0.05*Math.sin(((raw-0.6)/0.4)*Math.PI);
+    el.style.opacity = Math.min(1, raw*5).toFixed(3);
+    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(2)}deg) scale(${scale.toFixed(3)})`;
+    if(raw < 1){
+      requestAnimationFrame(frame);
+    } else {
+      // landed: position via left/top, rotation via transform only
+      el.style.transform = `rotate(${finalRot.toFixed(2)}deg)`;
+      el.style.left = to.x+'px';
+      el.style.top  = to.y+'px';
+      el.style.opacity = '1';
+      el.classList.add('landed');
     }
-    // fallback: just place it even if overlapping (shouldn't happen with 20 items)
-    if(!best){
-      const col = i % 4;
-      const row = Math.floor(i/4);
-      const cellW=(safeRight-safeLeft)/4;
-      const cellH=(safeBot-safeTop)/5;
-      best={ x:safeLeft+col*cellW+margin, y:safeTop+row*cellH+margin };
-    }
-    placed.push({x:best.x, y:best.y, w:boxW, h:boxH});
   }
-  return placed.map(p=>({x:p.x,y:p.y}));
+  requestAnimationFrame(frame);
 }
 
 function findSpanForDi(di){
-  for(let i=N-1;i>=0;i--){
+  for(let i=N-1;i>=0;i--)
     if(pos[i].di===di && spns[i].style.display!=='none') return i;
-  }
   return -1;
 }
-
 function getSpanScreenPos(i){
-  const bt=pos[i].th,tf=bt/TANG,r=rAt(bt);
+  const bt=pos[i].th, tf=bt/TANG, r=rAt(bt);
   const tn=bt+swirlA;
-  const x=CX+r*Math.cos(tn);
-  const y=tf*TH;
-  return {x, y:window.innerHeight-214-TH+y};
+  return{x:CX+r*Math.cos(tn), y:window.innerHeight-214-TH+(tf*TH)};
 }
 
 function onHighlightClick(e){
   if(phase!=='descend'&&phase!=='puzzle') return;
   if(phase==='descend') phase='puzzle';
   const word=e.target.dataset.word;
-  if(!word||word==='__filler__'){ flashWrong(e.target); return; }
-  if(word!==TARGET_WORDS[nextTarget]){ flashWrong(e.target); return; }
+  if(!word||word==='__filler__'){flashWrong(e.target);return;}
+  if(word!==TARGET_WORDS[nextTarget]){flashWrong(e.target);return;}
   e.target.classList.add('used');
   const slot=document.getElementById('slot-'+nextTarget);
   if(slot){slot.textContent=word; slot.classList.add('filled');}
@@ -374,16 +570,36 @@ function onHighlightClick(e){
 }
 
 function flashWrong(el){
-  el.classList.remove('wrong');
-  void el.offsetWidth;
-  el.classList.add('wrong');
+  el.classList.remove('wrong'); void el.offsetWidth; el.classList.add('wrong');
   el.addEventListener('animationend',()=>el.classList.remove('wrong'),{once:true});
 }
 
 function onComplete(){
   phase='done';
-  puzzleHint.classList.remove('visible');
-  ejectedEls.forEach((el,i)=>setTimeout(()=>{el.style.opacity='0';},i*60));
+  puzzleHint.classList.add('fade-out');
+  ejectedEls.forEach((el,i)=>{
+    setTimeout(()=>{ el.classList.add('completing'); el.style.opacity='0'; }, i*80);
+  });
+  const fadeBase=ejectedEls.length*80;
+  setTimeout(()=>{
+    answerBar.classList.add('fade-out');
+    cupEl.classList.add('fade-out');
+    outerEl.classList.add('fade-out');
+  }, fadeBase+400);
+  setTimeout(()=>{ bgVideo.playbackRate=0.12; bgVideo.classList.add('ending'); }, fadeBase+800);
+  setTimeout(()=>{
+    endingEl.classList.add('visible');
+    endingPhrase.textContent='fazer uma tempestade num copo de água';
+    setTimeout(()=>endingPhrase.classList.add('visible'), 300);
+  }, fadeBase+2200);
+  setTimeout(()=>{
+    endingMeaning.innerHTML=buildMeaningHTML(MEANING_TEXT)
+      .split('\n\n').map(p=>`<p>${p}</p>`).join('');
+    setTimeout(()=>{
+      endingMeaning.classList.add('visible');
+      setTimeout(()=>endingBtn.classList.add('visible'), 1400);
+    }, 400);
+  }, fadeBase+5200);
 }
 
 function shuffleArray(arr){
@@ -393,7 +609,6 @@ function shuffleArray(arr){
   }
 }
 
-/* ── MAIN LOOP ── */
 function loop(now){
   requestAnimationFrame(loop);
   const dt=lastTime?Math.min((now-lastTime)/1000,0.05):0.016;
@@ -452,7 +667,7 @@ function renderSpans(t,intensity,visCount){
     ss.ox+=ss.vx; ss.oy+=ss.vy;
     const dep=(Math.sin(tn)+1)/2;
     updates.push({x:(x+ss.ox).toFixed(1),y:(y+ss.oy).toFixed(1),
-      alpha:(0.07+0.93*dep).toFixed(2),scaleX:(0.70+0.30*dep).toFixed(3)});
+      alpha:(0.15+0.85*dep).toFixed(2),scaleX:(0.70+0.30*dep).toFixed(3)});
   }
   for(let i=0;i<N;i++){
     const u=updates[i],s=spns[i];
@@ -460,7 +675,7 @@ function renderSpans(t,intensity,visCount){
     if(s.style.display==='none')s.style.display='';
     s.style.left=u.x+'px'; s.style.top=u.y+'px';
     s.style.transform=`translateX(-50%) translateY(-50%) scaleX(${u.scaleX})`;
-    s.style.color=`rgba(0,0,0,${u.alpha})`;
+    s.style.color=`rgba(230,233,237,${u.alpha})`;
   }
 }
 
