@@ -5,6 +5,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expressão: Barriga a dar horas</title>
+
+  <!--
+    ✅ CORREÇÃO PRINCIPAL: Script inline que corre ANTES do CSS pintar o ecrã.
+    Aplica a cor de fundo e a variável CSS imediatamente, eliminando
+    o flash branco/amarelo ao navegar de outra página.
+  -->
+  <script>
+    (function() {
+      var bg = 'rgb(244, 235, 216)';
+      document.documentElement.style.setProperty('--bg-dynamic', bg);
+      document.documentElement.style.backgroundColor = bg;
+    })();
+  </script>
+
   <link rel="stylesheet" href="style_barriga.css">
 </head>
 
