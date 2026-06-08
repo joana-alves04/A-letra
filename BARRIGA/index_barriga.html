@@ -1,29 +1,83 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Barriga a dar horas</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expressão: Barriga a dar horas</title>
+
+  <!--
+    ✅ CORREÇÃO PRINCIPAL: Script inline que corre ANTES do CSS pintar o ecrã.
+    Aplica a cor de fundo e a variável CSS imediatamente, eliminando
+    o flash branco/amarelo ao navegar de outra página.
+  -->
+  <script>
+    (function () {
+      var bg = 'rgb(244, 235, 216)';
+      document.documentElement.style.setProperty('--bg-dynamic', bg);
+      document.documentElement.style.backgroundColor = bg;
+    })();
+  </script>
+
   <link rel="stylesheet" href="style_barriga.css">
 </head>
+
 <body>
 
-<div class="clock-container">
-  <div class="clock" id="clock">
-    <div class="center"></div>
+  <div class="scene" id="app-wrapper">
 
-    <div class="hand hour" id="hour"></div>
-    <div class="hand minute" id="minute"></div>
+    <div id="time-background">12:00</div>
 
-    <div class="food food1">🍕</div>
-    <div class="food food2">🍔</div>
-    <div class="food food3">🥐</div>
-    <div class="food food4">🍟</div>
+    <div class="gear-hint">RODA-ME &rarr;</div>
+
+    <div id="corner-gear-wrapper" title="Gira para avançar no tempo!">
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <g fill="currentColor">
+          <path d="M90,0 h20 v200 h-20 z" />
+          <path d="M90,0 h20 v200 h-20 z" transform="rotate(30 100 100)" />
+          <path d="M90,0 h20 v200 h-20 z" transform="rotate(60 100 100)" />
+          <path d="M90,0 h20 v200 h-20 z" transform="rotate(90 100 100)" />
+          <path d="M90,0 h20 v200 h-20 z" transform="rotate(120 100 100)" />
+          <path d="M90,0 h20 v200 h-20 z" transform="rotate(150 100 100)" />
+          <circle cx="100" cy="100" r="75" fill="var(--bg-dynamic)" />
+          <circle cx="100" cy="100" r="50" fill="currentColor" />
+          <circle cx="100" cy="100" r="15" fill="var(--bg-dynamic)" />
+        </g>
+      </svg>
+    </div>
+
+    <div id="horizontal-container">
+      <div class="page page-barriga" id="scroll-container">
+
+        <div class="slide">
+          <p class="reveal">Tudo começa com um ligeiro vazio no estômago.</p>
+        </div>
+
+        <div class="slide">
+          <p class="reveal">O tempo avança. O estômago encolhe.<br>A ansiedade aumenta.</p>
+        </div>
+
+        <div class="slide">
+          <p class="reveal">Lá dentro, o corpo transforma-se num despertador que ninguém pediu.</p>
+        </div>
+
+        <div class="slide climax-slide">
+          <p class="reveal">E dizemos que estamos com a...</p>
+          <h1 class="reveal emphasis">"BARRIGA A<br>DAR HORAS!"</h1>
+
+          <div class="end-buttons reveal">
+            <a href="sobre_barriga.html" class="final-btn">Saber mais sobre a expressão</a>
+            <a href="../HOMEPAGE/expressoes.html" class="final-btn">Página Inicial</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
-  <h1 id="title">Que horas são?</h1>
-</div>
+  <script src="script.js"></script>
 
-<script src="script.js"></script>
 </body>
+
 </html>

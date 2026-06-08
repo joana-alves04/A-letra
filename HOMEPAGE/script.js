@@ -17,104 +17,135 @@ function initObservers() {
   }
 }
 
-// ── O MOTOR DO ESTENDAL PERFEITO (Afinado) ─────────────────────────────────
+// ── MOTOR DO ESTENDAL ─────────────────────────────────────────────────────
 function initEstendalScrollytelling() {
   const page = document.querySelector('.estendal-page-scrolly');
-  const facadeWrapper = document.getElementById('facade-wrapper');
   const track = document.getElementById('clothesline-track');
-  const fachadaImg = document.getElementById('fachada-img');
-  
-  if (!page || !facadeWrapper || !track || !fachadaImg) return;
+
+  if (!page || !track) return;
 
   if (window.handleEstendalScroll) {
-      page.removeEventListener('scroll', window.handleEstendalScroll);
-      window.removeEventListener('resize', window.calculateEstendalDimensions);
+    page.removeEventListener('scroll', window.handleEstendalScroll);
+    window.removeEventListener('resize', window.calculateEstendalDimensions);
+    page.removeEventListener('wheel', window.stopSnap);
+    page.removeEventListener('touchstart', window.stopSnap);
   }
 
-  let maxVerticalMove = 0;
   let horizontalMoveMax = 0;
   let viewportWidth = window.innerWidth;
-  let viewportHeight = window.innerHeight;
+  let scrollTimeout;
+  let isSnapping = false;
+  let snapAnimationId;
+  const ajusteHorizontal = 0;
 
-  window.calculateEstendalDimensions = function() {
-      viewportWidth = window.innerWidth;
-      viewportHeight = window.innerHeight;
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
-      setTimeout(() => {
-          const imgHeight = fachadaImg.getBoundingClientRect().height;
-          
-          maxVerticalMove = imgHeight - viewportHeight;
-          if (maxVerticalMove < 0) maxVerticalMove = 0;
+  function customSmoothScroll(target, duration) {
+    const start = page.scrollTop;
+    const distance = target - start;
+    let startTime = null;
 
-          horizontalMoveMax = track.scrollWidth - viewportWidth;
-          
-          window.handleEstendalScroll();
-      }, 100);
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const percentage = Math.min(progress / duration, 1);
+      page.scrollTop = start + distance * easeOutCubic(percentage);
+      if (progress < duration) snapAnimationId = requestAnimationFrame(step);
+      else isSnapping = false;
+    }
+    cancelAnimationFrame(snapAnimationId);
+    snapAnimationId = requestAnimationFrame(step);
+  }
+
+  window.stopSnap = function () {
+    if (isSnapping) {
+      cancelAnimationFrame(snapAnimationId);
+      isSnapping = false;
+    }
+  };
+  page.addEventListener('wheel', window.stopSnap, { passive: true });
+  page.addEventListener('touchstart', window.stopSnap, { passive: true });
+
+  window.calculateEstendalDimensions = function () {
+    viewportWidth = window.innerWidth;
+    setTimeout(() => {
+      horizontalMoveMax = Math.max(0, track.scrollWidth - viewportWidth);
+      window.handleEstendalScroll();
+    }, 150);
   };
 
-  window.handleEstendalScroll = function() {
-     const scrollTop = page.scrollTop; 
-     const docHeight = page.scrollHeight - page.clientHeight; 
-     
-     let scrollPercent = scrollTop / docHeight;
-     if(isNaN(scrollPercent) || docHeight === 0) scrollPercent = 0; 
-     
-     // 1. LÓGICA DA OPACIDADE (Aparecer os cartões)
-     // Mal passes de 3% do scroll, os cartões fazem fade in.
-     if (scrollPercent > 0.03) {
-         track.classList.add('cards-visible');
-     } else {
-         track.classList.remove('cards-visible');
-     }
+  window.handleEstendalScroll = function () {
+    const scrollTop = page.scrollTop;
+    const docHeight = page.scrollHeight - page.clientHeight;
+    if (docHeight <= 0) return;
+    let scrollPercent = scrollTop / docHeight;
 
-     // 2. LÓGICA DO MOVIMENTO
-     const phase1End = 0.15;
+    if (scrollTop <= 5) {
+      track.classList.remove('cards-visible');
+    } else {
+      track.classList.add('cards-visible');
+    }
 
-     let vPercent = scrollPercent / phase1End;
-     vPercent = Math.min(1, Math.max(0, vPercent)); 
+    const moveStart = 0.15;
+    let hPercent = 0;
+    if (scrollPercent > moveStart) {
+      hPercent = (scrollPercent - moveStart) / (1 - moveStart);
+    }
+    hPercent = Math.min(1, Math.max(0, hPercent));
 
-     let hPercent = (scrollPercent - phase1End) / (1 - phase1End);
-     hPercent = Math.min(1, Math.max(0, hPercent)); 
+    const currentX = Math.floor(hPercent * horizontalMoveMax);
+    track.style.transform = `translateX(-${currentX}px)`;
 
-     // O .toFixed(1) arredonda os valores para evitar o tal salto/tremor no final
-     const currentY = (vPercent * maxVerticalMove).toFixed(1);
-     const currentX = (hPercent * horizontalMoveMax).toFixed(1);
+    const cards = track.querySelectorAll('.estendal-card-scrolly');
+    let centerIndex = 0;
+    let minDistance = Infinity;
+    const targetScreenCenter = (viewportWidth / 2) + ajusteHorizontal;
 
-     facadeWrapper.style.transform = `translateY(-${currentY}px)`;
-     track.style.transform = `translateX(-${currentX}px)`;
+    cards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const dist = Math.abs(cardCenter - targetScreenCenter);
+      if (dist < minDistance) {
+        minDistance = dist;
+        centerIndex = index;
+      }
+    });
 
-     // --- Lógica das Cartas em Destaque (Zoom) ---
-     const cards = track.querySelectorAll('.estendal-card-scrolly');
-     let centerIndex = 0;
-     let minDistance = Infinity;
+    cards.forEach(c => c.classList.remove('is-active'));
+    if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
 
-     cards.forEach((card, index) => {
-         const rect = card.getBoundingClientRect();
-         const cardCenter = rect.left + rect.width / 2;
-         const screenCenter = viewportWidth / 2;
-         const dist = Math.abs(cardCenter - screenCenter);
-
-         if (dist < minDistance) {
-             minDistance = dist;
-             centerIndex = index;
-         }
-     });
-
-     cards.forEach(c => c.classList.remove('is-active'));
-     if(cards[centerIndex]) cards[centerIndex].classList.add('is-active');
+    if (!isSnapping && horizontalMoveMax > 0 && scrollTop > 5) {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        if (isAnimating) return;
+        const activeCard = cards[centerIndex];
+        if (!activeCard) return;
+        const rect = activeCard.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = cardCenter - targetScreenCenter;
+        if (Math.abs(diff) > 2 && scrollPercent >= moveStart) {
+          isSnapping = true;
+          let targetX = currentX + diff;
+          targetX = Math.max(0, Math.min(targetX, horizontalMoveMax));
+          let targetHPercent = targetX / horizontalMoveMax;
+          let targetScrollPercent = (targetHPercent * (1 - moveStart)) + moveStart;
+          let targetScrollTop = targetScrollPercent * docHeight;
+          customSmoothScroll(targetScrollTop, 800);
+        }
+      }, 150);
+    }
   };
 
   window.addEventListener('resize', window.calculateEstendalDimensions);
   page.addEventListener('scroll', window.handleEstendalScroll);
-  
   window.calculateEstendalDimensions();
 }
 
-// ── SISTEMA GERAL DE NAVEGAÇÃO ───────────────────────────────────────────
+// ── SISTEMA DE NAVEGAÇÃO SUAVE ────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
-  initEstendalScrollytelling(); 
-  
+  initEstendalScrollytelling();
+
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
     const pageEl = document.querySelector('.page, .estendal-page-scrolly');
@@ -124,8 +155,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
-  
-  if (!link || link.classList.contains('estendal-card-scrolly') || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname) return;
+
+  // AQUI ESTÁ A REGRA: Se tiver a classe 'link-direto', o router ignora e a página abre normalmente!
+  if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname || link.classList.contains('link-direto')) return;
 
   e.preventDefault();
   if (isAnimating) return;
@@ -133,8 +165,8 @@ document.addEventListener("click", async (e) => {
 
   const targetUrl = link.href;
   const targetPath = new URL(targetUrl, window.location.origin).pathname;
-  const isBack = link.classList.contains('nav-link-back');
   const container = document.getElementById('horizontal-container');
+  const isBack = link.classList.contains('nav-link-back');
 
   const currentPageEl = document.querySelector('.page, .estendal-page-scrolly');
   if (currentPageEl) {
@@ -144,24 +176,20 @@ document.addEventListener("click", async (e) => {
   try {
     const response = await fetch(targetUrl);
     if (!response.ok) throw new Error('Erro');
-    
+
     const htmlText = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlText, 'text/html');
+    const doc = new DOMParser().parseFromString(htmlText, 'text/html');
+
     const newPage = doc.querySelector('.page, .estendal-page-scrolly');
-    
     if (!newPage) throw new Error('HTML inválido');
 
     if (isBack) {
       container.insertBefore(newPage, container.firstElementChild);
-      
       const savedScroll = sessionStorage.getItem('scroll_' + targetPath);
       if (savedScroll !== null) newPage.scrollTop = parseInt(savedScroll, 10);
-
       container.style.transition = 'none';
       container.style.transform = 'translateX(-100vw)';
-      container.getBoundingClientRect(); 
-      
+      container.getBoundingClientRect();
       container.style.transition = 'transform 800ms cubic-bezier(0.77, 0, 0.175, 1)';
       container.style.transform = 'translateX(0vw)';
     } else {
@@ -174,20 +202,20 @@ document.addEventListener("click", async (e) => {
     history.pushState({}, '', targetUrl);
 
     setTimeout(() => {
-      if (isBack) container.lastElementChild.remove();
-      else {
+      if (isBack) {
+        container.lastElementChild.remove();
+      } else {
         container.firstElementChild.remove();
         container.style.transition = 'none';
         container.style.transform = 'translateX(0vw)';
       }
+
       initObservers();
-      initEstendalScrollytelling(); 
+      initEstendalScrollytelling();
       isAnimating = false;
     }, 800);
 
-  } catch (err) {
-    window.location.href = targetUrl;
-  }
+  } catch (err) { window.location.href = targetUrl; }
 });
 
 window.addEventListener("popstate", () => window.location.reload());
