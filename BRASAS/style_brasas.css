@@ -1,111 +1,147 @@
-/* Reset básico */
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
 body,
 html {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   height: 100%;
-  font-family: sans-serif;
+  overflow: hidden;
+  background: #050505;
 }
 
-/* Contêiner principal */
 .page-brasas {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: #f4ebd8;
+  background-color: #050505;
+  overflow: hidden;
 }
 
-/* Área de scroll */
-#scroll-brasas {
+/* O brilho radial de fundo que acompanha o calor */
+.page-brasas::before {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  overflow-y: auto;
-  scrollbar-width: none;
-  z-index: 10;
-}
-
-/* Pálpebras - Absolutas para não quebrar o layout */
-.palpebra {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50vh;
-  background: #18120e;
-  z-index: 50;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vw;
+  background: radial-gradient(circle, rgba(255, 69, 0, calc(var(--calor, 0) * 0.15)) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 0;
 }
 
-.palpebra-cima {
-  top: 0;
-  transform: translateY(-100%);
-}
-
-.palpebra-baixo {
-  bottom: 0;
-  transform: translateY(100%);
-}
-
-/* Espaçamento e conteúdo */
-.scroll-spacer {
-  height: 200vh;
-  display: flex;
-  justify-content: center;
-  padding-top: 20vh;
-}
-
-.climax-brasas {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Zzz Animation */
-#zzz-container {
-  position: fixed;
+#tela-brasas {
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 1;
   pointer-events: none;
-  z-index: 60;
 }
 
-.zzz {
+#ui-jogo {
   position: absolute;
-  color: #E89C53;
-  font-weight: bold;
-  font-size: 2rem;
-  animation: floatZzz 3s forwards;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  width: 90%;
+  pointer-events: none;
 }
 
-@keyframes floatZzz {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
+/* INSTRUÇÃO */
+.instrucao-brasa {
+  font-family: "Averia Serif Libre", serif;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  color: rgba(255, 255, 255, calc(1 - var(--calor, 0)));
+  /* Desaparece com o calor */
+  transition: opacity 0.3s;
+  margin-bottom: 30px;
+}
 
-  50% {
-    opacity: 1;
+.instrucao-brasa span {
+  font-family: "Baloo 2", sans-serif;
+  color: #ff8c00;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.9em;
+}
+
+/* A EXPRESSÃO QUE ACENDE COMO UMA BRASA */
+.texto-brasa {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 800;
+  margin: 0;
+  text-transform: uppercase;
+  /* Começa no #222 (cinza escuro) e vai até ao branco/amarelo (#fff3b0) */
+  color: color-mix(in srgb, #fff3b0 calc(var(--calor, 0) * 100%), #222);
+  /* O Brilho (glow) aumenta com o calor */
+  text-shadow:
+    0 0 calc(var(--calor, 0) * 20px) rgba(255, 69, 0, var(--calor, 0)),
+    0 0 calc(var(--calor, 0) * 50px) rgba(255, 140, 0, var(--calor, 0)),
+    0 10px 20px rgba(0, 0, 0, 0.8);
+  transition: color 0.1s, text-shadow 0.1s, transform 0.1s;
+}
+
+/* Animação quando atinge os 100% (Respiração do sono) */
+.texto-brasa.incandescente {
+  animation: respiracaoBrasa 3s infinite alternate ease-in-out;
+}
+
+@keyframes respiracaoBrasa {
+  0% {
+    color: #ffcc00;
+    text-shadow: 0 0 30px rgba(255, 69, 0, 0.8), 0 0 60px rgba(255, 140, 0, 0.5);
+    transform: scale(1);
   }
 
   100% {
-    opacity: 0;
-    transform: translateY(-100px);
+    color: #fff3b0;
+    text-shadow: 0 0 50px rgba(255, 69, 0, 1), 0 0 100px rgba(255, 140, 0, 0.8);
+    transform: scale(1.02);
   }
 }
 
-/* Botões */
-.botao-voltar {
-  padding: 15px 30px;
-  background: #B86508;
-  color: white;
+/* BOTÕES */
+.botoes-finais {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 50px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
+}
+
+.botoes-finais.escondido {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+}
+
+.btn-acordar {
+  display: inline-block;
+  padding: 15px 35px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #ff8c00;
+  color: #ff8c00;
+  border-radius: 50px;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
   text-decoration: none;
-  border-radius: 20px;
-  margin-top: 20px;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(5px);
+}
+
+.btn-acordar:hover {
+  background: #ff8c00;
+  color: #050505;
+  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6);
+  transform: translateY(-3px);
 }
