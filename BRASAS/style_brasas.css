@@ -6,142 +6,625 @@ html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  background: #050505;
+  background: #000;
 }
 
 .page-brasas {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: #050505;
+  background-color: rgb(var(--bg-r, 135), var(--bg-g, 206), var(--bg-b, 235));
+  transition: background-color 0.4s ease;
   overflow: hidden;
 }
 
-/* O brilho radial de fundo que acompanha o calor */
-.page-brasas::before {
+#scroll-narrativa {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  z-index: 2;
+}
+
+#scroll-narrativa::-webkit-scrollbar {
+  display: none;
+}
+
+.slide-narrativa {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 10%;
+  color: white;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
+}
+
+.texto-historia {
+  font-family: "Averia Serif Libre", serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 400;
+}
+
+.dica-scroll {
+  font-family: "Baloo 2", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: pisca 2s infinite;
+  margin-top: 40px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes pisca {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+#cenario-sala {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at center 60%, #4a3e34 0%, #111 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+#cenario-sala::after {
   content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, calc(var(--sono, 0) * 0.009));
+  pointer-events: none;
+  z-index: 8;
+}
+
+.janela {
+  position: absolute;
+  top: 6%;
+  left: 6%;
+  width: 150px;
+  height: 220px;
+  background: #060914;
+  border: 10px solid #241a14;
+  border-radius: 4px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 15px 40px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+
+.janela::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 6px;
+  background: #241a14;
+  transform: translateY(-50%);
+}
+
+.janela::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  width: 6px;
+  background: #241a14;
+  transform: translateX(-50%);
+}
+
+.lua {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 45px;
+  height: 45px;
+  background: #fff8d6;
+  border-radius: 50%;
+  box-shadow: 0 0 25px #fff8d6;
+  opacity: 0.9;
+}
+
+.candeeiro {
+  position: absolute;
+  bottom: 45vh;
+  right: 12%;
+  width: 90px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.abajur {
+  width: 100%;
+  height: 100%;
+  background: #dfb07e;
+  border-radius: 45px 45px 10px 10px;
+  position: relative;
+  z-index: 3;
+  box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+  border-bottom: 4px solid #1a1a1a;
+}
+
+.luz-candeeiro {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100vw;
-  height: 100vw;
-  background: radial-gradient(circle, rgba(255, 69, 0, calc(var(--calor, 0) * 0.15)) 0%, transparent 60%);
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.45) 0%, transparent 65%);
+  border-radius: 50%;
   pointer-events: none;
-  z-index: 0;
+  opacity: calc(1 - (var(--sono, 0) * 0.01));
+  z-index: 1;
 }
 
+.tapete {
+  position: absolute;
+  bottom: -20px;
+  width: 80%;
+  height: 100px;
+  background: #3d2314;
+  border-radius: 50%;
+  transform: scaleY(0.4);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.9);
+  z-index: 1;
+  opacity: 0.8;
+}
+
+/* ================================== */
+/* TV RETRO CSS                       */
+/* ================================== */
+.tv-retro-wrapper {
+  position: relative;
+  width: 50%;
+  max-width: 550px;
+  z-index: 5;
+  margin-top: -15vh;
+  filter: blur(calc(var(--sono, 0) * 0.06px));
+}
+
+.tv-retro-wood {
+  background: linear-gradient(135deg, #8a4a26 0%, #4a2108 100%);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(0, 0, 0, 0.6);
+  border: 2px solid #3a1804;
+}
+
+.tv-retro-panel {
+  background: #eae8df;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 15px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #c4c1b3;
+  align-items: stretch;
+}
+
+.tv-retro-bezel {
+  flex: 1;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 40px / 30px;
+  box-shadow: inset 0 0 20px #000, 0 5px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-retro-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #050505;
+  border-radius: 20px / 15px;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+
+#tv-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+  background: #000;
+}
+
+.fase-acordar #tv-video {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tv-vidro-reflexo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+  z-index: 2;
+}
+
+/* Controlos da Direita */
+.tv-retro-controls {
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #dfddce;
+  padding: 10px 5px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.tv-dial-top {
+  width: 45px;
+  height: 45px;
+  background: #333;
+  border-radius: 50%;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-dial-bottom {
+  width: 35px;
+  height: 35px;
+  background: #ccc;
+  border-radius: 50%;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3), inset 0 2px 4px #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-dial-inner {
+  width: 50%;
+  height: 50%;
+  background: #666;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+.tv-speaker {
+  flex: 1;
+  width: 100%;
+  background: repeating-linear-gradient(0deg, #111, #111 2px, transparent 2px, transparent 4px), repeating-linear-gradient(90deg, #111, #111 2px, transparent 2px, transparent 4px);
+  background-color: #c4c1b3;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+
+.tv-brilho-exterior {
+  position: absolute;
+  top: 50%;
+  left: 42%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(140, 190, 255, 0.18) 0%, transparent 55%);
+  animation: tv-flicker 4s infinite alternate;
+}
+
+/* ================================== */
+/* MENU FINAL DENTRO DA TV           */
+/* ================================== */
+.tv-menu-final {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.8s ease 0.4s;
+  z-index: 10;
+}
+
+.fase-acordar .tv-menu-final {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* O Título Restabelecido */
+.tv-menu-titulo {
+  font-family: "Baloo 2", sans-serif;
+  color: #fff;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* O Design de Pílula Base para Ambos os Botões */
+.btn-tv {
+  padding: 10px 20px;
+  border: 2px solid transparent;
+  color: #fff;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  pointer-events: auto;
+  text-align: center;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tamanhos Diferenciados como no Exemplo */
+#btn-origem {
+  background-color: #6A3761;
+  width: 85%;
+}
+
+#btn-home {
+  background-color: #da88cd;
+  width: 55%;
+}
+
+/* <-- Botão de baixo mais curto! */
+
+.btn-tv:hover {
+  transform: scale(1.03);
+  filter: brightness(1.15);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* ================================== */
+/* LAREIRA E PÁLPEBRAS                */
+/* ================================== */
+.zona-lareira {
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  height: 38vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: radial-gradient(circle at bottom, rgba(255, 69, 0, calc(var(--sono, 0) * 0.008)) 0%, transparent 60%);
+  padding-bottom: 20px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.instrucao-lareira {
+  font-family: "Baloo 2", sans-serif;
+  color: #ff8c00;
+  opacity: calc(1 - (var(--sono, 0) * 0.03));
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.fase-dormir .instrucao-lareira,
+.fase-acordar .instrucao-lareira {
+  opacity: 0;
+}
+
+.lareira-fisica {
+  pointer-events: auto;
+  position: relative;
+  width: 380px;
+  height: 130px;
+  background: #140b07;
+  border: 5px solid #2b1c12;
+  border-bottom: none;
+  border-radius: 160px 160px 10px 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  cursor: crosshair;
+  box-shadow: 0 -5px 40px rgba(255, 69, 0, calc(0.2 + var(--sono, 0) * 0.006)), inset 0 -15px 30px rgba(255, 69, 0, 0.4);
+  transition: transform 0.2s;
+  z-index: 2;
+}
+
+.lareira-fisica:hover {
+  transform: scale(1.03);
+}
+
+.pedra-borda {
+  position: absolute;
+  bottom: 20px;
+  width: 90%;
+  height: 8px;
+  background: #221;
+  z-index: 6;
+  border-radius: 4px;
+}
+
+.tronco {
+  position: absolute;
+  width: 110px;
+  height: 26px;
+  background: #2e1a0d;
+  border-radius: 8px;
+  box-shadow: inset 0 0 10px #000;
+  z-index: 4;
+  border: 2px solid #111;
+}
+
+.tronco1 {
+  transform: rotate(15deg);
+  bottom: 25px;
+  left: 90px;
+}
+
+.tronco2 {
+  transform: rotate(-20deg);
+  bottom: 30px;
+  right: 90px;
+}
+
+.nucleo-fogo {
+  width: 200px;
+  height: 60px;
+  background: radial-gradient(ellipse, #ff4500 0%, #7a0000 80%);
+  border-radius: 100px 100px 0 0;
+  filter: blur(6px);
+  opacity: calc(0.4 + (var(--sono, 0) * 0.007));
+  z-index: 2;
+  animation: fogo-pulsa 2s infinite alternate;
+}
+
+.palpebra {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: #030303;
+  z-index: 18;
+  pointer-events: none;
+  height: calc(var(--sono, 0) * 0.52%);
+}
+
+.palpebra-cima {
+  top: 0;
+  border-bottom: 2px solid #000;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 1);
+}
+
+.palpebra-baixo {
+  bottom: 0;
+  border-top: 2px solid #000;
+  box-shadow: 0 -15px 50px rgba(0, 0, 0, 1);
+}
+
+.fase-dormir .palpebra {
+  height: 51vh !important;
+  transition: height 0.15s ease-out;
+}
+
+.fase-acordar .palpebra {
+  height: 0 !important;
+  transition: height 0.4s ease !important;
+}
+
+/* ================================== */
+/* ECRÃ BLACKOUT E BOTÃO ACORDAR      */
+/* ================================== */
+#blackout-ecra {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1s ease 0.8s, visibility 1s ease 0.8s;
+}
+
+.fase-dormir #blackout-ecra {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.fase-acordar #blackout-ecra {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#btn-acordar-meio {
+  padding: 20px 60px;
+  background-color: #6A3761;
+  border: none;
+  color: #fff;
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  animation: respirarBotao 2s infinite alternate;
+  pointer-events: auto;
+}
+
+#btn-acordar-meio:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #6A3761;
+  animation: none;
+}
+
+@keyframes respirarBotao {
+  0% {
+    box-shadow: 0 0 10px #6A3761;
+  }
+
+  100% {
+    box-shadow: 0 0 30px #6A3761;
+  }
+}
+
+/* ================================== */
+/* CANVAS MAGNÍFICO                   */
+/* ================================== */
 #tela-brasas {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  z-index: 40;
   pointer-events: none;
-}
-
-#ui-jogo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  text-align: center;
-  width: 90%;
-  pointer-events: none;
-}
-
-/* INSTRUÇÃO */
-.instrucao-brasa {
-  font-family: "Averia Serif Libre", serif;
-  font-size: clamp(1.2rem, 2vw, 1.8rem);
-  color: rgba(255, 255, 255, calc(1 - var(--calor, 0)));
-  /* Desaparece com o calor */
-  transition: opacity 0.3s;
-  margin-bottom: 30px;
-}
-
-.instrucao-brasa span {
-  font-family: "Baloo 2", sans-serif;
-  color: #ff8c00;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-size: 0.9em;
-}
-
-/* A EXPRESSÃO QUE ACENDE COMO UMA BRASA */
-.texto-brasa {
-  font-family: "Baloo 2", sans-serif;
-  font-size: clamp(3rem, 8vw, 7rem);
-  font-weight: 800;
-  margin: 0;
-  text-transform: uppercase;
-  /* Começa no #222 (cinza escuro) e vai até ao branco/amarelo (#fff3b0) */
-  color: color-mix(in srgb, #fff3b0 calc(var(--calor, 0) * 100%), #222);
-  /* O Brilho (glow) aumenta com o calor */
-  text-shadow:
-    0 0 calc(var(--calor, 0) * 20px) rgba(255, 69, 0, var(--calor, 0)),
-    0 0 calc(var(--calor, 0) * 50px) rgba(255, 140, 0, var(--calor, 0)),
-    0 10px 20px rgba(0, 0, 0, 0.8);
-  transition: color 0.1s, text-shadow 0.1s, transform 0.1s;
-}
-
-/* Animação quando atinge os 100% (Respiração do sono) */
-.texto-brasa.incandescente {
-  animation: respiracaoBrasa 3s infinite alternate ease-in-out;
-}
-
-@keyframes respiracaoBrasa {
-  0% {
-    color: #ffcc00;
-    text-shadow: 0 0 30px rgba(255, 69, 0, 0.8), 0 0 60px rgba(255, 140, 0, 0.5);
-    transform: scale(1);
-  }
-
-  100% {
-    color: #fff3b0;
-    text-shadow: 0 0 50px rgba(255, 69, 0, 1), 0 0 100px rgba(255, 140, 0, 0.8);
-    transform: scale(1.02);
-  }
-}
-
-/* BOTÕES */
-.botoes-finais {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 50px;
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-  transition: opacity 1s ease 0.5s, transform 1s ease 0.5s;
-}
-
-.botoes-finais.escondido {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(20px);
-}
-
-.btn-acordar {
-  display: inline-block;
-  padding: 15px 35px;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid #ff8c00;
-  color: #ff8c00;
-  border-radius: 50px;
-  font-family: "Baloo 2", sans-serif;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: all 0.4s ease;
-  backdrop-filter: blur(5px);
-}
-
-.btn-acordar:hover {
-  background: #ff8c00;
-  color: #050505;
-  box-shadow: 0 0 25px rgba(255, 140, 0, 0.6);
-  transform: translateY(-3px);
 }

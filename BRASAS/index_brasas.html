@@ -1,30 +1,105 @@
 <!DOCTYPE html>
 <html lang="pt">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Expressão: Passar pelas brasas</title>
   <link rel="stylesheet" href="style_brasas.css">
 </head>
+
 <body>
 
   <div class="page-brasas" id="jogo-brasas-container">
-    
-    <canvas id="tela-brasas"></canvas>
 
-    <div id="ui-jogo">
-      <h2 class="instrucao-brasa" id="instrucao-texto">O sono é frio.<br><span>Agita o rato para atear as brasas...</span></h2>
-      
-      <h1 class="texto-brasa" id="texto-alvo">PASSAR PELAS BRASAS</h1>
-      
-      <div class="botoes-finais escondido" id="botoes-finais">
-        <a href="sobre_brasas.html" class="btn-acordar">Saber a Origem</a>
-        <a href="../HOMEPAGE/expressoes.html" class="btn-acordar">Página Inicial</a>
+    <div id="scroll-narrativa">
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">O dia foi longo.</h2>
+        <p class="dica-scroll">&darr; Desce para continuar &darr;</p>
+      </div>
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">Depois de tantas horas a correr de um lado para o outro</h2>
+      </div>
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">O que eu mais quero...</h2>
+      </div>
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">É descansar</h2>
+      </div>
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">O sol já se pôs.</h2>
+      </div>
+      <div class="slide-narrativa">
+        <h2 class="texto-historia">Finalmente, o conforto de casa.</h2>
+      </div>
+
+      <div id="cenario-sala">
+        <div class="janela">
+          <div class="lua"></div>
+        </div>
+        <div class="candeeiro">
+          <div class="abajur"></div>
+          <div class="luz-candeeiro"></div>
+        </div>
+        <div class="tapete"></div>
+
+        <div class="tv-retro-wrapper">
+          <div class="tv-retro-wood">
+            <div class="tv-retro-panel">
+
+              <div class="tv-retro-bezel">
+                <div class="tv-retro-screen">
+                  <video id="tv-video" autoplay loop muted playsinline>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                  </video>
+                  <div class="tv-vidro-reflexo"></div>
+
+                  <div class="tv-menu-final" id="tv-menu-final">
+                    <h3 class="tv-menu-titulo">"Passar pelas Brasas"</h3>
+                    <a href="sobre_brasas.html" class="btn-tv" id="btn-origem">Saber Mais Sobre a Expressão</a>
+                    <a href="../HOMEPAGE/expressoes.html" class="btn-tv" id="btn-home">Página Inicial</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tv-retro-controls">
+                <div class="tv-dial-top">
+                  <div class="tv-dial-inner"></div>
+                </div>
+                <div class="tv-dial-bottom">
+                  <div class="tv-dial-inner"></div>
+                </div>
+                <div class="tv-speaker"></div>
+              </div>
+
+            </div>
+          </div>
+          <div class="tv-brilho-exterior"></div>
+        </div>
+        <div class="zona-lareira">
+          <h2 class="instrucao-lareira" id="instrucao-txt">Passa o rato sobre estas brasas para aquecer a sala...</h2>
+          <div class="lareira-fisica" id="lareira-interativa">
+            <div class="pedra-borda"></div>
+            <div class="tronco tronco1"></div>
+            <div class="tronco tronco2"></div>
+            <div class="nucleo-fogo"></div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="palpebra palpebra-cima"></div>
+    <div class="palpebra palpebra-baixo"></div>
+
+    <div id="blackout-ecra">
+      <button id="btn-acordar-meio">ACORDAR</button>
+    </div>
+
+    <canvas id="tela-brasas"></canvas>
 
   </div>
 
   <script src="script_brasas.js"></script>
 </body>
+
 </html>

@@ -1,166 +1,185 @@
-function iniciarJogoBrasas() {
-    const pageContainer = document.getElementById('jogo-brasas-container');
-    const canvas = document.getElementById('tela-brasas');
-    const textoAlvo = document.getElementById('texto-alvo');
-    const instrucao = document.getElementById('instrucao-texto');
-    const botoes = document.getElementById('botoes-finais');
+if (!window.jogoBrasasIniciado) {
+    window.jogoBrasasIniciado = true;
 
-    if (!pageContainer || !canvas || !textoAlvo) return;
+    function iniciarJogoBrasas() {
+        const container = document.getElementById('jogo-brasas-container');
+        if (!container) return;
 
-    const ctx = canvas.getContext('2d');
-    let particulas = [];
+        container.classList.remove('fase-dormir');
+        container.classList.remove('fase-acordar');
 
-    let calor = 0; // Vai de 0 a 100
-    let jogoGanho = false;
-    let ultimoX = 0;
-    let ultimoY = 0;
+        const scrollContainer = container.querySelector('#scroll-narrativa');
+        const canvas = container.querySelector('#tela-brasas');
+        const lareiraInterativa = container.querySelector('#lareira-interativa');
+        const btnAcordar = container.querySelector('#btn-acordar-meio');
 
-    function redimensionar() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    redimensionar();
-    window.addEventListener('resize', redimensionar);
+        if (!canvas || !scrollContainer || !lareiraInterativa) return;
 
-    // Motor de Partículas (Faíscas e Zzzs)
-    class Brasa {
-        constructor(x, y, velocidadeExtra = 0, eSilencioso = false) {
-            this.x = x;
-            this.y = y;
-            this.vida = 1;
+        const ctx = canvas.getContext('2d');
+        let particulas = [];
+        let sono = 0;
 
-            if (eSilencioso) {
-                // Os Zzz sobem muito suavemente
-                this.velocidadeX = (Math.random() - 0.5) * 0.5;
-                this.velocidadeY = (Math.random() * -1) - 0.5;
-                this.tipo = 'zzz';
+        let estadoAtivo = "NORMAL";
+        let chegouASala = false;
+        let isHoveringLareira = false;
+        let ultimoX = 0;
+        let ultimoY = 0;
+
+        function redimensionar() {
+            if (!document.body.contains(container)) return;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        redimensionar();
+        window.addEventListener('resize', redimensionar);
+
+        // Hover Puro
+        lareiraInterativa.addEventListener('mouseenter', () => { isHoveringLareira = true; });
+        lareiraInterativa.addEventListener('mouseleave', () => { isHoveringLareira = false; });
+
+        // Clique em Acordar
+        if (btnAcordar) {
+            btnAcordar.addEventListener('click', () => {
+                estadoAtivo = "ACORDOU";
+                container.classList.remove('fase-dormir');
+                container.classList.add('fase-acordar');
+                container.style.setProperty('--sono', 0);
+            });
+        }
+
+        // Scroll
+        scrollContainer.addEventListener('scroll', () => {
+            if (estadoAtivo !== "NORMAL") return;
+            const maxScroll = (scrollContainer.scrollHeight - scrollContainer.clientHeight) || 1;
+            const progressoScroll = Math.min(Math.max(scrollContainer.scrollTop / maxScroll, 0), 1);
+
+            let r, g, b;
+            if (progressoScroll < 0.33) {
+                const p = progressoScroll / 0.33;
+                r = 135 + p * (240 - 135); g = 206 - p * (206 - 130); b = 235 - p * (235 - 50);
+            } else if (progressoScroll < 0.66) {
+                const p = (progressoScroll - 0.33) / 0.33;
+                r = 240 - p * (240 - 70); g = 130 - p * (130 - 35); b = 50 + p * (110 - 50);
             } else {
-                // Faíscas caóticas
-                this.velocidadeX = (Math.random() - 0.5) * (2 + velocidadeExtra);
-                this.velocidadeY = (Math.random() * -2) - 0.5 - (velocidadeExtra * 0.5);
-                this.tipo = 'brasa';
+                const p = (progressoScroll - 0.66) / 0.34;
+                r = 70 - p * (70 - 15); g = 35 - p * (35 - 12); b = 110 - p * (110 - 10);
             }
 
-            if (this.tipo === 'brasa') {
-                this.tamanho = Math.random() * 5 + 2;
-                const cores = ['#ff4500', '#ff8c00', '#ffd700'];
-                this.cor = cores[Math.floor(Math.random() * cores.length)];
-            } else {
-                this.texto = 'Zzz';
-                this.tamanho = Math.random() * 15 + 20;
-                this.cor = '#ffd700';
-            }
-        }
+            container.style.setProperty('--bg-r', Math.floor(r));
+            container.style.setProperty('--bg-g', Math.floor(g));
+            container.style.setProperty('--bg-b', Math.floor(b));
 
-        atualizar() {
-            this.x += this.velocidadeX;
-            this.y += this.velocidadeY;
-            this.vida -= 0.012;
-            if (this.tipo === 'brasa') this.tamanho *= 0.96;
-        }
+            if (progressoScroll > 0.95) chegouASala = true;
+            else chegouASala = false;
+        });
 
-        desenhar() {
-            ctx.globalAlpha = Math.max(this.vida, 0);
-            ctx.fillStyle = this.cor;
-            ctx.shadowBlur = this.tipo === 'brasa' ? 10 : 15;
-            ctx.shadowColor = this.cor;
+        class Brasa {
+            constructor(x, y, velocidadeExtra = 0) {
+                this.x = x; this.y = y; this.vida = 1;
+                this.velocidadeX = (Math.random() - 0.5) * (1.5 + velocidadeExtra);
+                this.velocidadeY = (Math.random() * -3) - 0.5 - (velocidadeExtra * 0.5);
 
-            if (this.tipo === 'brasa') {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.tamanho, 0, Math.PI * 2);
-                ctx.fill();
-            } else {
-                ctx.font = `bold ${this.tamanho}px 'Baloo 2', sans-serif`;
-                ctx.fillText(this.texto, this.x, this.y);
-            }
-        }
-    }
+                this.isZzz = (estadoAtivo === "DORMIU") && Math.random() > 0.85 && velocidadeExtra === 0;
 
-    function interagir(clientX, clientY) {
-        let velocidadeMovimento = Math.abs(clientX - ultimoX) + Math.abs(clientY - ultimoY);
-        ultimoX = clientX;
-        ultimoY = clientY;
-
-        let velLimitada = Math.min(velocidadeMovimento, 100);
-
-        // Geração de partículas de fogo
-        const qtd = jogoGanho ? 1 : Math.ceil(velLimitada / 15);
-        for (let i = 0; i < qtd; i++) {
-            particulas.push(new Brasa(clientX, clientY, velLimitada / 10, false));
-        }
-
-        if (!jogoGanho) {
-            calor += (velLimitada * 0.04);
-            if (calor > 100) calor = 100;
-        }
-    }
-
-    pageContainer.onmousemove = (e) => interagir(e.clientX, e.clientY);
-    pageContainer.ontouchmove = (e) => {
-        interagir(e.touches[0].clientX, e.touches[0].clientY);
-        e.preventDefault();
-    };
-
-    function loopJogo() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (let i = 0; i < particulas.length; i++) {
-            particulas[i].atualizar();
-            particulas[i].desenhar();
-            if (particulas[i].vida <= 0 || (particulas[i].tipo === 'brasa' && particulas[i].tamanho <= 0.3)) {
-                particulas.splice(i, 1);
-                i--;
-            }
-        }
-
-        if (!jogoGanho) {
-            // Condição de Vitória
-            if (calor >= 100) {
-                jogoGanho = true;
-
-                // Tranca as letras no estado incandescente
-                textoAlvo.classList.add('incandescente');
-                instrucao.style.display = 'none'; // Some com as instruções
-                botoes.classList.remove('escondido'); // Mostra os botões
-
-                // Explosão de fogo comemorativa
-                for (let i = 0; i < 40; i++) {
-                    const px = (window.innerWidth * 0.3) + (Math.random() * window.innerWidth * 0.4);
-                    const py = (window.innerHeight * 0.4) + (Math.random() * window.innerHeight * 0.2);
-                    particulas.push(new Brasa(px, py, 6, false));
+                if (this.isZzz) {
+                    this.texto = 'Zzz'; this.tamanho = Math.random() * 20 + 15; this.cor = '#ffd700';
+                } else {
+                    this.tamanho = Math.random() * 5 + 3.5;
+                    const cores = ['#ff4500', '#ff8c00', '#ffd700'];
+                    this.cor = cores[Math.floor(Math.random() * cores.length)];
                 }
-            } else {
-                // Arrefecimento contínuo
-                calor -= 0.2;
-                if (calor < 0) calor = 0;
-
-                // INJETA O CALOR DIRETAMENTE NO CSS (Escala 0.0 a 1.0)
-                pageContainer.style.setProperty('--calor', calor / 100);
             }
-        } else {
-            // Quando ganha, liberta "Zzz" aleatórios do fundo para simular a sesta
-            if (Math.random() > 0.95) {
-                particulas.push(new Brasa(Math.random() * canvas.width, canvas.height + 20, 0, true));
+            atualizar() {
+                this.x += this.velocidadeX; this.y += this.velocidadeY;
+                this.vida -= 0.012; if (!this.isZzz) this.tamanho *= 0.96;
             }
-            // Pequenas brasas residuais
-            if (Math.random() > 0.8) {
-                particulas.push(new Brasa(Math.random() * canvas.width, canvas.height + 20, 0, false));
+            desenhar() {
+                ctx.globalAlpha = Math.max(this.vida, 0);
+                ctx.fillStyle = this.cor;
+                ctx.shadowBlur = this.isZzz ? 20 : 10;
+                ctx.shadowColor = this.cor;
+                if (this.isZzz) {
+                    ctx.font = `bold ${this.tamanho}px 'Baloo 2', sans-serif`;
+                    ctx.fillText(this.texto, this.x, this.y);
+                } else {
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.tamanho, 0, Math.PI * 2); ctx.fill();
+                }
             }
         }
 
-        requestAnimationFrame(loopJogo);
+        function interagir(clientX, clientY) {
+            if (!chegouASala) return;
+
+            let velocidadeMovimento = Math.abs(clientX - ultimoX) + Math.abs(clientY - ultimoY);
+            ultimoX = clientX; ultimoY = clientY;
+
+            let velLimitada = Math.min(velocidadeMovimento, 100);
+            if (velLimitada < 4) return;
+
+            const qtd = Math.ceil(velLimitada / 16);
+            for (let i = 0; i < qtd; i++) {
+                particulas.push(new Brasa(clientX, clientY, velLimitada / 18));
+            }
+
+            if (estadoAtivo === "NORMAL") {
+                const rect = lareiraInterativa.getBoundingClientRect();
+                if (clientX >= rect.left && clientX <= rect.right &&
+                    clientY >= rect.top && clientY <= rect.bottom) {
+
+                    sono += (velLimitada * 0.06);
+                    if (sono > 100) sono = 100;
+                }
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => interagir(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => interagir(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+
+        function loopJogo() {
+            if (!document.body.contains(container)) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particulas.length; i++) {
+                particulas[i].atualizar(); particulas[i].desenhar();
+                if (particulas[i].vida <= 0 || (!particulas[i].isZzz && particulas[i].tamanho <= 0.3)) {
+                    particulas.splice(i, 1); i--;
+                }
+            }
+
+            if (estadoAtivo === "DORMIU") {
+                if (Math.random() > 0.95) particulas.push(new Brasa(Math.random() * canvas.width, canvas.height + 20, 0));
+                requestAnimationFrame(loopJogo);
+                return;
+            }
+
+            if (estadoAtivo === "NORMAL" && chegouASala) {
+                if (isHoveringLareira) {
+                    sono += 0.5;
+                    if (sono > 100) sono = 100;
+                }
+
+                container.style.setProperty('--sono', sono);
+
+                if (sono >= 100) {
+                    estadoAtivo = "DORMIU";
+                    container.classList.add('fase-dormir');
+
+                    scrollContainer.style.overflowY = 'hidden';
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                }
+            }
+
+            requestAnimationFrame(loopJogo);
+        }
+        loopJogo();
     }
 
-    loopJogo();
+    if (document.readyState === 'complete') iniciarJogoBrasas();
+    else window.addEventListener('load', iniciarJogoBrasas);
+
+    const obsBrasas = new MutationObserver(() => {
+        if (document.getElementById('tela-brasas')) iniciarJogoBrasas();
+    });
+    obsBrasas.observe(document.body, { childList: true, subtree: true });
 }
-
-if (document.readyState === 'complete') iniciarJogoBrasas();
-else window.addEventListener('load', iniciarJogoBrasas);
-
-const obsBrasas = new MutationObserver(() => {
-    if (document.getElementById('tela-brasas')) {
-        iniciarJogoBrasas();
-        obsBrasas.disconnect();
-    }
-});
-obsBrasas.observe(document.body, { childList: true, subtree: true });
