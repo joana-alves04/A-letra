@@ -9,6 +9,9 @@ html {
   background: #000;
 }
 
+/* ================================================================== */
+/* GERAL E CENA DA SALA (PÁGINA 1)                                    */
+/* ================================================================== */
 .page-brasas {
   position: relative;
   width: 100vw;
@@ -82,6 +85,7 @@ html {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding-bottom: 50px;
 }
 
 #cenario-sala::after {
@@ -191,15 +195,14 @@ html {
   opacity: 0.8;
 }
 
-/* ================================== */
-/* TV RETRO CSS                       */
-/* ================================== */
+/* ================================================================== */
+/* ESTRUTURA E MATRIZ DA TV                                           */
+/* ================================================================== */
 .tv-retro-wrapper {
   position: relative;
   width: 50%;
   max-width: 550px;
   z-index: 5;
-  margin-top: -15vh;
   filter: blur(calc(var(--sono, 0) * 0.06px));
 }
 
@@ -249,7 +252,7 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   z-index: 1;
   transition: opacity 0.5s ease;
   background: #000;
@@ -272,7 +275,6 @@ html {
   z-index: 2;
 }
 
-/* Controlos da Direita */
 .tv-retro-controls {
   width: 60px;
   display: flex;
@@ -294,6 +296,8 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
 .tv-dial-bottom {
@@ -305,6 +309,16 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.tv-dial-top:active {
+  transform: rotate(45deg);
+}
+
+.tv-dial-bottom:active {
+  transform: rotate(-45deg);
 }
 
 .tv-dial-inner {
@@ -327,7 +341,7 @@ html {
 .tv-brilho-exterior {
   position: absolute;
   top: 50%;
-  left: 42%;
+  left: 50%;
   transform: translate(-50%, -50%);
   width: 200%;
   height: 200%;
@@ -337,9 +351,6 @@ html {
   animation: tv-flicker 4s infinite alternate;
 }
 
-/* ================================== */
-/* MENU FINAL DENTRO DA TV           */
-/* ================================== */
 .tv-menu-final {
   position: absolute;
   top: 0;
@@ -365,21 +376,52 @@ html {
   pointer-events: auto;
 }
 
-/* O Título Restabelecido */
 .tv-menu-titulo {
   font-family: "Baloo 2", sans-serif;
   color: #fff;
   font-size: clamp(1rem, 2vw, 1.5rem);
   text-transform: uppercase;
-  margin: 0 0 10px 0;
+  margin: 0;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
   text-align: center;
   padding: 0 10px;
 }
 
-/* O Design de Pílula Base para Ambos os Botões */
+/* ================================================================== */
+/* BOTÕES EXTERIORES (A FLUTUAR POR BAIXO DA TV)                      */
+/* ================================================================== */
+.botoes-exteriores-tv {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+  z-index: 10;
+
+  /* Na Página 1, eles só aparecem quando acordamos */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.8s ease 0.4s;
+}
+
+.fase-acordar .botoes-exteriores-tv {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Na Página 2, estão sempre visíveis */
+#sobre-brasas-container .botoes-exteriores-tv {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 .btn-tv {
-  padding: 10px 20px;
+  padding: 12px 25px;
   border: 2px solid transparent;
   color: #fff;
   font-family: "Baloo 2", sans-serif;
@@ -398,28 +440,29 @@ html {
   justify-content: center;
 }
 
-/* Tamanhos Diferenciados como no Exemplo */
-#btn-origem {
+/* O de cima fica mais largo e o de baixo mais curto, como no teu design */
+.btn-top {
   background-color: #6A3761;
-  width: 85%;
+  width: 75%;
+  max-width: 350px;
 }
 
-#btn-home {
-  background-color: #da88cd;
-  width: 55%;
+.btn-bottom {
+  background-color: #A75B9A;
+  width: 50%;
+  max-width: 200px;
 }
-
-/* <-- Botão de baixo mais curto! */
 
 .btn-tv:hover {
   transform: scale(1.03);
   filter: brightness(1.15);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  border-color: #fff;
 }
 
-/* ================================== */
-/* LAREIRA E PÁLPEBRAS                */
-/* ================================== */
+/* ================================================================== */
+/* LAREIRA E PÁLPEBRAS                                                */
+/* ================================================================== */
 .zona-lareira {
   position: absolute;
   bottom: 0;
@@ -527,6 +570,7 @@ html {
   z-index: 18;
   pointer-events: none;
   height: calc(var(--sono, 0) * 0.52%);
+  transition: height 0.15s ease-out;
 }
 
 .palpebra-cima {
@@ -543,7 +587,6 @@ html {
 
 .fase-dormir .palpebra {
   height: 51vh !important;
-  transition: height 0.15s ease-out;
 }
 
 .fase-acordar .palpebra {
@@ -551,9 +594,6 @@ html {
   transition: height 0.4s ease !important;
 }
 
-/* ================================== */
-/* ECRÃ BLACKOUT E BOTÃO ACORDAR      */
-/* ================================== */
 #blackout-ecra {
   position: absolute;
   top: 0;
@@ -600,12 +640,6 @@ html {
   pointer-events: auto;
 }
 
-#btn-acordar-meio:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px #6A3761;
-  animation: none;
-}
-
 @keyframes respirarBotao {
   0% {
     box-shadow: 0 0 10px #6A3761;
@@ -616,9 +650,6 @@ html {
   }
 }
 
-/* ================================== */
-/* CANVAS MAGNÍFICO                   */
-/* ================================== */
 #tela-brasas {
   position: absolute;
   top: 0;
@@ -627,4 +658,171 @@ html {
   height: 100%;
   z-index: 40;
   pointer-events: none;
+}
+
+/* ================================================================== */
+/* PÁGINA 2: SOBRE A EXPRESSÃO (TV GIGANTE FULLSCREEN)                */
+/* ================================================================== */
+.page-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #2a201c 0%, #050505 100%);
+}
+
+.tv-retro-wrapper-big {
+  position: relative;
+  width: 95%;
+  max-width: 1200px;
+  z-index: 5;
+  animation: flutuarTv 6s infinite ease-in-out;
+}
+
+@keyframes flutuarTv {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.tv-retro-wrapper-big .tv-retro-screen {
+  aspect-ratio: 16/10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tv-retro-wrapper-big .tv-retro-controls {
+  width: 90px;
+  gap: 15px;
+}
+
+.tv-retro-wrapper-big .tv-dial-top {
+  width: 65px;
+  height: 65px;
+}
+
+.tv-retro-wrapper-big .tv-dial-bottom {
+  width: 50px;
+  height: 50px;
+}
+
+.tv-info-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 45px;
+  text-align: center;
+  color: #fff;
+  z-index: 2;
+  transition: opacity 0.2s ease-in;
+  opacity: 1;
+}
+
+.indicador-canal {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.6rem;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.info-titulo {
+  font-family: "Averia Serif Libre", serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin: 0 0 15px 0;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.info-texto {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.instrucao-canal {
+  font-family: "Baloo 2", sans-serif;
+  color: #ff8c00;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 10px 0;
+  animation: piscaSuave 2s infinite alternate;
+  text-shadow: 0 2px 5px #000;
+}
+
+@keyframes piscaSuave {
+  0% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+#estatica-tv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-radial-gradient(circle at 50% 50%, #fff 0, #000 2px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.mudando-canal #estatica-tv {
+  animation: estaticaFlash 0.3s steps(8) forwards;
+}
+
+.mudando-canal .tv-info-container {
+  opacity: 0;
+}
+
+@keyframes estaticaFlash {
+  0% {
+    opacity: 0;
+    background-position: 0 0;
+  }
+
+  15% {
+    opacity: 0.7;
+    background-position: 15px 5px;
+  }
+
+  45% {
+    opacity: 0.5;
+    background-position: -10px -15px;
+  }
+
+  75% {
+    opacity: 0.8;
+    background-position: 25px -25px;
+  }
+
+  100% {
+    opacity: 0;
+    background-position: 0 0;
+  }
 }
