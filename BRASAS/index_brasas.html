@@ -14,9 +14,10 @@
 
     <div id="scroll-narrativa">
       <div class="slide-narrativa">
-        <h2 class="texto-historia">O dia foi longo.</h2>
-        <p class="dica-scroll">&darr; Desce para continuar &darr;</p>
+        <h2 class="texto-historia">O dia foi <span id="palavra-misterio" class="desfocado">longo</span>.</h2>
+        <p class="dica-scroll interativo" id="botao-descobrir">Clica aqui e descobre a palavra</p>
       </div>
+
       <div class="slide-narrativa">
         <h2 class="texto-historia">Depois de tantas horas a correr de um lado para o outro</h2>
       </div>
@@ -37,10 +38,12 @@
         <div class="janela">
           <div class="lua"></div>
         </div>
+
         <div class="candeeiro">
           <div class="abajur"></div>
           <div class="luz-candeeiro"></div>
         </div>
+
         <div class="tapete"></div>
 
         <div class="tv-retro-wrapper">
@@ -52,15 +55,16 @@
 
                   <video id="tv-video" loop playsinline>
                     <source src="../imgs/sleep.mp4" type="video/mp4">
-                    O teu navegador não suporta a reprodução deste vídeo.
                   </video>
 
                   <div class="tv-vidro-reflexo"></div>
 
                   <div class="tv-menu-final" id="tv-menu-final">
                     <h3 class="tv-menu-titulo">"Passar pelas Brasas"</h3>
-                    <a href="sobre_brasas.html" class="btn-tv" id="btn-origem">Saber Mais Sobre a Expressão</a>
-                    <a href="../HOMEPAGE/expressoes.html" class="btn-tv" id="btn-home">Página Inicial</a>
+                    <div class="tv-screen-buttons">
+                      <a href="sobre_brasas.html" class="btn-tv btn-top">Saber Mais Sobre a Expressão</a>
+                      <a href="../HOMEPAGE/expressoes.html" class="btn-tv btn-bottom">Página Inicial</a>
+                    </div>
                   </div>
 
                 </div>
@@ -80,6 +84,7 @@
           </div>
           <div class="tv-brilho-exterior"></div>
         </div>
+
         <div class="zona-lareira">
           <h2 class="instrucao-lareira" id="instrucao-txt">Passa o rato sobre estas brasas para aquecer a sala...</h2>
           <div class="lareira-fisica" id="lareira-interativa">
