@@ -31,7 +31,7 @@ if (btn) {
             frango.style.display = "none"; btn.style.display = "none"; counter.style.display = "none";
             const buttons = document.createElement("div");
             buttons.classList.add("end-buttons");
-            buttons.innerHTML = `<button class="final-btn" onclick="window.location.href='sobre_frangos.html'">Saber mais sobre a expressão</button><button class="final-btn" onclick="window.location.href='../HOMEPAGE/expressoes.html'">Página Inicial</button>`;
+            buttons.innerHTML = `<button class="final-btn" onclick="window.location.href='sobre_frangos.html'">Saber mais sobre a expressão</button><button class="final-btn" onclick="window.location.href='../expressoes.html'">Página Inicial</button>`;
             document.querySelector(".scene").appendChild(buttons);
         }
     });
