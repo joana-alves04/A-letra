@@ -1,23 +1,27 @@
-/* Reset básico */
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
 body,
 html {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   height: 100%;
-  font-family: sans-serif;
+  overflow: hidden;
+  background: #000;
 }
 
-/* Contêiner principal */
+/* ================================================================== */
+/* ESTILOS DA PÁGINA 1: A SALA DAS BRASAS                             */
+/* ================================================================== */
 .page-brasas {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: #f4ebd8;
+  background-color: rgb(var(--bg-r, 135), var(--bg-g, 206), var(--bg-b, 235));
+  transition: background-color 0.4s ease;
+  overflow: hidden;
 }
 
-/* Área de scroll */
-#scroll-brasas {
+#scroll-narrativa {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,87 +29,809 @@ html {
   height: 100vh;
   overflow-y: auto;
   scrollbar-width: none;
-  z-index: 10;
+  z-index: 2;
 }
 
-/* Pálpebras - Absolutas para não quebrar o layout */
-.palpebra {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50vh;
-  background: #18120e;
-  z-index: 50;
-  pointer-events: none;
+#scroll-narrativa::-webkit-scrollbar {
+  display: none;
 }
 
-.palpebra-cima {
-  top: 0;
-  transform: translateY(-100%);
-}
-
-.palpebra-baixo {
-  bottom: 0;
-  transform: translateY(100%);
-}
-
-/* Espaçamento e conteúdo */
-.scroll-spacer {
-  height: 200vh;
-  display: flex;
-  justify-content: center;
-  padding-top: 20vh;
-}
-
-.climax-brasas {
+.slide-narrativa {
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  padding: 0 10%;
+  color: white;
+  text-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
 }
 
-/* Zzz Animation */
-#zzz-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 60;
+.texto-historia {
+  font-family: "Averia Serif Libre", serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 400;
 }
 
-.zzz {
-  position: absolute;
-  color: #E89C53;
-  font-weight: bold;
-  font-size: 2rem;
-  animation: floatZzz 3s forwards;
+.dica-scroll {
+  font-family: "Baloo 2", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: pisca 2s infinite;
+  margin-top: 40px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-@keyframes floatZzz {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
+@keyframes pisca {
+
+  0%,
+  100% {
+    opacity: 0.3;
   }
 
   50% {
     opacity: 1;
   }
+}
+
+/* EFEITOS DA PRIMEIRA SLIDE (DESFOCADO) */
+.desfocado {
+  filter: blur(12px);
+  transition: filter 0.8s ease;
+}
+
+.nitido {
+  filter: blur(0px);
+}
+
+.dica-scroll.interativo {
+  cursor: pointer;
+  opacity: 1;
+  animation: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.dica-scroll.interativo:hover {
+  color: #fff;
+  transform: scale(1.05);
+}
+
+#cenario-sala {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at center 60%, #4a3e34 0%, #111 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: 50px;
+}
+
+#cenario-sala::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, calc(var(--sono, 0) * 0.009));
+  pointer-events: none;
+  z-index: 8;
+}
+
+.janela {
+  position: absolute;
+  top: 6%;
+  left: 6%;
+  width: 150px;
+  height: 220px;
+  background: #060914;
+  border: 10px solid #241a14;
+  border-radius: 4px;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.9), 0 15px 40px rgba(0, 0, 0, 0.6);
+  z-index: 3;
+}
+
+.janela::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 6px;
+  background: #241a14;
+  transform: translateY(-50%);
+}
+
+.janela::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  height: 100%;
+  width: 6px;
+  background: #241a14;
+  transform: translateX(-50%);
+}
+
+.lua {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 45px;
+  height: 45px;
+  background: #fff8d6;
+  border-radius: 50%;
+  box-shadow: 0 0 25px #fff8d6;
+  opacity: 0.9;
+}
+
+.candeeiro {
+  position: absolute;
+  bottom: 45vh;
+  right: 12%;
+  width: 90px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.abajur {
+  width: 100%;
+  height: 100%;
+  background: #dfb07e;
+  border-radius: 45px 45px 10px 10px;
+  position: relative;
+  z-index: 3;
+  box-shadow: inset 0 -10px 20px rgba(0, 0, 0, 0.4);
+  border-bottom: 4px solid #1a1a1a;
+}
+
+.luz-candeeiro {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.45) 0%, transparent 65%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: calc(1 - (var(--sono, 0) * 0.01));
+  z-index: 1;
+}
+
+.tapete {
+  position: absolute;
+  bottom: -20px;
+  width: 80%;
+  height: 100px;
+  background: #3d2314;
+  border-radius: 50%;
+  transform: scaleY(0.4);
+  box-shadow: 0 5px 30px rgba(0, 0, 0, 0.9);
+  z-index: 1;
+  opacity: 0.8;
+}
+
+/* ================================================================== */
+/* ESTRUTURA E MATRIZ DA TV                                           */
+/* ================================================================== */
+.tv-retro-wrapper {
+  position: relative;
+  width: 50%;
+  max-width: 550px;
+  z-index: 5;
+  margin-top: -15vh;
+  filter: blur(calc(var(--sono, 0) * 0.06px));
+}
+
+.tv-retro-wood {
+  background: linear-gradient(135deg, #8a4a26 0%, #4a2108 100%);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 10px rgba(0, 0, 0, 0.6);
+  border: 2px solid #3a1804;
+}
+
+.tv-retro-panel {
+  background: #eae8df;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  gap: 15px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #c4c1b3;
+  align-items: stretch;
+}
+
+.tv-retro-bezel {
+  flex: 1;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 40px / 30px;
+  box-shadow: inset 0 0 20px #000, 0 5px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tv-retro-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #050505;
+  border-radius: 20px / 15px;
+  overflow: hidden;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+
+#tv-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: opacity 0.5s ease;
+  background: #000;
+}
+
+.fase-acordar #tv-video {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.tv-vidro-reflexo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+  z-index: 2;
+}
+
+/* Painel Lateral de Controlos */
+.tv-retro-controls {
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #dfddce;
+  padding: 10px 5px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.tv-dial-top {
+  width: 45px;
+  height: 45px;
+  background: #333;
+  border-radius: 50%;
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.4), inset 0 2px 2px rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.tv-dial-bottom {
+  width: 35px;
+  height: 35px;
+  background: #ccc;
+  border-radius: 50%;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3), inset 0 2px 4px #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.tv-dial-top:active {
+  transform: rotate(45deg);
+}
+
+.tv-dial-bottom:active {
+  transform: rotate(-45deg);
+}
+
+.tv-dial-inner {
+  width: 50%;
+  height: 50%;
+  background: #666;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px #000;
+}
+
+.tv-speaker {
+  flex: 1;
+  width: 100%;
+  background: repeating-linear-gradient(0deg, #111, #111 2px, transparent 2px, transparent 4px), repeating-linear-gradient(90deg, #111, #111 2px, transparent 2px, transparent 4px);
+  background-color: #c4c1b3;
+  border-radius: 4px;
+  opacity: 0.6;
+}
+
+.tv-brilho-exterior {
+  position: absolute;
+  top: 50%;
+  left: 42%;
+  transform: translate(-50%, -50%);
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(140, 190, 255, 0.18) 0%, transparent 55%);
+  animation: tv-flicker 4s infinite alternate;
+}
+
+/* Menu da TV na primeira página */
+.tv-menu-final {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.8s ease 0.4s;
+  z-index: 10;
+}
+
+.fase-acordar .tv-menu-final {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.tv-menu-titulo {
+  font-family: "Baloo 2", sans-serif;
+  color: #fff;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-transform: uppercase;
+  margin: 0 0 15px 0;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+  text-align: center;
+  padding: 0 10px;
+}
+
+/* CAIXA PARA OS DOIS BOTÕES */
+.tv-screen-buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 15px;
+  z-index: 20;
+  pointer-events: auto;
+}
+
+/* FORMATO BASE DO BOTÃO PÍLULA */
+.btn-tv {
+  padding: 12px 20px;
+  border: 2px solid transparent;
+  color: #fff !important;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 50px;
+  font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.btn-top {
+  background-color: #6A3761;
+  width: 85%;
+  max-width: 380px;
+}
+
+.btn-bottom {
+  background-color: #A75B9A;
+  width: 55%;
+  max-width: 240px;
+}
+
+.btn-tv:hover {
+  transform: scale(1.03);
+  filter: brightness(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#btn-acordar-meio:hover {
+  transform: scale(1.03);
+  filter: brightness(1.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* ================================================================== */
+/* LAREIRA E PÁLPEBRAS                                                */
+/* ================================================================== */
+.zona-lareira {
+  position: absolute;
+  bottom: 0;
+  width: 100vw;
+  height: 38vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: radial-gradient(circle at bottom, rgba(255, 69, 0, calc(var(--sono, 0) * 0.008)) 0%, transparent 60%);
+  padding-bottom: 20px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.instrucao-lareira {
+  font-family: "Baloo 2", sans-serif;
+  color: #ff8c00;
+  opacity: calc(1 - (var(--sono, 0) * 0.03));
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.fase-dormir .instrucao-lareira,
+.fase-acordar .instrucao-lareira {
+  opacity: 0;
+}
+
+.lareira-fisica {
+  pointer-events: auto;
+  position: relative;
+  width: 380px;
+  height: 130px;
+  background: #140b07;
+  border: 5px solid #2b1c12;
+  border-bottom: none;
+  border-radius: 160px 160px 10px 10px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  cursor: crosshair;
+  box-shadow: 0 -5px 40px rgba(255, 69, 0, calc(0.2 + var(--sono, 0) * 0.006)), inset 0 -15px 30px rgba(255, 69, 0, 0.4);
+  transition: transform 0.2s;
+  z-index: 2;
+}
+
+.lareira-fisica:hover {
+  transform: scale(1.03);
+}
+
+.pedra-borda {
+  position: absolute;
+  bottom: 20px;
+  width: 90%;
+  height: 8px;
+  background: #221;
+  z-index: 6;
+  border-radius: 4px;
+}
+
+.tronco {
+  position: absolute;
+  width: 110px;
+  height: 26px;
+  background: #2e1a0d;
+  border-radius: 8px;
+  box-shadow: inset 0 0 10px #000;
+  z-index: 4;
+  border: 2px solid #111;
+}
+
+.tronco1 {
+  transform: rotate(15deg);
+  bottom: 25px;
+  left: 90px;
+}
+
+.tronco2 {
+  transform: rotate(-20deg);
+  bottom: 30px;
+  right: 90px;
+}
+
+.nucleo-fogo {
+  width: 200px;
+  height: 60px;
+  background: radial-gradient(ellipse, #ff4500 0%, #7a0000 80%);
+  border-radius: 100px 100px 0 0;
+  filter: blur(6px);
+  opacity: calc(0.4 + (var(--sono, 0) * 0.007));
+  z-index: 2;
+  animation: fogo-pulsa 2s infinite alternate;
+}
+
+.palpebra {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: #030303;
+  z-index: 18;
+  pointer-events: none;
+  height: calc(var(--sono, 0) * 0.52%);
+  transition: height 0.15s ease-out;
+}
+
+.palpebra-cima {
+  top: 0;
+  border-bottom: 2px solid #000;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 1);
+}
+
+.palpebra-baixo {
+  bottom: 0;
+  border-top: 2px solid #000;
+  box-shadow: 0 -15px 50px rgba(0, 0, 0, 1);
+}
+
+.fase-dormir .palpebra {
+  height: 51vh !important;
+}
+
+.fase-acordar .palpebra {
+  height: 0 !important;
+  transition: height 0.4s ease !important;
+}
+
+#blackout-ecra {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 1s ease 0.8s, visibility 1s ease 0.8s;
+}
+
+.fase-dormir #blackout-ecra {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.fase-acordar #blackout-ecra {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+#btn-acordar-meio {
+  padding: 20px 60px;
+  background-color: #6A3761;
+  border: none;
+  color: #fff;
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  animation: respirarBotao 2s infinite alternate;
+  pointer-events: auto;
+  
+}
+
+@keyframes respirarBotao {
+  0% {
+    box-shadow: 0 0 10px #6A3761;
+  }
 
   100% {
-    opacity: 0;
-    transform: translateY(-100px);
+    box-shadow: 0 0 30px #6A3761;
   }
 }
 
-/* Botões */
-.botao-voltar {
-  padding: 15px 30px;
-  background: #B86508;
-  color: white;
-  text-decoration: none;
-  border-radius: 20px;
-  margin-top: 20px;
+#tela-brasas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none;
+}
+
+/* ================================================================== */
+/* ESTILOS DA PÁGINA 2: SOBRE A EXPRESSÃO (TV GIGANTE FULLSCREEN)     */
+/* ================================================================== */
+.page-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #2a201c 0%, #3c1354 100%);
+}
+
+.tv-retro-wrapper-big {
+  position: relative;
+  width: 95%;
+  max-width: 1200px;
+  z-index: 5;
+  animation: flutuarTv 6s infinite ease-in-out;
+}
+
+@keyframes flutuarTv {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.tv-retro-wrapper-big .tv-retro-screen {
+  aspect-ratio: 16/10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tv-retro-wrapper-big .tv-retro-controls {
+  width: 90px;
+  gap: 15px;
+}
+
+.tv-retro-wrapper-big .tv-dial-top {
+  width: 65px;
+  height: 65px;
+}
+
+.tv-retro-wrapper-big .tv-dial-bottom {
+  width: 50px;
+  height: 50px;
+}
+
+.tv-info-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 45px;
+  text-align: center;
+  color: #fff;
+  z-index: 2;
+  transition: opacity 0.2s ease-in;
+  opacity: 1;
+}
+
+.indicador-canal {
+  position: absolute;
+  top: 25px;
+  right: 30px;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 1.6rem;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.info-titulo {
+  font-family: "Averia Serif Libre", serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  margin: 0 0 25px 0;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+}
+
+.info-texto {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  line-height: 1.6;
+  color: #e0e0e0;
+  margin: 0 0 35px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.instrucao-canal {
+  font-family: "Baloo 2", sans-serif;
+  color: #ff8c00;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 30px 0;
+  animation: piscaSuave 2s infinite alternate;
+  text-shadow: 0 2px 5px #000;
+}
+
+@keyframes piscaSuave {
+  0% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+#estatica-tv {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-radial-gradient(circle at 50% 50%, #fff 0, #000 2px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.mudando-canal #estatica-tv {
+  animation: estaticaFlash 0.3s steps(8) forwards;
+}
+
+.mudando-canal .tv-info-container {
+  opacity: 0;
+}
+
+@keyframes estaticaFlash {
+  0% {
+    opacity: 0;
+    background-position: 0 0;
+  }
+
+  15% {
+    opacity: 0.7;
+    background-position: 15px 5px;
+  }
+
+  45% {
+    opacity: 0.5;
+    background-position: -10px -15px;
+  }
+
+  75% {
+    opacity: 0.8;
+    background-position: 25px -25px;
+  }
+
+  100% {
+    opacity: 0;
+    background-position: 0 0;
+  }
 }
