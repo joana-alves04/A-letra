@@ -1,6 +1,15 @@
 /* Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
 
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  /* Remove o flash azul ao clicar no mobile */
+  -webkit-touch-callout: none !important;
+  /* Remove o menu de opções ao ficar a pressionar */
+  outline: none !important;
+  /* Remove o contorno ao focar no desktop */
+}
+
 /* Tokens — paleta bordeaux sobre creme */
 :root {
   --background: #FEF8DD;
@@ -11,6 +20,8 @@
   --border: rgba(69, 7, 7, 0.18);
   --font-serif: "Averia Serif Libre", Georgia, serif;
   --font-sans: "Baloo 2", system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 *,
@@ -40,6 +51,8 @@ body {
 
   /* Bloqueia o "salto elástico" no fundo da página */
   overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #app-wrapper {
@@ -508,4 +521,53 @@ body {
   /* IE e Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+/* ================================================================== */
+/* ADAPTAÇÕES PARA TELEMÓVEL (ESTENDAL RESPONSIVE)                    */
+/* ================================================================== */
+@media (max-width: 768px) {
+
+  /* 1. O contentor da fachada mantém a proporção real da tua imagem (624/794) */
+  .facade-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Isto obriga o bloco a comportar-se sempre como a tua imagem */
+    aspect-ratio: 624 / 794;
+    max-height: 100vh;
+    margin: auto;
+  }
+
+  /* 2. A imagem preenche o espaço garantindo que a proporção é mantida */
+  .fachada-scrolly-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* 3. A Corda (Ajustada para descer os cartões) */
+  .clothesline-track-scrolly {
+    position: absolute;
+
+    /* 🔥 Aumentei para 70%. Se ainda estiver um pouco acima da corda, 
+           experimenta 72% ou 73%. */
+    top: 66%;
+
+    width: 100vw;
+    left: 0;
+    padding-left: 27.5vw;
+    padding-right: 27.5vw;
+    gap: 15vw;
+  }
+
+  /* 4. Cartões ajustados para o tamanho do ecrã mobile */
+  .estendal-card-scrolly {
+    width: 45vw;
+    min-width: 160px;
+    margin-top: -25px;
+  }
 }
