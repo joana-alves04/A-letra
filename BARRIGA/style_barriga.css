@@ -817,6 +817,9 @@ svg:focus,
 /* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE)                    */
 /* ================================================================== */
 @media (max-width: 768px) {
+  #horizontal-container {
+    transform: translateY(-10vh) !important;
+  }
 
   /* --- PÁGINA 1: A EXPERIÊNCIA PRINCIPAL --- */
 
