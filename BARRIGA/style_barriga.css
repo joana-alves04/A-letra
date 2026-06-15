@@ -817,8 +817,11 @@ svg:focus,
 /* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE)                    */
 /* ================================================================== */
 @media (max-width: 768px) {
-  #horizontal-container {
-    transform: translateY(-10vh) !important;
+
+  .climax-slide {
+    padding-bottom: 15vh !important;
+    /* Cria um espaço "fantasma" no fundo */
+    box-sizing: border-box !important;
   }
 
   /* --- PÁGINA 1: A EXPERIÊNCIA PRINCIPAL --- */
