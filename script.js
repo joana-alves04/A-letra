@@ -27,38 +27,43 @@ function initHomeVideoControls() {
 
   if (video && btnPlay && btnSound) {
 
+    // 1. Função que trata SÓ do botão Play/Pause
     function atualizarIconePlay() {
-      imgPlay.src = video.paused ? "imgs/play.png" : "imgs/pause.png";
+      if (video.paused) {
+        imgPlay.src = "imgs/play.png";
+      } else {
+        imgPlay.src = "imgs/pause.png";
+      }
     }
 
+    // 2. Função que trata SÓ do botão de Som
     function atualizarIconeSom() {
-      imgSound.src = video.muted ? "imgs/som_on.png" : "imgs/som_off.png";
+      if (video.muted) {
+        imgSound.src = "imgs/som_off.png";
+      } else {
+        imgSound.src = "imgs/som_on.png";
+      }
     }
 
-    // Inicializa os ícones no estado correto
+    // Garante os ícones certos logo quando a página abre
     atualizarIconePlay();
     atualizarIconeSom();
 
     // Clicar no botão PLAY
     btnPlay.onclick = () => {
       if (video.paused) {
-        video.muted = false; // Força a remoção do mudo imposto pelo telemóvel
-        video.volume = 1.0;  // Força o volume no máximo
         video.play().catch(err => console.log("Erro ao dar play:", err));
       } else {
         video.pause();
       }
-      atualizarIconePlay();
-      atualizarIconeSom();
     };
 
     // Clicar no botão de SOM
     btnSound.onclick = () => {
-      video.muted = !video.muted;
-      if (!video.muted) video.volume = 1.0; // Se ligar o som, mete no máximo
-      atualizarIconeSom();
+      video.muted = !video.muted; // Troca entre mudo e com som
     };
 
+    // Atualiza os botões mesmo se o vídeo parar por outros motivos
     video.addEventListener('play', atualizarIconePlay);
     video.addEventListener('pause', atualizarIconePlay);
     video.addEventListener('volumechange', atualizarIconeSom);
