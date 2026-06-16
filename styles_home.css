@@ -99,15 +99,63 @@ a {
 
 /* ── Secções de scroll vertical (HomePage) ─────────────────────────── */
 .slide {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 70vh;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 48px;
+  padding: 90px 48px;
   position: relative;
 }
 
+/* ── VÍDEO DA HOMEPAGE (Desktop) ────────────────────────────────────────── */
+.video-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+}
+
+.home-video {
+  flex: 1;
+  max-height: 70vh;
+  object-fit: contain;
+  display: block;
+}
+
+.video-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 10;
+}
+
+.control-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.control-btn:hover {
+  transform: scale(1.1);
+}
+
+.control-btn img {
+  width: 45px;
+  height: auto;
+  display: block;
+}
+
+/* ── TEXTOS DOS SLIDES ───────────────────────────────────────────────────── */
 .slide-text {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -130,13 +178,12 @@ a {
 
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 70dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 24px;
+  padding: 85px;
   position: relative;
   text-align: center;
 }
@@ -508,17 +555,51 @@ body {
 }
 
 /* ================================================================== */
-/* ADAPTAÇÕES PARA TELEMÓVEL (MOBILE RESPONSIVE)                      */
+/* ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)           */
 /* ================================================================== */
 @media (max-width: 768px) {
 
-  /* 1. Protege a lista de opções para o item "03 Equipa" não colar ao fundo */
+  /* ── 1. VÍDEO DA HOMEPAGE (Botões em baixo do vídeo) ── */
+  .video-container {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .home-video {
+    width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+  }
+
+  .video-controls {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    width: 100%;
+  }
+
+  .control-btn img {
+    width: 45px;
+  }
+
+  /* ── 2. GERAL E SLIDES ── */
+  .slide {
+    min-height: auto;
+    padding: 80px 24px;
+  }
+
   .hero {
     padding-bottom: 12vh !important;
     box-sizing: border-box !important;
   }
 
-  /* Ajustes das Inner Sections Mobile */
   .inner-section {
     grid-template-columns: 1fr;
     padding: 28px 0;
@@ -529,23 +610,17 @@ body {
     gap: 32px;
   }
 
-  /* ========================================================= */
-  /* BLOQUEIO DO SCROLL VERTICAL E SCROLL SNAP HORIZONTAL     */
-  /* ========================================================= */
-
-  /* 2. Remove a altura gigante no mobile (scroll passa a ser lateral) */
+  /* ── 3. SCROLLYTELLING (ESTENDAL) ── */
   .scrollytelling-total-spacer {
     display: none !important;
   }
 
-  /* 3. Tranca o scroll vertical da página principal do estendal */
   .estendal-page-scrolly {
     height: 100vh !important;
     height: 100dvh !important;
     overflow-y: hidden !important;
   }
 
-  /* 4. A Fachada: Mantém o comportamento e proporção real */
   .facade-wrapper {
     position: absolute;
     top: 0;
@@ -566,32 +641,24 @@ body {
     object-position: top center;
   }
 
-  /* 5. A CORDA: O Segredo do Scroll Horizontal Nativo no Mobile */
   .clothesline-track-scrolly {
     position: absolute;
     top: 62%;
-    /* Subimos de 66% para 62% para compensar o padding extra */
     left: 0;
     width: 100vw !important;
     height: auto !important;
-
-    /* Configuração de Scroll Horizontal Magnético */
     overflow-x: auto !important;
     overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
-
     transform: none !important;
     display: flex !important;
     gap: 15vw;
-
-    /* Espaço extra em cima e baixo para não cortar as cartas nem a sombra! */
     padding-top: 30px !important;
     padding-bottom: 60px !important;
     padding-left: 27.5vw;
     padding-right: 27.5vw;
     box-sizing: border-box;
-
     opacity: 1 !important;
   }
 
@@ -599,13 +666,10 @@ body {
     display: none;
   }
 
-  /* 6. Cartões: Snap Point (onde o ecrã "cola") */
   .estendal-card-scrolly {
     width: 45vw;
     min-width: 160px;
     margin-top: -25px;
-
-    /* Regras cruciais para o Flex e o Snap */
     flex: 0 0 auto !important;
     scroll-snap-align: center !important;
   }
