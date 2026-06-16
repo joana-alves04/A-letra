@@ -44,6 +44,8 @@ body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
+  /* Adapta-se dinamicamente às barras do browser */
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
@@ -58,6 +60,7 @@ body {
 #app-wrapper {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   position: relative;
 }
@@ -66,6 +69,7 @@ body {
   display: flex;
   width: 200vw;
   height: 100vh;
+  height: 100dvh;
   transform: translateX(0vw);
   will-change: transform;
 }
@@ -73,6 +77,7 @@ body {
 .page {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   flex: 0 0 100vw;
   overflow-y: auto;
   overflow-x: hidden;
@@ -95,6 +100,7 @@ a {
 /* ── Secções de scroll vertical (HomePage) ─────────────────────────── */
 .slide {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -125,6 +131,7 @@ a {
 /* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -282,13 +289,6 @@ a {
   min-height: 100%;
 }
 
-@media (max-width: 600px) {
-  .inner-page {
-    padding: 20px 16px;
-    gap: 32px;
-  }
-}
-
 .inner-header {
   display: flex;
   align-items: baseline;
@@ -345,13 +345,6 @@ a {
   transform: translateY(0);
 }
 
-@media (max-width: 600px) {
-  .inner-section {
-    grid-template-columns: 1fr;
-    padding: 28px 0;
-  }
-}
-
 .section-label {
   font-family: ui-monospace, monospace;
   font-size: 11px;
@@ -368,14 +361,13 @@ a {
   max-width: 60ch;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
    EXPRESSÕES — SCROLLYTELLING (O ESTENDAL UNIFICADO E PERFEITO)
    ═══════════════════════════════════════════════════════════════════════════ */
-
 .estendal-page-scrolly {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow-y: auto;
   background: var(--background);
   overscroll-behavior: none;
@@ -420,6 +412,7 @@ a {
   top: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
@@ -430,12 +423,14 @@ a {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
 }
 
 .fachada-scrolly-img {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   object-fit: cover;
   object-position: top center;
 }
@@ -456,15 +451,11 @@ a {
   transform: translateX(0);
   display: flex;
   gap: 8vw;
-
-  /* Mudança: O cartão tem 17vw. Para o centro dele bater nos 50vw do ecrã, o padding é 50 - 8.5 = 41.5vw */
   padding-left: 41.5vw;
   padding-right: 41.5vw;
-
   align-items: flex-start;
   z-index: 2;
   will-change: transform;
-
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
 }
@@ -500,11 +491,7 @@ a {
   display: block;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ESCONDER AS BARRAS DE SCROLL (Mas manter a funcionalidade)
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Para Chrome, Safari e Opera */
+/* Esconder as barras de scroll nativas */
 .estendal-page-scrolly::-webkit-scrollbar,
 .page::-webkit-scrollbar,
 html::-webkit-scrollbar,
@@ -512,36 +499,66 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* Para Firefox, IE e Edge */
 .estendal-page-scrolly,
 .page,
 html,
 body {
   -ms-overflow-style: none;
-  /* IE e Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 
 /* ================================================================== */
-/* ADAPTAÇÕES PARA TELEMÓVEL (ESTENDAL RESPONSIVE)                    */
+/* ADAPTAÇÕES PARA TELEMÓVEL (MOBILE RESPONSIVE)                      */
 /* ================================================================== */
 @media (max-width: 768px) {
 
-  /* 1. O contentor da fachada mantém a proporção real da tua imagem (624/794) */
+  /* 1. Protege a lista de opções para o item "03 Equipa" não colar ao fundo */
+  .hero {
+    padding-bottom: 12vh !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ajustes das Inner Sections Mobile */
+  .inner-section {
+    grid-template-columns: 1fr;
+    padding: 28px 0;
+  }
+
+  .inner-page {
+    padding: 20px 16px;
+    gap: 32px;
+  }
+
+  /* ========================================================= */
+  /* BLOQUEIO DO SCROLL VERTICAL E SCROLL SNAP HORIZONTAL     */
+  /* ========================================================= */
+
+  /* 2. Remove a altura gigante no mobile (scroll passa a ser lateral) */
+  .scrollytelling-total-spacer {
+    display: none !important;
+  }
+
+  /* 3. Tranca o scroll vertical da página principal do estendal */
+  .estendal-page-scrolly {
+    height: 100vh !important;
+    height: 100dvh !important;
+    overflow-y: hidden !important;
+  }
+
+  /* 4. A Fachada: Mantém o comportamento e proporção real */
   .facade-wrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    /* Isto obriga o bloco a comportar-se sempre como a tua imagem */
+    height: 100dvh !important;
     aspect-ratio: 624 / 794;
     max-height: 100vh;
+    max-height: 100dvh;
     margin: auto;
   }
 
-  /* 2. A imagem preenche o espaço garantindo que a proporção é mantida */
   .fachada-scrolly-img {
     width: 100%;
     height: 100%;
@@ -549,25 +566,47 @@ body {
     object-position: top center;
   }
 
-  /* 3. A Corda (Ajustada para descer os cartões) */
+  /* 5. A CORDA: O Segredo do Scroll Horizontal Nativo no Mobile */
   .clothesline-track-scrolly {
     position: absolute;
-
-    /* 🔥 Aumentei para 70%. Se ainda estiver um pouco acima da corda, 
-           experimenta 72% ou 73%. */
-    top: 66%;
-
-    width: 100vw;
+    top: 62%;
+    /* Subimos de 66% para 62% para compensar o padding extra */
     left: 0;
+    width: 100vw !important;
+    height: auto !important;
+
+    /* Configuração de Scroll Horizontal Magnético */
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+
+    transform: none !important;
+    display: flex !important;
+    gap: 15vw;
+
+    /* Espaço extra em cima e baixo para não cortar as cartas nem a sombra! */
+    padding-top: 30px !important;
+    padding-bottom: 60px !important;
     padding-left: 27.5vw;
     padding-right: 27.5vw;
-    gap: 15vw;
+    box-sizing: border-box;
+
+    opacity: 1 !important;
   }
 
-  /* 4. Cartões ajustados para o tamanho do ecrã mobile */
+  .clothesline-track-scrolly::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 6. Cartões: Snap Point (onde o ecrã "cola") */
   .estendal-card-scrolly {
     width: 45vw;
     min-width: 160px;
     margin-top: -25px;
+
+    /* Regras cruciais para o Flex e o Snap */
+    flex: 0 0 auto !important;
+    scroll-snap-align: center !important;
   }
 }
