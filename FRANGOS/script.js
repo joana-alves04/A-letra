@@ -12,11 +12,14 @@ if (btn) {
         years++;
         rotation += 360;
         frango.style.transform = `rotate(${rotation}deg)`;
+
         if (years < 50) counter.innerHTML = `${years} anos a virar frangos`;
+
         if (years === 15) {
             frango.innerHTML = `<img src="../imgs/galinha_animal.png" class="animal" draggable="false">`;
             document.body.classList.add("galinha-mode");
         }
+
         if (years >= 50) {
             if (!virouFrango) {
                 virouFrango = true;
@@ -27,11 +30,27 @@ if (btn) {
             }
             counter.innerHTML = `<div class="final-text"><span class="main">VIRASTE UM FRANGO!</span><span class="years">${years} anos a virar frangos</span></div>`;
         }
+
+        // ── CORREÇÃO DA ZONA DE PERIGO DE CLIQUE ──
         if (years >= 65 && !document.querySelector(".end-buttons")) {
-            frango.style.display = "none"; btn.style.display = "none"; counter.style.display = "none";
+            frango.style.display = "none";
+            btn.style.display = "none";
+            counter.style.display = "none";
+
+            // 1. Cria e injeta a imagem decorativa por cima
+            const finalImg = document.createElement("img");
+            finalImg.src = "../imgs/frango_vira.png";
+            finalImg.classList.add("imagem-final-frango");
+            finalImg.setAttribute("draggable", "false");
+            document.querySelector(".scene").appendChild(finalImg);
+
+            // 2. Cria e injeta os botões finais (que vão herdar a proteção temporal do CSS)
             const buttons = document.createElement("div");
             buttons.classList.add("end-buttons");
-            buttons.innerHTML = `<button class="final-btn" onclick="window.location.href='sobre_frangos.html'">Saber mais sobre a expressão</button><button class="final-btn" onclick="window.location.href='../expressoes.html'">Página Inicial</button>`;
+            buttons.innerHTML = `
+                <button class="final-btn" onclick="window.location.href='sobre_frangos.html'">Saber mais sobre a expressão</button>
+                <button class="final-btn" onclick="window.location.href='../expressoes.html'">Página Inicial</button>
+            `;
             document.querySelector(".scene").appendChild(buttons);
         }
     });

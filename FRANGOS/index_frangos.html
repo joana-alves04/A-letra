@@ -4,29 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Muitos anos a virar frangos</title>
-
     <link rel="stylesheet" href="style_frangos.css">
 </head>
 
 <body>
 
-    <div class="scene">
+    <div class="scene" id="gameScene">
 
-        <!-- IMAGEM PRINCIPAL -->
         <div class="frango" id="frango">
-
-            <img src="../imgs/pinto.png" alt="Pinto" class="animal" draggable="false">
-
+            <img src="../imgs/pinto.png" alt="Pinto" class="animal" id="frangoImg" draggable="false">
         </div>
 
-        <!-- BOTÃO -->
         <button id="turnBtn">
             Virar Frango
         </button>
 
-        <!-- TEXTO -->
         <h1 id="counter">
             0 anos a virar frangos
         </h1>
@@ -34,7 +27,6 @@
     </div>
 
     <script src="script.js"></script>
-
 </body>
 
 </html>
