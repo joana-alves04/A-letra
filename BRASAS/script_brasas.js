@@ -198,13 +198,20 @@
             const displayNumero = container.querySelector('#numero-canal');
             const ecraTv = container.querySelector('.tv-retro-screen');
 
-            const dialFisicoTop = container.querySelector('.tv-dial-top');
-            const dialFisicoBottom = container.querySelector('.tv-dial-bottom');
+            const dialFisicoTop = container.querySelector('.tv-dial-top');    // Botão Grande
+            const dialFisicoBottom = container.querySelector('.tv-dial-bottom'); // Botão Pequeno
 
-            function trocarCanal() {
+            // Recebe a direção: 1 para avançar, -1 para recuar
+            function trocarCanal(direcao) {
                 if (!ecraTv) return;
                 ecraTv.classList.add('mudando-canal');
-                canalAtual = (canalAtual + 1) % canais.length;
+
+                // Lógica que permite andar em círculo (para a frente e para trás)
+                if (direcao === 1) {
+                    canalAtual = (canalAtual + 1) % canais.length;
+                } else {
+                    canalAtual = (canalAtual - 1 + canais.length) % canais.length;
+                }
 
                 setTimeout(() => {
                     if (displayTitulo) displayTitulo.textContent = canais[canalAtual].titulo;
@@ -215,8 +222,10 @@
                 setTimeout(() => { ecraTv.classList.remove('mudando-canal'); }, 300);
             }
 
-            if (dialFisicoTop) dialFisicoTop.addEventListener('click', trocarCanal);
-            if (dialFisicoBottom) dialFisicoBottom.addEventListener('click', trocarCanal);
+            // O botão grande (Top) avança (1), o pequeno (Bottom) recua (-1)
+            if (dialFisicoTop) dialFisicoTop.addEventListener('click', () => trocarCanal(1));
+            if (dialFisicoBottom) dialFisicoBottom.addEventListener('click', () => trocarCanal(-1));
+
         } catch (e) {
             console.error("Erro no Menu de Canais:", e);
         }
