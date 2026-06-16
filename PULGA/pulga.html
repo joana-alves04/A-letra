@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expressão: Estar com a pulga atrás da orelha</title>
+    <style>
+        :root {
+            --font-main: "Times New Roman", Times, serif;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background: #f0f0f0;
+            font-family: var(--font-main);
+            overflow: hidden;
+            width: 100vw; height: 100vh;
+        }
+
+        .window {
+            position: absolute;
+            width: 250px;
+            background: white;
+            border: 1px solid #000;
+            padding: 10px;
+            cursor: move;
+            box-shadow: 5px 5px 0px #000;
+        }
+
+        .window img.main-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            background: #ddd;
+        }
+
+        .window-num {
+            text-align: center;
+            padding: 8px 0 4px 0;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .letters-behind {
+            position: absolute;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: #555;
+            font-family: var(--font-main);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .letters-below {
+            text-align: center;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: #555;
+            padding-top: 6px;
+            display: none;
+        }
+
+        #flea {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            display: none;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        #flea img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window" id="win1" data-order="3" style="top:80px; left:60px; z-index:5;">
+        <img class="main-img" src="imagem1.jpg" alt="">
+        <div class="window-num">3</div>
+        <div class="letters-below">tx</div>
+    </div>
+
+    <div class="window" id="win2" data-order="1" style="top:300px; left:350px; z-index:5;">
+        <img class="main-img" src="imagem2.jpg" alt="">
+        <div class="window-num">1</div>
+        <div class="letters-below">pulga</div>
+    </div>
+
+    <div class="window" id="win3" data-order="5" style="top:60px; left:620px; z-index:5;">
+        <img class="main-img" src="imagem3.jpg" alt="">
+        <div class="window-num">5</div>
+        <div class="letters-below">.html</div>
+    </div>
+
+    <div class="window" id="win4" data-order="2" style="top:350px; left:900px; z-index:5;">
+        <img class="main-img" src="imagem4.jpg" alt="">
+        <div class="window-num">2</div>
+        <div class="letters-below">wf</div>
+    </div>
+
+    <div class="window" id="win5" data-order="4" style="top:180px; left:1150px; z-index:5;">
+        <img class="main-img" src="imagem5.jpg" alt="">
+        <div class="window-num">4</div>
+        <div class="letters-below">pd</div>
+    </div>
+
+    <div id="flea"><img src="pulga.png" alt=""></div>
+
+    <script>
+        const windows = Array.from(document.querySelectorAll('.window'));
+        const fleaEl = document.getElementById('flea');
+        let selectedWin = null;
+        let offsetX = 0, offsetY = 0;
+        let fleaActive = false;
+
+        const windowsByOrder = [...windows].sort((a, b) =>
+            parseInt(a.dataset.order) - parseInt(b.dataset.order)
+        );
+
+        const lettersData = { win1: 'tx', win2: 'pulga', win3: '.html', win4: 'wf', win5: 'pd' };
+        const behindEls = new Map();
+        const revealed = new Map();
+
+        windows.forEach(win => {
+            revealed.set(win, false);
+            const rect = win.getBoundingClientRect();
+            const behind = document.createElement('div');
+            behind.className = 'letters-behind';
+            behind.textContent = lettersData[win.id];
+            behind.style.left = (rect.left + rect.width / 2) + 'px';
+            behind.style.top = (rect.bottom - 30) + 'px';
+            behind.style.transform = 'translateX(-50%)';
+            document.body.appendChild(behind);
+            behindEls.set(win, behind);
+        });
+
+        function getWinCorner(win) {
+            const r = win.getBoundingClientRect();
+            return { x: r.right - 10, y: r.top - 10 };
+        }
+
+        function getWinCenter(win) {
+            const r = win.getBoundingClientRect();
+            return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        }
+
+        function getNextInSequence(currentWin) {
+            const currentOrder = parseInt(currentWin.dataset.order);
+            const maxOrder = windowsByOrder.length;
+            const nextOrder = (currentOrder % maxOrder) + 1;
+            return windowsByOrder.find(w => parseInt(w.dataset.order) === nextOrder);
+        }
+
+        function jumpFlea(fromWin, toWin) {
+            const from = getWinCenter(fromWin);
+            const to = getWinCorner(toWin);
+
+            const startX = from.x - 10;
+            const startY = from.y - 10;
+            const endX = to.x - 10;
+            const endY = to.y - 10;
+
+            const midX = (startX + endX) / 2;
+            const midY = Math.min(startY, endY) - 200;
+
+            const duration = 800;
+            const startTime = performance.now();
+
+            fleaEl.style.transition = 'none';
+            fleaEl.style.display = 'block';
+
+            function step(now) {
+                const t = Math.min((now - startTime) / duration, 1);
+                const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+                const x = (1 - ease) * (1 - ease) * startX + 2 * (1 - ease) * ease * midX + ease * ease * endX;
+                const y = (1 - ease) * (1 - ease) * startY + 2 * (1 - ease) * ease * midY + ease * ease * endY;
+
+                fleaEl.style.left = x + 'px';
+                fleaEl.style.top = y + 'px';
+
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    fleaEl.style.display = 'none';
+                    fleaActive = false;
+                }
+            }
+
+            requestAnimationFrame(step);
+        }
+
+        function triggerFlea(startWin) {
+            if (fleaActive) return;
+            fleaActive = true;
+
+            const corner = getWinCorner(startWin);
+            fleaEl.style.transition = 'none';
+            fleaEl.style.left = (corner.x - 10) + 'px';
+            fleaEl.style.top = (corner.y - 10) + 'px';
+            fleaEl.style.display = 'block';
+
+            setTimeout(() => {
+                const next = getNextInSequence(startWin);
+                jumpFlea(startWin, next);
+            }, 1000);
+        }
+
+        function checkExposed(movedWin) {
+            if (revealed.get(movedWin)) return;
+
+            const behind = behindEls.get(movedWin);
+            const r = behind.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const cy = r.top + r.height / 2;
+
+            const covered = windows.some(w => {
+                if (w === movedWin) return false;
+                const wr = w.getBoundingClientRect();
+                return cx >= wr.left && cx <= wr.right && cy >= wr.top && cy <= wr.bottom;
+            });
+
+            if (!covered) {
+                revealed.set(movedWin, true);
+
+                setTimeout(() => {
+                    behind.style.display = 'none';
+                    movedWin.querySelector('.letters-below').style.display = 'block';
+                }, 500);
+
+                triggerFlea(movedWin);
+            }
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            const win = e.target.closest('.window');
+            if (win) {
+                selectedWin = win;
+                const rect = win.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                win.style.zIndex = 1000;
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!selectedWin) return;
+            selectedWin.style.left = (e.clientX - offsetX) + 'px';
+            selectedWin.style.top = (e.clientY - offsetY) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (selectedWin) {
+                selectedWin.style.zIndex = 5;
+                checkExposed(selectedWin);
+            }
+            selectedWin = null;
+        });
+    </script>
+</body>
+</html>

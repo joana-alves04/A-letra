@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expressão: Bater a bota</title>
+    <style>
+        :root {
+            --font-main: "Times New Roman", Times, serif;
+            --pad-h: clamp(20px, 7vw, 100px);
+            --font-size: clamp(0.8rem, 2vw, 1.2rem);
+            --font-size-p2: clamp(0.75rem, 1.8vw, 1.1rem);
+        }
+
+        * { box-sizing: border-box; }
+
+        body, html {
+            margin: 0; padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: var(--font-main);
+            overflow: hidden;
+            cursor: none;
+            width: 100vw; height: 100vh;
+        }
+
+        #scroll-wrapper {
+            display: flex;
+            width: 200vw;
+            height: 100vh;
+            transition: transform 0.9s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        /* PAGE 1 */
+        #page-1 {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .dark-content {
+            padding: clamp(80px, 15vh, 160px) var(--pad-h) 40px var(--pad-h);
+            width: 100%;
+            height: calc(100vh - clamp(60px, 10vh, 120px));
+            line-height: 2.3;
+            font-size: var(--font-size);
+        }
+
+        .dark-content p {
+            margin: 0 0 1.2em 0;
+        }
+
+        #cta {
+            position: absolute;
+            bottom: clamp(40px, 8vh, 120px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: var(--font-size);
+            font-style: italic;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-bottom: 1px solid #fff;
+            padding-bottom: 2px;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 5;
+            white-space: nowrap;
+        }
+        #cta:hover {
+            opacity: 0.6;
+            transform: translateX(-50%) translateY(-4px);
+        }
+
+        /* PAGE 2 */
+        #page-2 {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #page-2-content {
+            padding: clamp(80px, 15vh, 160px) var(--pad-h) 0 var(--pad-h);
+            width: 100%;
+            font-size: var(--font-size-p2);
+            font-style: normal;
+            line-height: 2;
+        }
+
+        #page-2-content p {
+            margin: 0 0 1em 0;
+        }
+
+        #audio-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(12px, 2vh, 24px);
+            padding-bottom: clamp(80px, 15vh, 180px);
+        }
+
+        #audio-label {
+            font-size: var(--font-size-p2);
+            font-style: italic;
+            letter-spacing: 2px;
+            opacity: 0.5;
+        }
+
+        #play-btn {
+            width: clamp(44px, 6vw, 70px);
+            height: clamp(44px, 6vw, 70px);
+            border: 1px solid #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        #play-btn:hover { opacity: 0.6; }
+
+        #play-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: clamp(7px, 1vw, 12px) 0 clamp(7px, 1vw, 12px) clamp(12px, 1.8vw, 22px);
+            border-color: transparent transparent transparent #fff;
+            margin-left: 4px;
+        }
+
+        #pause-icon {
+            display: none;
+            gap: 5px;
+        }
+        #pause-icon span {
+            display: block;
+            width: clamp(3px, 0.4vw, 5px);
+            height: clamp(12px, 1.8vw, 22px);
+            background: #fff;
+        }
+
+        #progress-bar {
+            width: clamp(160px, 28vw, 300px);
+            height: 1px;
+            background: rgba(255,255,255,0.2);
+            position: relative;
+            cursor: pointer;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        #time-display {
+            font-size: clamp(0.65rem, 1vw, 0.85rem);
+            opacity: 0.4;
+            letter-spacing: 1px;
+        }
+
+        #back-btn {
+            position: absolute;
+            top: clamp(40px, 6vh, 80px);
+            left: clamp(15px, 3vw, 40px);
+            font-size: var(--font-size);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #back-btn:hover { opacity: 1; }
+
+        #overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #flashlight {
+            position: fixed;
+            width: clamp(100px, 15vw, 220px);
+            height: clamp(100px, 15vw, 220px);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 11;
+            background: radial-gradient(circle, rgba(255,255,220,0.35) 0%, transparent 70%);
+            mix-blend-mode: screen;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="scroll-wrapper">
+
+        <div id="page-1">
+            <div class="dark-content">
+                <p><span id="first-letter">O</span> senhor Joaquim tinha uma mania muito específica que repetia todas as noites, sem falhar uma única vez: antes de se deitar, sentava-se na ponta da cama e descalçava-se devagar. Depois, pegava na bota direita com a mão e dava uma batida seca e ruidosa com ela contra a bota esquerda, que ainda estava no chão. Ele dizia sempre que era apenas para sacudir a terra do trabalho e deixar os sapatos limpos para o dia seguinte, mas a verdade é que cumpria aquilo como se fosse um ritual obrigatório. Ele pegava mesmo na bota e batia com ela com toda a força.</p>
+                <p>Numa noite de inverno especialmente fria, o senhor Joaquim recolheu-se mais cansado do que o habitual. Sentou-se na cama, respirou fundo e, mesmo quase a fechar os olhos de sono, cumpriu o seu velho costume. Pegou na bota com as mãos um bocado trémulas e, num último esforço, bateu-a com força contra a outra.</p>
+                <p>O som do couro a bater ecoou pelo quarto escuro. Mas, no mesmo milésimo de segundo em que as botas chocaram, o seu coração cansado parou de repente. O senhor Joaquim caiu para o lado no colchão e ali ficou, num sono definitivo.</p>
+            </div>
+            <div id="cta" onclick="goToPage2()">bater as botas</div>
+        </div>
+
+        <div id="page-2">
+            <div id="back-btn" onclick="goToPage1()">← voltar</div>
+            <div id="page-2-content">
+                <p>A expressão "bater as botas" é um eufemismo muito usado para dizer que alguém faleceu, e a sua origem vem do mundo militar. A hipótese mais aceite diz que tudo começou com as regras de respeito no exército: quando um soldado se ia retirar da presença de um superior, dava meia-volta e batia fortemente com os calcanhares no chão. Como esse gesto marcava o momento em que o soldado "saía de cena", as pessoas começaram a associar o bater das botas ao ato de alguém se retirar definitivamente desta vida.</p>
+                <p>Para além desta, existem outras versões conhecidas. Uma diz que tem a ver com o espasmo final dos soldados feridos, que batiam os calcanhares ao esticarem as pernas pela última vez. Outra fala da dificuldade em descalçar os mortos para reaproveitar o calçado, que era caríssimo, sendo preciso bater com as botas para as tirar.</p>
+            </div>
+            <div id="audio-player">
+                <div id="audio-label">ouvir</div>
+                <div id="play-btn" onclick="togglePlay()">
+                    <div id="play-icon"></div>
+                    <div id="pause-icon"><span></span><span></span></div>
+                </div>
+                <div id="progress-bar" onclick="seek(event)">
+                    <div id="progress-fill"></div>
+                </div>
+                <div id="time-display">0:00 / 0:00</div>
+            </div>
+        </div>
+
+    </div>
+
+    <audio id="audio" src="audio.mp3"></audio>
+
+    <canvas id="overlay"></canvas>
+    <div id="flashlight"></div>
+
+    <script>
+        const light = document.getElementById('flashlight');
+        const canvas = document.getElementById('overlay');
+        const ctx = canvas.getContext('2d');
+        let firstRect = null;
+        let currentPage = 1;
+        let mouseX = -999, mouseY = -999;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function updateFirstRect() {
+            const r = document.getElementById('first-letter').getBoundingClientRect();
+            firstRect = {
+                left: r.left - 2,
+                top: r.top - 2,
+                width: r.width + 4,
+                height: r.height + 4
+            };
+        }
+
+        function getRadius() {
+            return Math.min(window.innerWidth, window.innerHeight) * 0.1;
+        }
+
+        function draw() {
+            if (!firstRect) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (currentPage === 1) {
+                ctx.clearRect(firstRect.left, firstRect.top, firstRect.width, firstRect.height);
+            }
+
+            const radius = getRadius();
+            const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, radius);
+            gradient.addColorStop(0, 'rgba(0,0,0,1)');
+            gradient.addColorStop(0.45, 'rgba(0,0,0,1)');
+            gradient.addColorStop(0.75, 'rgba(0,0,0,0.6)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+        }
+
+        function goToPage2() {
+            currentPage = 2;
+            document.getElementById('scroll-wrapper').style.transform = 'translateX(-100vw)';
+            draw();
+        }
+
+        function goToPage1() {
+            currentPage = 1;
+            document.getElementById('scroll-wrapper').style.transform = 'translateX(0)';
+            audio.pause();
+            audio.currentTime = 0;
+            updatePlayIcon(false);
+            draw();
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            setTimeout(() => { updateFirstRect(); draw(); }, 50);
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            light.style.left = e.clientX + 'px';
+            light.style.top = e.clientY + 'px';
+            draw();
+        });
+
+        resizeCanvas();
+        setTimeout(() => { updateFirstRect(); draw(); }, 50);
+
+        const audio = document.getElementById('audio');
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+                updatePlayIcon(true);
+            } else {
+                audio.pause();
+                updatePlayIcon(false);
+            }
+        }
+
+        function updatePlayIcon(playing) {
+            document.getElementById('play-icon').style.display = playing ? 'none' : 'block';
+            document.getElementById('pause-icon').style.display = playing ? 'flex' : 'none';
+        }
+
+        function seek(e) {
+            const bar = document.getElementById('progress-bar');
+            const ratio = e.offsetX / bar.offsetWidth;
+            audio.currentTime = ratio * audio.duration;
+        }
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${m}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        audio.addEventListener('timeupdate', () => {
+            if (!audio.duration) return;
+            const pct = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progress-fill').style.width = pct + '%';
+            document.getElementById('time-display').textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
+        });
+
+        audio.addEventListener('ended', () => {
+            updatePlayIcon(false);
+            document.getElementById('progress-fill').style.width = '0%';
+            audio.currentTime = 0;
+        });
+    </script>
+</body>
+</html>
