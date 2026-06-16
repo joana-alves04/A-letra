@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="pt">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,13 +8,16 @@
   <meta name="description" content="Uma escolha entre dez possibilidades. Estúdio de design e ideias." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles_home.css" />
 </head>
+
 <body>
   <div id="app-wrapper">
     <div id="horizontal-container">
-      
+
       <main class="page">
         <section class="hero">
           <img src="logo.png" alt="Aletra" class="hero-logo reveal" />
@@ -22,26 +26,42 @@
             <span>↓</span>
           </div>
         </section>
-        
+
         <section class="slide">
           <p class="slide-text">E se tudo o que dissesses,<br>acontecesse?</p>
         </section>
-        
+
         <section class="slide">
           <p class="slide-text">Num mundo onde a<br>linguagem deixa de ser<br>figurativa…</p>
         </section>
-        
+
         <section class="slide">
-          <p>meter algo aqui</p>
+          <div class="video-container">
+
+            <video id="meuVideo" loop playsinline class="home-video">
+              <source src="imgs/À_LETRA.mp4" type="video/mp4">
+              O teu navegador não suporta vídeos HTML5.
+            </video>
+
+            <div class="video-controls">
+              <button id="btnPlay" class="control-btn">
+                <img src="imgs/play.png" alt="Play/Pausa" id="imgPlay">
+              </button>
+              <button id="btnSound" class="control-btn">
+                <img src="imgs/som_off.png" alt="Som Ligado/Desligado" id="imgSound">
+              </button>
+            </div>
+
+          </div>
         </section>
-        
+
         <section class="slide">
           <p class="slide-text">As palavras já não são <br>só palavras.</p>
         </section>
-        
+
         <section class="index" id="indice">
           <div class="list">
-            
+
             <div class="row">
               <a href="expressoes.html" class="row-link nav-link-forward">
                 <span class="row-num">01</span>
@@ -49,7 +69,7 @@
                 <span class="row-cta">ver →</span>
               </a>
             </div>
-            
+
             <div class="row">
               <a href="sobre_nos.html" class="row-link nav-link-forward">
                 <span class="row-num">02</span>
@@ -57,7 +77,7 @@
                 <span class="row-cta">ver →</span>
               </a>
             </div>
-            
+
             <div class="row">
               <a href="equipa.html" class="row-link nav-link-forward">
                 <span class="row-num">03</span>
@@ -65,7 +85,7 @@
                 <span class="row-cta">ver →</span>
               </a>
             </div>
-            
+
           </div>
           <div class="row-divider"></div>
         </section>
@@ -75,4 +95,5 @@
   </div>
   <script src="script.js"></script>
 </body>
+
 </html>

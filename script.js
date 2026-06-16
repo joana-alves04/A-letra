@@ -17,6 +17,54 @@ function initObservers() {
   }
 }
 
+// ── CONTROLOS DO VÍDEO DA HOMEPAGE ────────────────────────────────────────
+function initHomeVideoControls() {
+  const video = document.getElementById("meuVideo");
+  const btnPlay = document.getElementById("btnPlay");
+  const btnSound = document.getElementById("btnSound");
+  const imgPlay = document.getElementById("imgPlay");
+  const imgSound = document.getElementById("imgSound");
+
+  if (video && btnPlay && btnSound) {
+
+    function atualizarIconePlay() {
+      imgPlay.src = video.paused ? "imgs/play.png" : "imgs/pause.png";
+    }
+
+    function atualizarIconeSom() {
+      imgSound.src = video.muted ? "imgs/som_on.png" : "imgs/som_off.png";
+    }
+
+    // Inicializa os ícones no estado correto
+    atualizarIconePlay();
+    atualizarIconeSom();
+
+    // Clicar no botão PLAY
+    btnPlay.onclick = () => {
+      if (video.paused) {
+        video.muted = false; // Força a remoção do mudo imposto pelo telemóvel
+        video.volume = 1.0;  // Força o volume no máximo
+        video.play().catch(err => console.log("Erro ao dar play:", err));
+      } else {
+        video.pause();
+      }
+      atualizarIconePlay();
+      atualizarIconeSom();
+    };
+
+    // Clicar no botão de SOM
+    btnSound.onclick = () => {
+      video.muted = !video.muted;
+      if (!video.muted) video.volume = 1.0; // Se ligar o som, mete no máximo
+      atualizarIconeSom();
+    };
+
+    video.addEventListener('play', atualizarIconePlay);
+    video.addEventListener('pause', atualizarIconePlay);
+    video.addEventListener('volumechange', atualizarIconeSom);
+  }
+}
+
 // ── MOTOR DO ESTENDAL ─────────────────────────────────────────────────────
 function initEstendalScrollytelling() {
   const page = document.querySelector('.estendal-page-scrolly');
@@ -41,8 +89,10 @@ function initEstendalScrollytelling() {
   // COMPORTAMENTO MOBILE: Deslize horizontal nativo (CSS Scroll Snap)
   // ====================================================================
   if (isMobile) {
-    track.style.transform = 'none'; // Liberta o track do controlo JS
+    track.style.transform = 'none';
     track.classList.add('cards-visible');
+
+    let mobileScrollTimeout;
 
     window.handleMobileScroll = function () {
       const cards = track.querySelectorAll('.estendal-card-scrolly');
@@ -50,7 +100,6 @@ function initEstendalScrollytelling() {
       let centerIndex = 0;
       let minDistance = Infinity;
 
-      // Descobre qual é o cartão que está mais ao centro do ecrã
       cards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
         const cardCenter = rect.left + rect.width / 2;
@@ -61,21 +110,37 @@ function initEstendalScrollytelling() {
         }
       });
 
-      // Aplica a classe is-active ao cartão central
       cards.forEach(c => c.classList.remove('is-active'));
       if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
+
+      clearTimeout(mobileScrollTimeout);
+      mobileScrollTimeout = setTimeout(() => {
+        if (isAnimating) return;
+        const activeCard = cards[centerIndex];
+        if (!activeCard) return;
+
+        const rect = activeCard.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = cardCenter - targetScreenCenter;
+
+        if (Math.abs(diff) > 2) {
+          track.scrollBy({
+            left: diff,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
     };
 
     track.addEventListener('scroll', window.handleMobileScroll, { passive: true });
-    setTimeout(window.handleMobileScroll, 100); // Disparo inicial
+    setTimeout(window.handleMobileScroll, 100);
 
-    // Recalcula caso o utilizador vire o telemóvel deitado (passando a desktop)
     window.calculateEstendalDimensions = function () {
       if (window.innerWidth > 768) initEstendalScrollytelling();
     };
     window.addEventListener('resize', window.calculateEstendalDimensions);
 
-    return; // Sai da função para não executar o código do Desktop
+    return;
   }
 
   // ====================================================================
@@ -86,7 +151,6 @@ function initEstendalScrollytelling() {
   let scrollTimeout;
   let isSnapping = false;
   let snapAnimationId;
-  const ajusteHorizontal = 0;
 
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -99,9 +163,14 @@ function initEstendalScrollytelling() {
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
       const percentage = Math.min(progress / duration, 1);
+
       page.scrollTop = start + distance * easeOutCubic(percentage);
-      if (progress < duration) snapAnimationId = requestAnimationFrame(step);
-      else isSnapping = false;
+
+      if (progress < duration) {
+        snapAnimationId = requestAnimationFrame(step);
+      } else {
+        isSnapping = false;
+      }
     }
     cancelAnimationFrame(snapAnimationId);
     snapAnimationId = requestAnimationFrame(step);
@@ -120,7 +189,7 @@ function initEstendalScrollytelling() {
   window.calculateEstendalDimensions = function () {
     viewportWidth = window.innerWidth;
     if (viewportWidth <= 768) {
-      initEstendalScrollytelling(); // Muda para modo mobile se a janela encolher
+      initEstendalScrollytelling();
       return;
     }
     setTimeout(() => {
@@ -135,11 +204,8 @@ function initEstendalScrollytelling() {
     if (docHeight <= 0) return;
     let scrollPercent = scrollTop / docHeight;
 
-    if (scrollTop <= 5) {
-      track.classList.remove('cards-visible');
-    } else {
-      track.classList.add('cards-visible');
-    }
+    if (scrollTop <= 5) track.classList.remove('cards-visible');
+    else track.classList.add('cards-visible');
 
     const moveStart = 0.15;
     let hPercent = 0;
@@ -148,13 +214,13 @@ function initEstendalScrollytelling() {
     }
     hPercent = Math.min(1, Math.max(0, hPercent));
 
-    const currentX = Math.floor(hPercent * horizontalMoveMax);
+    const currentX = hPercent * horizontalMoveMax;
     track.style.transform = `translateX(-${currentX}px)`;
 
     const cards = track.querySelectorAll('.estendal-card-scrolly');
     let centerIndex = 0;
     let minDistance = Infinity;
-    const targetScreenCenter = (viewportWidth / 2) + ajusteHorizontal;
+    const targetScreenCenter = viewportWidth / 2;
 
     cards.forEach((card, index) => {
       const rect = card.getBoundingClientRect();
@@ -169,25 +235,32 @@ function initEstendalScrollytelling() {
     cards.forEach(c => c.classList.remove('is-active'));
     if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
 
-    if (!isSnapping && horizontalMoveMax > 0 && scrollTop > 5) {
+    if (!isSnapping && horizontalMoveMax > 0 && scrollPercent >= moveStart) {
       clearTimeout(scrollTimeout);
+
       scrollTimeout = setTimeout(() => {
-        if (isAnimating) return;
+        if (isAnimating || isSnapping) return;
         const activeCard = cards[centerIndex];
         if (!activeCard) return;
-        const rect = activeCard.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const diff = cardCenter - targetScreenCenter;
-        if (Math.abs(diff) > 2 && scrollPercent >= moveStart) {
+
+        const trackRect = track.getBoundingClientRect();
+        const cardRect = activeCard.getBoundingClientRect();
+        const cardCenterInTrack = (cardRect.left - trackRect.left) + (cardRect.width / 2);
+
+        let desiredTranslateX = cardCenterInTrack - targetScreenCenter;
+        desiredTranslateX = Math.max(0, Math.min(desiredTranslateX, horizontalMoveMax));
+
+        const diffX = Math.abs(currentX - desiredTranslateX);
+
+        if (diffX > 2) {
           isSnapping = true;
-          let targetX = currentX + diff;
-          targetX = Math.max(0, Math.min(targetX, horizontalMoveMax));
-          let targetHPercent = targetX / horizontalMoveMax;
+          let targetHPercent = desiredTranslateX / horizontalMoveMax;
           let targetScrollPercent = (targetHPercent * (1 - moveStart)) + moveStart;
           let targetScrollTop = targetScrollPercent * docHeight;
-          customSmoothScroll(targetScrollTop, 800);
+
+          customSmoothScroll(targetScrollTop, 600);
         }
-      }, 150);
+      }, 250);
     }
   };
 
@@ -196,10 +269,11 @@ function initEstendalScrollytelling() {
   window.calculateEstendalDimensions();
 }
 
-// ── SISTEMA DE NAVEGAÇÃO SUAVE ────────────────────────────────────────────
+// ── INICIALIZAÇÃO GERAL DA PÁGINA ─────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
   initEstendalScrollytelling();
+  initHomeVideoControls(); // Inicializa o vídeo no primeiro carregamento do site
 
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
@@ -208,6 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// ── SISTEMA DE NAVEGAÇÃO SUAVE (ROUTER AJAX) ──────────────────────────────
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
 
@@ -264,8 +339,10 @@ document.addEventListener("click", async (e) => {
         container.style.transform = 'translateX(0vw)';
       }
 
+      // Reinicializa todos os scripts nas páginas injetadas dinamicamente
       initObservers();
       initEstendalScrollytelling();
+      initHomeVideoControls(); // Garante que o vídeo funciona se voltarmos à Homepage
       isAnimating = false;
     }, 800);
 
