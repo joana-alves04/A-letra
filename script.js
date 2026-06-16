@@ -24,13 +24,63 @@ function initEstendalScrollytelling() {
 
   if (!page || !track) return;
 
+  // Limpeza de eventos antigos para evitar duplicações se o router for ativado
   if (window.handleEstendalScroll) {
     page.removeEventListener('scroll', window.handleEstendalScroll);
     window.removeEventListener('resize', window.calculateEstendalDimensions);
     page.removeEventListener('wheel', window.stopSnap);
     page.removeEventListener('touchstart', window.stopSnap);
   }
+  if (window.handleMobileScroll) {
+    track.removeEventListener('scroll', window.handleMobileScroll);
+  }
 
+  const isMobile = window.innerWidth <= 768;
+
+  // ====================================================================
+  // COMPORTAMENTO MOBILE: Deslize horizontal nativo (CSS Scroll Snap)
+  // ====================================================================
+  if (isMobile) {
+    track.style.transform = 'none'; // Liberta o track do controlo JS
+    track.classList.add('cards-visible');
+
+    window.handleMobileScroll = function () {
+      const cards = track.querySelectorAll('.estendal-card-scrolly');
+      const targetScreenCenter = window.innerWidth / 2;
+      let centerIndex = 0;
+      let minDistance = Infinity;
+
+      // Descobre qual é o cartão que está mais ao centro do ecrã
+      cards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const dist = Math.abs(cardCenter - targetScreenCenter);
+        if (dist < minDistance) {
+          minDistance = dist;
+          centerIndex = index;
+        }
+      });
+
+      // Aplica a classe is-active ao cartão central
+      cards.forEach(c => c.classList.remove('is-active'));
+      if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
+    };
+
+    track.addEventListener('scroll', window.handleMobileScroll, { passive: true });
+    setTimeout(window.handleMobileScroll, 100); // Disparo inicial
+
+    // Recalcula caso o utilizador vire o telemóvel deitado (passando a desktop)
+    window.calculateEstendalDimensions = function () {
+      if (window.innerWidth > 768) initEstendalScrollytelling();
+    };
+    window.addEventListener('resize', window.calculateEstendalDimensions);
+
+    return; // Sai da função para não executar o código do Desktop
+  }
+
+  // ====================================================================
+  // COMPORTAMENTO DESKTOP: Scrollytelling (Scroll vertical -> Horizontal)
+  // ====================================================================
   let horizontalMoveMax = 0;
   let viewportWidth = window.innerWidth;
   let scrollTimeout;
@@ -63,11 +113,16 @@ function initEstendalScrollytelling() {
       isSnapping = false;
     }
   };
+
   page.addEventListener('wheel', window.stopSnap, { passive: true });
   page.addEventListener('touchstart', window.stopSnap, { passive: true });
 
   window.calculateEstendalDimensions = function () {
     viewportWidth = window.innerWidth;
+    if (viewportWidth <= 768) {
+      initEstendalScrollytelling(); // Muda para modo mobile se a janela encolher
+      return;
+    }
     setTimeout(() => {
       horizontalMoveMax = Math.max(0, track.scrollWidth - viewportWidth);
       window.handleEstendalScroll();
@@ -156,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("click", async (e) => {
   const link = e.target.closest('a');
 
-  // AQUI ESTÁ A REGRA: Se tiver a classe 'link-direto', o router ignora e a página abre normalmente!
   if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname || link.classList.contains('link-direto')) return;
 
   e.preventDefault();

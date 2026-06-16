@@ -390,8 +390,6 @@ body.hungry-mode .emphasis {
 
   transform: translateY(-3px);
 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-
 }
 
 
@@ -817,8 +815,11 @@ svg:focus,
 /* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE)                    */
 /* ================================================================== */
 @media (max-width: 768px) {
-  #horizontal-container {
-    transform: translateY(-10vh) !important;
+
+  .climax-slide {
+    padding-bottom: 15vh !important;
+    /* Cria um espaço "fantasma" no fundo */
+    box-sizing: border-box !important;
   }
 
   /* --- PÁGINA 1: A EXPERIÊNCIA PRINCIPAL --- */

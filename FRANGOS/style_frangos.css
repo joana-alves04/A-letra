@@ -85,7 +85,6 @@ body.insane {
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     outline: none !important;
 }
 
@@ -180,7 +179,6 @@ h1 {
     width: 340px;
     padding: 18px 32px;
     max-width: 90vw;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* O botão secundário (Cápsula Menor: Laranja Claro) */
@@ -193,7 +191,6 @@ h1 {
     width: 250px;
     padding: 14px 28px;
     max-width: 80vw;
-    box-shadow: none !important;
 }
 
 .end-buttons a:hover,
@@ -201,7 +198,6 @@ h1 {
 .final-btn:hover,
 .btn-voltar:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.25) !important;
 }
 
 @keyframes fadeIn {

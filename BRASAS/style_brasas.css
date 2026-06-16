@@ -1,12 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
 
+/* Remove flashes azuis e contornos ao clicar (mobile & desktop) */
+* {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  outline: none !important;
+}
+
 body,
 html {
   margin: 0;
   padding: 0;
   height: 100%;
+  height: 100dvh;
+  /* Proteção anti-barras do browser global */
   overflow: hidden;
   background: #000;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* ================================================================== */
@@ -456,16 +467,10 @@ html {
   max-width: 240px;
 }
 
-.btn-tv:hover {
-  transform: scale(1.03);
-  filter: brightness(1.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
+.btn-tv:hover,
 #btn-acordar-meio:hover {
   transform: scale(1.03);
   filter: brightness(1.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 /* ================================================================== */
@@ -646,7 +651,6 @@ html {
   letter-spacing: 3px;
   animation: respirarBotao 2s infinite alternate;
   pointer-events: auto;
-
 }
 
 @keyframes respirarBotao {
@@ -836,34 +840,51 @@ html {
   }
 }
 
-a,
-button,
-.btn-tv,
-.tv-dial-top,
-.tv-dial-bottom,
-#btn-acordar-meio,
-.interativo {
-  outline: none !important;
-  -webkit-tap-highlight-color: transparent !important;
-}
-
-a:focus,
-button:focus {
-  outline: none !important;
-}
-
 /* Esconde a palavra "em baixo" quando estamos no computador */
 .texto-mobile {
   display: none;
 }
 
+
 /* ================================================================== */
-/* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE)                    */
+/* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE COM PROTEÇÕES)      */
 /* ================================================================== */
 
 @media (max-width: 768px) {
 
-  /* 1. COMUM: Limpeza Global */
+  /* ================================================================== */
+  /* 0. MARGENS DE SALVAGUARDA E CORREÇÃO DAS BARRAS DO BROWSER         */
+  /* ================================================================== */
+  .page-brasas,
+  .page-fullscreen,
+  #scroll-narrativa,
+  .slide-narrativa,
+  #cenario-sala {
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
+
+  #cenario-sala {
+    padding-top: 5vh !important;
+    padding-bottom: 12vh !important;
+    box-sizing: border-box !important;
+    justify-content: center !important;
+  }
+
+  .page-fullscreen {
+    padding-top: 6vh !important;
+    padding-bottom: 6vh !important;
+    box-sizing: border-box !important;
+  }
+
+  .zona-lareira {
+    bottom: 4vh !important;
+  }
+
+  /* ================================================================== */
+  /* 1. COMUM: Limpeza Global                                           */
+  /* ================================================================== */
   .lareira-fisica {
     width: 90% !important;
     max-width: 380px !important;
@@ -872,8 +893,9 @@ button:focus {
   .instrucao-lareira {
     width: 100% !important;
     text-align: center !important;
-    margin: 0 auto 20px auto !important;
+    margin: 0 auto 10px auto !important;
     font-size: 0.9rem !important;
+    box-sizing: border-box !important;
   }
 
   .janela,
@@ -892,10 +914,8 @@ button:focus {
   /* Base do Botão Pílula para mobile */
   .btn-tv {
     margin: 0 auto !important;
-    /* Centra na horizontal */
     font-size: 0.8rem !important;
     padding: 12px 10px !important;
-    /* Padding equilibrado */
     box-sizing: border-box !important;
     display: flex !important;
     justify-content: center !important;
@@ -904,11 +924,13 @@ button:focus {
     line-height: 1.2 !important;
   }
 
-  /* 2. TV PÁGINA INICIAL (index) - FOCO NA LARGURA DOS BOTÕES NO ECRÃ PEQUENO */
+  /* ================================================================== */
+  /* 2. TV PÁGINA INICIAL (index) - Ajuste para Ecrã Baixinho           */
+  /* ================================================================== */
   .tv-retro-wrapper {
     width: 92% !important;
     max-width: 400px !important;
-    margin: 5vh auto 0 auto !important;
+    margin: auto !important;
   }
 
   .tv-retro-wrapper .tv-retro-panel {
@@ -925,7 +947,6 @@ button:focus {
     position: relative !important;
   }
 
-  /* Centralização total da "cortina" preta do menu */
   .tv-retro-wrapper .tv-menu-final {
     position: absolute !important;
     top: 0 !important;
@@ -938,23 +959,20 @@ button:focus {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 15px !important;
+    padding: 10px !important;
     margin: 0 !important;
     box-sizing: border-box !important;
   }
 
-  /* Título: Alinhamento e espaço */
   .tv-retro-wrapper .tv-menu-titulo {
     text-align: center !important;
     width: 100% !important;
-    margin: 0 0 0px 0 !important;
-    /* Espaço equilibrado */
+    margin: 0 0 8px 0 !important;
     padding: 0 !important;
-    font-size: 1rem !important;
-    line-height: 1.3 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.2 !important;
   }
 
-  /* Container dos Botões: Alinhamento vertical e espaço */
   .tv-retro-wrapper .tv-screen-buttons {
     display: flex !important;
     flex-direction: column !important;
@@ -963,32 +981,34 @@ button:focus {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    gap: 12px !important;
-    /* Espaço equilibrado entre botões */
+    gap: 8px !important;
   }
 
-  /* AJUSTE FINAL: LARGURA MÁXIMA NO ECRÃ PEQUENO DO INDEX */
+  .tv-retro-wrapper .btn-tv {
+    padding: 8px 10px !important;
+    font-size: 0.75rem !important;
+    line-height: 1.1 !important;
+  }
+
   .tv-retro-wrapper .btn-top {
     width: 92% !important;
-    /* LARGURA AUMENTADA para ocupar quase todo o ecrã preto */
     max-width: 280px !important;
     margin: 0 auto !important;
-    /* Força alinhamento central absoluto */
   }
 
   .tv-retro-wrapper .btn-bottom {
     width: 70% !important;
-    /* Aumentado ligeiramente mantendo a diferença */
     max-width: 220px !important;
     margin: 0 auto !important;
-    /* Força alinhamento central absoluto */
   }
 
-  /* 3. TV PÁGINA SOBRE (Não mexer, mantida igual) */
+  /* ================================================================== */
+  /* 3. TV PÁGINA SOBRE - Proteção contra Textos Longos                 */
+  /* ================================================================== */
   .tv-retro-wrapper-big {
     width: 92% !important;
     max-width: 400px !important;
-    margin-top: 5vh !important;
+    margin: auto !important;
   }
 
   .tv-retro-wrapper-big .tv-retro-panel {
@@ -999,39 +1019,53 @@ button:focus {
 
   .tv-retro-wrapper-big .tv-retro-screen {
     aspect-ratio: auto !important;
-    min-height: 480px !important;
-    height: auto !important;
-    padding: 20px !important;
+
+    /* 🔥 A MAGIA ESTÁ AQUI: Trancamos a altura da TV! */
+    height: 520px !important;
+    /* Altura ideal para caber o Canal 1 */
+    max-height: 50dvh !important;
+    /* Mas se o telemóvel for muito pequeno, tranca em 60% do ecrã */
+
+    padding: 15px !important;
     position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
   }
 
+  /* O texto ganha scroll e nunca empurra os botões para fora */
   .tv-info-container {
     display: flex !important;
     flex-direction: column !important;
-    height: 100% !important;
+    flex: 1 !important;
+    overflow-y: auto !important;
     padding: 0 !important;
     align-items: center !important;
+    justify-content: flex-start !important;
     width: 100% !important;
+  }
+
+  .tv-info-container::-webkit-scrollbar {
+    display: none;
   }
 
   .indicador-canal {
     position: absolute !important;
-    top: 20px !important;
-    right: 20px !important;
-    font-size: 1.1rem !important;
+    top: 15px !important;
+    right: 15px !important;
+    font-size: 1rem !important;
   }
 
   .info-titulo {
-    font-size: 1.5rem !important;
-    margin: 30px 0 15px 0 !important;
+    font-size: 1.3rem !important;
+    margin: 25px 0 10px 0 !important;
     text-align: center !important;
     width: 100% !important;
   }
 
   .info-texto {
-    font-size: 0.95rem !important;
-    margin: 0 0 20px 0 !important;
-    line-height: 1.4 !important;
+    font-size: 0.9rem !important;
+    margin: 0 0 15px 0 !important;
+    line-height: 1.3 !important;
     text-align: center !important;
     width: 100% !important;
   }
@@ -1041,12 +1075,17 @@ button:focus {
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    margin-top: auto !important;
-    padding: 0 0 10px 0 !important;
-    gap: 12px !important;
+    flex-shrink: 0 !important;
+    margin-top: 10px !important;
+    padding: 0 !important;
+    gap: 10px !important;
   }
 
-  /* Manter as larguras originais dos botões na página Sobre (Estilo foto 2) */
+  .tv-retro-wrapper-big .btn-tv {
+    padding: 10px 10px !important;
+    font-size: 0.8rem !important;
+  }
+
   .tv-retro-wrapper-big .btn-top {
     width: 90% !important;
     max-width: 280px !important;
@@ -1057,7 +1096,7 @@ button:focus {
     max-width: 220px !important;
   }
 
-  /* 4. PAINEL INFERIOR SOBRE */
+  /* PAINEL INFERIOR SOBRE */
   .tv-retro-wrapper-big .tv-retro-controls {
     flex-direction: row !important;
     width: 100% !important;
@@ -1077,7 +1116,7 @@ button:focus {
   .tv-dial-top {
     width: 35px !important;
     height: 35px !important;
-    margin-right: 0px !important;
+    margin-right: 10px !important;
   }
 
   .tv-dial-bottom {
