@@ -390,8 +390,6 @@ body.hungry-mode .emphasis {
 
   transform: translateY(-3px);
 
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-
 }
 
 
@@ -794,4 +792,124 @@ body.sobre-page {
 
   transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 
+}
+
+a,
+button,
+.final-btn,
+#corner-gear-wrapper,
+.mini-gear,
+svg {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+a:focus,
+button:focus,
+svg:focus,
+#corner-gear-wrapper:focus {
+  outline: none !important;
+}
+
+/* ================================================================== */
+/* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE)                    */
+/* ================================================================== */
+@media (max-width: 768px) {
+
+  .climax-slide {
+    padding-bottom: 15vh !important;
+    /* Cria um espaço "fantasma" no fundo */
+    box-sizing: border-box !important;
+  }
+
+  /* --- PÁGINA 1: A EXPERIÊNCIA PRINCIPAL --- */
+
+  /* 1. Impede que a hora no fundo fique minúscula */
+  #time-background {
+    font-size: 7.5rem;
+    letter-spacing: -2px;
+  }
+
+  /* 2. Texto do Climax com MUITO MAIS IMPACTO */
+  .emphasis {
+    font-size: 50px !important;
+    /* Aumentado para 4.4rem para impacto máximo */
+    line-height: 1;
+    /* Mantém as linhas coladas */
+    margin-top: 35px;
+    margin-bottom: 25px;
+  }
+
+  /* Reduz um bocadinho o texto das slides normais para respirar melhor */
+  .reveal {
+    font-size: 1.8rem;
+  }
+
+  /* 3. Ajusta a posição e tamanho da engrenagem principal */
+  #corner-gear-wrapper {
+    width: 100px;
+    height: 100px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  /* 4. Ajusta a "seta/dica" (RODA-ME ->) para não fugir da engrenagem */
+  .gear-hint {
+    bottom: 60px;
+    right: 140px;
+    font-size: 0.9rem;
+  }
+
+  /* 5. Ajusta os botões finais para caberem bem no ecrã vertical */
+  .final-btn:first-child {
+    width: 90%;
+    max-width: 300px;
+    padding: 15px 20px;
+    font-size: 1rem;
+  }
+
+  .final-btn:last-child {
+    width: 60%;
+    max-width: 200px;
+    padding: 12px 20px;
+    font-size: 0.85rem;
+  }
+
+  /* --- PÁGINA 2: O MENU SOBRE (CAIXA SURPRESA) --- */
+
+  /* 6. Espaçamento geral da página "Sobre" */
+  .content-wrapper {
+    padding: 40px 15px;
+  }
+
+  /* 7. Reduz o título principal para não quebrar feio */
+  .header-title h1 {
+    font-size: 2.4rem;
+  }
+
+  /* 8. Ajustes aos cartões de informação */
+  .info-card {
+    padding: 25px 20px;
+    border-left-width: 5px;
+  }
+
+  .info-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .info-card p {
+    font-size: 1.1rem;
+  }
+
+  /* 9. Arrumação do Cartão da Curiosidade (Engrenagem Pequena) */
+  .curiosity-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .curiosity-action {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
