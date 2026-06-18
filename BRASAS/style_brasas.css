@@ -847,10 +847,82 @@ html {
 
 
 /* ================================================================== */
+/* BOTÃO DE VOLTAR FLUTUANTE (GLASSMORPHISM) - GERAL MOBILE           */
+/* ================================================================== */
+
+/* 1. Esconde o contentor inteiro no computador/tablet */
+.wrapper-btn-back {
+  display: none;
+}
+
+/* 2. O Botão de Vidro Universal (Estado Normal) */
+.btn-back {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+
+  /* Correção do alinhamento ótico do símbolo "<" */
+  padding: 0 3px 1px 0 !important;
+
+  color: #fff !important;
+  font-size: 20px !important;
+  font-family: "Baloo 2", sans-serif !important;
+  text-decoration: none;
+
+  /* Efeito Vidro com a cor #911F27 a 20% */
+  background: rgba(145, 31, 39, 0.2) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  /* Reflexos de luz na borda */
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+
+  /* Sombra para descolar do fundo */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3. Efeito ao passar o rato (Hover) */
+.btn-back:hover {
+  background: rgba(145, 31, 39, 0.4) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 35px rgba(145, 31, 39, 0.2) !important;
+}
+
+/* 4. Efeito ao clicar/tocar (Active) */
+.btn-back:active {
+  background: rgba(145, 31, 39, 0.6) !important;
+  transform: translateY(1px) scale(0.95);
+  box-shadow: 0 4px 15px rgba(145, 31, 39, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ================================================================== */
 /* ADAPTAÇÕES PARA TELEMÓVEL E TABLET (RESPONSIVE COM PROTEÇÕES)      */
 /* ================================================================== */
 
 @media (max-width: 768px) {
+
+  /* ── REGRAS EXCLUSIVAS PARA O BOTÃO VOLTAR NO TELEMÓVEL ── */
+  .wrapper-btn-back {
+    display: block !important;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    /* Garante que fica por cima dos jogos, vídeos e textos */
+    pointer-events: none;
+    /* Deixa clicar apenas no botão redondo em si */
+  }
 
   /* ================================================================== */
   /* 0. MARGENS DE SALVAGUARDA E CORREÇÃO DAS BARRAS DO BROWSER         */
@@ -985,7 +1057,7 @@ html {
   }
 
   .tv-retro-wrapper .btn-tv {
-    padding: 8px 10px !important;
+    padding: 6px 6px !important;
     font-size: 0.75rem !important;
     line-height: 1.1 !important;
   }
@@ -1020,54 +1092,58 @@ html {
   .tv-retro-wrapper-big .tv-retro-screen {
     aspect-ratio: auto !important;
 
-    /* 🔥 A MAGIA ESTÁ AQUI: Trancamos a altura da TV! */
-    height: 520px !important;
-    /* Altura ideal para caber o Canal 1 */
-    max-height: 50dvh !important;
-    /* Mas se o telemóvel for muito pequeno, tranca em 60% do ecrã */
+    /* Aumentamos de 50dvh para 65dvh para dar espaço ao texto respirar */
+    height: auto !important;
+    min-height: 400px !important;
+    max-height: 65dvh !important;
 
-    padding: 15px !important;
+    padding: 12px 15px !important;
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
   }
 
-  /* O texto ganha scroll e nunca empurra os botões para fora */
+  /* O contentor agora alinha tudo ao centro e BLOQUEIA o scroll */
   .tv-info-container {
     display: flex !important;
     flex-direction: column !important;
     flex: 1 !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
+    /* <-- MAGIA AQUI: Remove o scroll */
     padding: 0 !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: center !important;
+    /* Centra perfeitamente no ecrã negro */
     width: 100% !important;
-  }
-
-  .tv-info-container::-webkit-scrollbar {
-    display: none;
   }
 
   .indicador-canal {
     position: absolute !important;
-    top: 15px !important;
+    top: 12px !important;
     right: 15px !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
   }
 
   .info-titulo {
-    font-size: 1.3rem !important;
-    margin: 25px 0 10px 0 !important;
+    font-size: 1.15rem !important;
+    margin: 15px 0 8px 0 !important;
     text-align: center !important;
     width: 100% !important;
   }
 
   .info-texto {
-    font-size: 0.9rem !important;
-    margin: 0 0 15px 0 !important;
-    line-height: 1.3 !important;
+    font-size: 0.8rem !important;
+    margin: 0 0 10px 0 !important;
+    line-height: 1.25 !important;
     text-align: center !important;
     width: 100% !important;
+  }
+
+  /* Reduzimos a margem de 30px (do desktop) que estava a empurrar tudo para baixo! */
+  .instrucao-canal {
+    font-size: 0.75rem !important;
+    margin: 0 0 12px 0 !important;
+    line-height: 1.2 !important;
   }
 
   .tv-retro-wrapper-big .tv-screen-buttons {
@@ -1076,18 +1152,18 @@ html {
     flex-direction: column !important;
     align-items: center !important;
     flex-shrink: 0 !important;
-    margin-top: 10px !important;
+    margin-top: 5px !important;
     padding: 0 !important;
     gap: 10px !important;
   }
 
   .tv-retro-wrapper-big .btn-tv {
-    padding: 10px 10px !important;
-    font-size: 0.8rem !important;
+    padding: 10px !important;
+    font-size: 0.75rem !important;
   }
 
   .tv-retro-wrapper-big .btn-top {
-    width: 90% !important;
+    width: 95% !important;
     max-width: 280px !important;
   }
 
@@ -1116,7 +1192,7 @@ html {
   .tv-dial-top {
     width: 35px !important;
     height: 35px !important;
-    margin-right: 10px !important;
+    margin-right: 0px !important;
   }
 
   .tv-dial-bottom {
