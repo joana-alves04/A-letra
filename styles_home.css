@@ -3,14 +3,10 @@
 
 * {
   -webkit-tap-highlight-color: transparent !important;
-  /* Remove o flash azul ao clicar no mobile */
   -webkit-touch-callout: none !important;
-  /* Remove o menu de opções ao ficar a pressionar */
   outline: none !important;
-  /* Remove o contorno ao focar no desktop */
 }
 
-/* Tokens — paleta bordeaux sobre creme */
 :root {
   --background: #FEF8DD;
   --foreground: #450707;
@@ -36,22 +32,16 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ESTRUTURA DA NAVEGAÇÃO HORIZONTAL LADO-A-LADO
-   ═══════════════════════════════════════════════════════════════════════════ */
 html,
 body {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  /* Adapta-se dinamicamente às barras do browser */
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-
-  /* Bloqueia o "salto elástico" no fundo da página */
   overscroll-behavior: none;
   -webkit-user-select: none;
   user-select: none;
@@ -97,7 +87,6 @@ a {
   letter-spacing: -0.02em;
 }
 
-/* ── Secções de scroll vertical (HomePage) ─────────────────────────── */
 .slide {
   min-height: 70vh;
   height: auto;
@@ -108,7 +97,6 @@ a {
   position: relative;
 }
 
-/* ── VÍDEO DA HOMEPAGE (Desktop) ────────────────────────────────────────── */
 .video-container {
   display: flex;
   flex-direction: row;
@@ -155,7 +143,6 @@ a {
   display: block;
 }
 
-/* ── TEXTOS DOS SLIDES ───────────────────────────────────────────────────── */
 .slide-text {
   font-family: var(--font-serif);
   font-weight: 400;
@@ -176,7 +163,6 @@ a {
   transform: translateY(0);
 }
 
-/* ── HERO ────────────────────────────────────────────────────────────────── */
 .hero {
   min-height: 90dvh;
   display: flex;
@@ -210,7 +196,6 @@ a {
   animation: scroll-hint 2s ease-in-out infinite;
 }
 
-/* ── Linhas do índice ────────────────────────────────────────────────────── */
 .row {
   position: relative;
   border-top: 1px solid var(--border);
@@ -326,7 +311,7 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LAYOUT INTERIOR DAS PÁGINAS (Sobre nós / Equipa)
+   LAYOUT INTERIOR DAS PÁGINAS GERAL
    ═══════════════════════════════════════════════════════════════════════════ */
 .inner-page {
   display: flex;
@@ -352,7 +337,6 @@ a {
   line-height: 1;
 }
 
-/* Botão desktop clássico nas páginas "Sobre" e "Equipa" */
 .detail-page__back {
   font-family: var(--font-sans);
   font-size: 11px;
@@ -382,7 +366,7 @@ a {
   border-bottom: 1px solid var(--border);
   display: grid;
   grid-template-columns: 200px 1fr;
-  gap: 40px;
+  gap: 60px;
   opacity: 0;
   transform: translateY(20px);
   transition: 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -395,205 +379,169 @@ a {
 
 .section-label {
   font-family: ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 18px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
-.section-body {
-  font-family: var(--font-serif);
-  font-size: clamp(1rem, 2.5vw, 1.4rem);
-  color: var(--foreground);
-  line-height: 1.65;
-  max-width: 60ch;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    BOTÃO DE VOLTAR FLUTUANTE (GLASSMORPHISM) - GERAL MOBILE
    ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Esconde o contentor inteiro no computador/tablet */
 .wrapper-btn-back {
   display: none;
 }
 
-/* 1. O Botão (Estado Normal) */
 .btn-back {
   pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 45px;
   height: 45px;
   border-radius: 50%;
-
-  /* ── CORREÇÃO DO ALINHAMENTO ÓTICO ── */
-  /* Empurra o ícone cerca de 3px para a esquerda e 1px para cima para ficar no centro perfeito */
   padding: 0 3px 1px 0 !important;
-
   color: #fff !important;
   font-size: 20px !important;
   font-family: "Baloo 2", sans-serif !important;
   text-decoration: none;
-
-  /* ── A TUA COR: #911F27 com 20% Opacidade ── */
   background: rgba(145, 31, 39, 0.2) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
-  /* Bordas mais suaves para combinar com a nova cor */
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
-
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
-
   cursor: pointer;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. Efeito ao passar o rato (Hover) */
 .btn-back:hover {
-  /* Aumenta a opacidade para 40% para dar feedback visual */
   background: rgba(145, 31, 39, 0.4) !important;
   transform: translateY(-2px);
-  /* Dá um ligeiro salto */
   box-shadow: 0 10px 35px rgba(145, 31, 39, 0.2) !important;
 }
 
-/* 3. Efeito ao clicar/tocar (Active) */
 .btn-back:active {
-  /* Fica com 60% de opacidade e o botão "afunda" */
   background: rgba(145, 31, 39, 0.6) !important;
   transform: translateY(1px) scale(0.95);
-  /* O botão encolhe ligeiramente simulando o clique */
   box-shadow: 0 4px 15px rgba(145, 31, 39, 0.3) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   EXPRESSÕES — SCROLLYTELLING (O ESTENDAL UNIFICADO E PERFEITO)
+   PÁGINA SOBRE NÓS: CLIQUE LATERAL E AFINAÇÕES DE GRID
    ═══════════════════════════════════════════════════════════════════════════ */
-.estendal-page-scrolly {
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  overflow-y: auto;
-  background: var(--background);
-  overscroll-behavior: none;
+/* ── REDUZIR ESPAÇOS MORTOS PARA EVITAR "MINI SCROLL" NO DESKTOP ── */
+@media (min-width: 769px) {
+  .inner-page.com-botao-voltar {
+    padding-top: 60px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .inner-section {
+    align-items: center !important;
+    padding: 30px 0 !important;
+  }
+
+  .inner-section:last-child {
+    padding-bottom: 0 !important;
+    border-bottom: none !important;
+  }
 }
 
-/* ── CÂMARA E FACHADA (Desktop Base) ────────────────────────────────────── */
-.sticky-ecra-scrolly {
-  position: sticky;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.facade-wrapper {
-  position: absolute;
-  top: 0;
-  left: 0;
+.sobre-conteudo-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr !important;
+  gap: 60px;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
+  max-width: 100% !important;
 }
 
-.fachada-scrolly-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-}
-
-/* O spacer com a altura necessária para um scroll horizontal longo e suave */
-.scrollytelling-total-spacer {
-  width: 100%;
-  height: 800vh;
-  position: relative;
-  pointer-events: none;
-}
-
-/* ⚠️ A CORDA (Com padding afinado para centrar o 1º e último cartão) */
-.clothesline-track-scrolly {
-  position: absolute;
-  top: 65.4%;
-  left: 0;
-  transform: translateX(0);
+.sobre-botoes {
   display: flex;
-  gap: 8vw;
-  padding-left: 41.5vw;
-  padding-right: 41.5vw;
-  align-items: flex-start;
-  z-index: 2;
-  will-change: transform;
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
+  flex-direction: column;
+  gap: 15px;
 }
 
-/* QUANDO O JS DIZ QUE PODEM APARECER */
-.clothesline-track-scrolly.cards-visible {
+/* BOTÕES / TÍTULOS: Averia Serif, Bordeaux, Negrito */
+.btn-revela {
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 700 !important;
+  color: var(--accent);
+  cursor: pointer;
+  transition: 0.3s;
+  padding: 0;
+  opacity: 0.6;
+}
+
+.btn-revela:hover,
+.btn-revela.ativo-btn {
+  font-style: italic;
   opacity: 1;
 }
 
-/* OS CARTÕES */
-.estendal-card-scrolly {
-  display: block;
-  flex-shrink: 0;
-  width: 17vw;
-  min-width: 150px;
-  max-width: 250px;
-  margin-top: -35px;
-  transform-origin: top center;
-  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
-  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15)) brightness(0.85);
+.sobre-painel-lateral {
+  display: grid;
+  align-items: center;
 }
 
-/* Efeito Hover Ativo */
-.estendal-card-scrolly.is-active {
-  transform: scale(1.10);
-  filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.35)) brightness(1);
-  z-index: 10;
+/* TEXTO DO PAINEL (Gaveta) - Estado ESCONDIDO / A SAIR */
+.painel-item {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateX(20px);
+  pointer-events: none;
+
+  font-family: var(--font-sans) !important;
+  font-weight: 400 !important;
+  color: #000000 !important;
+  font-size: 1.25rem !important;
+  line-height: 1.65;
+  max-width: 100% !important;
+  text-align: left !important;
+
+  /* O texto que sai desaparece rápido (0.2s) e sem esperar */
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.estendal-card-scrolly img {
-  width: 100%;
-  height: auto;
-  display: block;
+/* TEXTO DO PAINEL - Estado ATIVO / A ENTRAR */
+.painel-item.ativo {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+
+  /* O texto que entra espera 0.2s (para o outro sair) e demora 0.4s a aparecer */
+  transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s;
 }
 
-/* Esconder as barras de scroll nativas */
-.estendal-page-scrolly::-webkit-scrollbar,
-.page::-webkit-scrollbar,
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
+/* Estilo para a Dica Inicial da página Sobre Nós */
+.painel-placeholder {
+  font-style: italic !important;
+  color: var(--muted-fg) !important;
 }
 
-.estendal-page-scrolly,
-.page,
-html,
-body {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Garante que a dica só tem opacidade quando está ativada. */
+.painel-placeholder.ativo {
+  opacity: 0.8 !important;
 }
 
-
-
-/* ================================================================== */
-/* ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)           */
-/* ================================================================== */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
+   ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── Mostra o botão flutuante universal no mobile ── */
+  /* ── BOTÃO FLUTUANTE DE VOLTAR ── */
   .wrapper-btn-back {
     display: block !important;
     position: fixed;
@@ -603,7 +551,7 @@ body {
     pointer-events: none;
   }
 
-  /* ── 1. VÍDEO DA HOMEPAGE (Botões em baixo do vídeo) ── */
+  /* ── VÍDEO DA HOMEPAGE E HERO ── */
   .video-container {
     flex-direction: column;
     gap: 16px;
@@ -633,7 +581,6 @@ body {
     width: 45px;
   }
 
-  /* ── 2. GERAL E SLIDES ── */
   .slide {
     min-height: auto;
     padding: 80px 24px;
@@ -644,17 +591,78 @@ body {
     box-sizing: border-box !important;
   }
 
-  .inner-section {
-    grid-template-columns: 1fr;
-    padding: 28px 0;
-  }
-
+  /* ── PÁGINAS INTERIORES (Espaçamento Geral) ── */
   .inner-page {
-    padding: 20px 16px;
+    padding: 80px 16px 20px 16px !important;
     gap: 32px;
   }
 
-  /* ── 3. SCROLLYTELLING E FACHADA MOBILE ── */
+  .inner-section {
+    grid-template-columns: 1fr;
+    padding: 25px 0 !important;
+    align-items: flex-start !important;
+    gap: 15px !important;
+  }
+
+  /* ── PÁGINA "SOBRE NÓS" (Mobile Exclusivo) ── */
+  .sobre-conteudo-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  .sobre-botoes {
+    border-bottom: none !important;
+    /* ⚡ REMOVIDA A RISCA DO MEIO */
+    padding-bottom: 5px !important;
+    /* ⚡ Ajustado para o texto ficar mais próximo */
+    margin-bottom: 0 !important;
+    gap: 12px !important;
+  }
+
+  .btn-revela {
+    font-size: 1.25rem !important;
+    line-height: 1.3;
+  }
+
+  .sobre-painel-lateral {
+    display: block !important;
+    position: relative;
+  }
+
+  /* A Dica "(Seleciona um tópico...)" volta a aparecer, herdando os estilos do desktop! */
+
+  .painel-item {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    font-size: 1.1rem !important;
+    transform: translateY(15px) !important;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s !important;
+  }
+
+  .painel-item.ativo {
+    position: relative !important;
+    visibility: visible;
+    margin-top: 10px !important;
+    /* ⚡ Pequeno respiro antes do texto */
+    transform: translateY(0) !important;
+    transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s, visibility 0s !important;
+  }
+
+  /* Estilo para a Dica Inicial da página Sobre Nós */
+  .painel-placeholder {
+    font-style: italic !important;
+    color: var(--muted-fg) !important;
+    font-size: 13px !important;
+  }
+
+  /* Garante que a dica só tem opacidade quando está ativada. */
+  .painel-placeholder.ativo {
+    opacity: 0.8 !important;
+  }
+
+  /* ── SCROLLYTELLING (ESTENDAL) ── */
   .scrollytelling-total-spacer {
     display: none !important;
   }
@@ -682,7 +690,6 @@ body {
     object-position: top center;
   }
 
-  /* ── 4. A CORDA E OS CARTÕES COM SCROLL NATIVO ── */
   .clothesline-track-scrolly {
     position: absolute;
     top: 66%;
@@ -696,8 +703,6 @@ body {
     gap: 15vw;
     box-sizing: border-box;
     opacity: 1 !important;
-
-    /* MOTOR DO SCROLL HORIZONTAL */
     display: flex !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
@@ -714,42 +719,25 @@ body {
     width: 45vw;
     min-width: 160px;
     margin-top: -25px;
-
-    /* SNAP DOS CARTÕES */
     flex: 0 0 auto !important;
     scroll-snap-align: center !important;
   }
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   ADICIONADO: REGRAS EXCLUSIVAS PARA A PÁGINA SOBRE NÓS
+   ESCONDER BARRAS DE SCROLL NATIVAS (GERAL)
    ═══════════════════════════════════════════════════════════════════════════ */
-
-/* Compensa a falta do título grande dando um espaço elegante ao topo no Desktop */
-@media (min-width: 769px) {
-  .inner-page.com-botao-voltar {
-    padding-top: 80px !important;
-  }
+.estendal-page-scrolly::-webkit-scrollbar,
+.page::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
 }
 
-.inner-section {
-    align-items: center !important;
-  }
-
-/* Controla os espaçamentos dos parágrafos de forma nativa e fluida */
-.sobre-body p {
-  margin-bottom: 24px !important;
-  text-align: justify;
-  /* Deixa o bloco de texto perfeitamente alinhado e premium */
-}
-
-.sobre-body p:last-child {
-  margin-bottom: 0 !important;
-  /* Remove a margem no último parágrafo da secção */
-}
-
-/* Destaca subtilmente os inícios fortes de cada parágrafo com a cor bordeaux */
-.sobre-body strong {
-  color: var(--accent);
+.estendal-page-scrolly,
+.page,
+html,
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
