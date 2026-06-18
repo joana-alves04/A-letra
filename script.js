@@ -355,3 +355,5 @@ document.addEventListener("click", async (e) => {
 });
 
 window.addEventListener("popstate", () => window.location.reload());
+
+

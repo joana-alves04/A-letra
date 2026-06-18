@@ -586,6 +586,8 @@ body {
   scrollbar-width: none;
 }
 
+
+
 /* ================================================================== */
 /* ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)           */
 /* ================================================================== */
@@ -717,4 +719,37 @@ body {
     flex: 0 0 auto !important;
     scroll-snap-align: center !important;
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ADICIONADO: REGRAS EXCLUSIVAS PARA A PÁGINA SOBRE NÓS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Compensa a falta do título grande dando um espaço elegante ao topo no Desktop */
+@media (min-width: 769px) {
+  .inner-page.com-botao-voltar {
+    padding-top: 80px !important;
+  }
+}
+
+.inner-section {
+    align-items: center !important;
+  }
+
+/* Controla os espaçamentos dos parágrafos de forma nativa e fluida */
+.sobre-body p {
+  margin-bottom: 24px !important;
+  text-align: justify;
+  /* Deixa o bloco de texto perfeitamente alinhado e premium */
+}
+
+.sobre-body p:last-child {
+  margin-bottom: 0 !important;
+  /* Remove a margem no último parágrafo da secção */
+}
+
+/* Destaca subtilmente os inícios fortes de cada parágrafo com a cor bordeaux */
+.sobre-body strong {
+  color: var(--accent);
 }
