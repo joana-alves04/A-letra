@@ -27,43 +27,28 @@ function initHomeVideoControls() {
 
   if (video && btnPlay && btnSound) {
 
-    // 1. Função que trata SÓ do botão Play/Pause
     function atualizarIconePlay() {
-      if (video.paused) {
-        imgPlay.src = "imgs/play.png";
-      } else {
-        imgPlay.src = "imgs/pause.png";
-      }
+      if (video.paused) imgPlay.src = "imgs/play.png";
+      else imgPlay.src = "imgs/pause.png";
     }
 
-    // 2. Função que trata SÓ do botão de Som
     function atualizarIconeSom() {
-      if (video.muted) {
-        imgSound.src = "imgs/som_off.png";
-      } else {
-        imgSound.src = "imgs/som_on.png";
-      }
+      if (video.muted) imgSound.src = "imgs/som_off.png";
+      else imgSound.src = "imgs/som_on.png";
     }
 
-    // Garante os ícones certos logo quando a página abre
     atualizarIconePlay();
     atualizarIconeSom();
 
-    // Clicar no botão PLAY
     btnPlay.onclick = () => {
-      if (video.paused) {
-        video.play().catch(err => console.log("Erro ao dar play:", err));
-      } else {
-        video.pause();
-      }
+      if (video.paused) video.play().catch(err => console.log("Erro ao dar play:", err));
+      else video.pause();
     };
 
-    // Clicar no botão de SOM
     btnSound.onclick = () => {
-      video.muted = !video.muted; // Troca entre mudo e com som
+      video.muted = !video.muted;
     };
 
-    // Atualiza os botões mesmo se o vídeo parar por outros motivos
     video.addEventListener('play', atualizarIconePlay);
     video.addEventListener('pause', atualizarIconePlay);
     video.addEventListener('volumechange', atualizarIconeSom);
@@ -77,7 +62,6 @@ function initEstendalScrollytelling() {
 
   if (!page || !track) return;
 
-  // Limpeza de eventos antigos para evitar duplicações se o router for ativado
   if (window.handleEstendalScroll) {
     page.removeEventListener('scroll', window.handleEstendalScroll);
     window.removeEventListener('resize', window.calculateEstendalDimensions);
@@ -90,9 +74,6 @@ function initEstendalScrollytelling() {
 
   const isMobile = window.innerWidth <= 768;
 
-  // ====================================================================
-  // COMPORTAMENTO MOBILE: Deslize horizontal nativo (CSS Scroll Snap)
-  // ====================================================================
   if (isMobile) {
     track.style.transform = 'none';
     track.classList.add('cards-visible');
@@ -129,10 +110,7 @@ function initEstendalScrollytelling() {
         const diff = cardCenter - targetScreenCenter;
 
         if (Math.abs(diff) > 2) {
-          track.scrollBy({
-            left: diff,
-            behavior: 'smooth'
-          });
+          track.scrollBy({ left: diff, behavior: 'smooth' });
         }
       }, 150);
     };
@@ -148,9 +126,6 @@ function initEstendalScrollytelling() {
     return;
   }
 
-  // ====================================================================
-  // COMPORTAMENTO DESKTOP: Scrollytelling (Scroll vertical -> Horizontal)
-  // ====================================================================
   let horizontalMoveMax = 0;
   let viewportWidth = window.innerWidth;
   let scrollTimeout;
@@ -278,7 +253,7 @@ function initEstendalScrollytelling() {
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
   initEstendalScrollytelling();
-  initHomeVideoControls(); // Inicializa o vídeo no primeiro carregamento do site
+  initHomeVideoControls();
 
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
@@ -287,8 +262,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ── SISTEMA DE NAVEGAÇÃO SUAVE (ROUTER AJAX) ──────────────────────────────
+// ── SISTEMA DE NAVEGAÇÃO SUAVE E EVENTOS GLOBAIS ─────────────────────────
 document.addEventListener("click", async (e) => {
+
+  // 1. SOLUÇÃO DEFINITIVA DA EQUIPA (Event Delegation)
+  // Ouve globalmente os cliques. Agora deteta se clicas no NOME ou na FOTO!
+  const btnEquipa = e.target.closest('.eqp-nome, .eqp-foto');
+
+  if (btnEquipa) {
+    // Procura o contentor principal (.eqp-membro) para encontrar a gaveta certa
+    const membroGeral = btnEquipa.closest('.eqp-membro');
+    const gavetaDescricao = membroGeral.querySelector('.eqp-desc-wrapper');
+    const dicaTexto = membroGeral.querySelector('.eqp-dica');
+
+    if (gavetaDescricao) {
+      gavetaDescricao.classList.toggle('aberto');
+
+      if (gavetaDescricao.classList.contains('aberto')) {
+        if (dicaTexto) { dicaTexto.style.opacity = '0'; dicaTexto.style.transform = 'translateY(-10px)'; }
+      } else {
+        if (dicaTexto) { dicaTexto.style.opacity = '0.7'; dicaTexto.style.transform = 'translateY(0)'; }
+      }
+    }
+    return; // Pára aqui para que o Router Ajax não tente processar o clique
+  }
+
+  // 2. LÓGICA DO ROUTER AJAX
   const link = e.target.closest('a');
 
   if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname || link.classList.contains('link-direto')) return;
@@ -308,7 +307,8 @@ document.addEventListener("click", async (e) => {
   }
 
   try {
-    const response = await fetch(targetUrl);
+    // MAGIA AQUI: { cache: 'no-cache' } garante que vais sempre buscar o HTML novo
+    const response = await fetch(targetUrl, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Erro');
 
     const htmlText = await response.text();
@@ -347,7 +347,7 @@ document.addEventListener("click", async (e) => {
       // Reinicializa todos os scripts nas páginas injetadas dinamicamente
       initObservers();
       initEstendalScrollytelling();
-      initHomeVideoControls(); // Garante que o vídeo funciona se voltarmos à Homepage
+      initHomeVideoControls();
       isAnimating = false;
     }, 800);
 

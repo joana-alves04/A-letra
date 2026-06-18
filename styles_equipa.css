@@ -1,0 +1,343 @@
+/* ================================================================== */
+/* ESTILOS EXCLUSIVOS DA PÁGINA EQUIPA                                */
+/* ================================================================== */
+
+.eqp-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.eqp-cabecalho {
+    text-align: center;
+    margin-bottom: 120px;
+}
+
+.eqp-titulo {
+    font-family: var(--font-serif);
+    color: var(--accent);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.3;
+    margin: 90px 0 135px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.eqp-subtitulo {
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    font-size: clamp(1.1rem, 2.5vw, 4.4rem);
+    margin: 25px;
+}
+
+/* Contentor de cada membro */
+.eqp-membro {
+    display: flex;
+    align-items: center;
+    gap: 120px;
+    width: 100%;
+    margin-bottom: 150px;
+}
+
+.eqp-esq {
+    flex-direction: row;
+}
+
+.eqp-dir {
+    flex-direction: row-reverse;
+}
+
+.eqp-foto-caixa {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 350px;
+    flex-shrink: 0;
+}
+
+/* Imagens já recortadas */
+.eqp-foto {
+    width: 280px;
+    height: auto;
+    margin-bottom: 30px;
+    display: block;
+}
+
+/* Frases debaixo das fotos */
+.eqp-citacao {
+    font-family: var(--font-serif);
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ── CAIXA DE TEXTOS INTERATIVA ── */
+.eqp-info {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* O Nome (agora é um botão clicável) */
+.eqp-nome {
+    font-family: var(--font-serif);
+    color: var(--accent);
+    font-size: clamp(2.5rem, 4vw, 3.2rem);
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+/* Efeito quando passa o rato no nome */
+.eqp-nome:hover {
+    transform: scale(1.02);
+    text-shadow: 0 5px 15px rgba(145, 31, 39, 0.2);
+}
+
+/* A Letra Miúda */
+.eqp-dica {
+    font-family: var(--font-sans);
+    color: var(--muted-fg);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.6;
+    margin-bottom: 15px;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* ── A GAVETA SECRETA (Slide Down) ── */
+.eqp-desc-wrapper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    /* Fica ligeiramente mais acima para dar o efeito de sair de trás do nome */
+    transform: translateY(-20px);
+    transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.5s ease 0.1s,
+        transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Classe ativada pelo JavaScript ao clicar no nome */
+.eqp-desc-wrapper.aberto {
+    max-height: 250px;
+    /* Altura suficiente para o teu texto */
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.eqp-desc {
+    font-family: var(--font-sans);
+    color: var(--foreground);
+    font-size: 1.2rem;
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+    /* Margem no topo para não ficar colado ao nome quando abre */
+    padding-top: 10px;
+}
+
+
+@media (max-width: 768px) {
+
+    .eqp-cabecalho {
+        margin-bottom: 60px;
+    }
+
+    /* 1. Transforma o membro num Grid para podermos mover os elementos livremente */
+    .eqp-membro,
+    .eqp-esq,
+    .eqp-dir {
+        display: grid !important;
+        grid-template-columns: 130px 1fr;
+        /* A foto fica com 130px fixos, o nome ocupa o resto */
+        grid-template-rows: auto auto auto auto;
+        /* Este mapa de áreas define a ordem: Frase no topo, Foto e Nome lado a lado, Descrição no fundo */
+        grid-template-areas:
+            "quote quote"
+            "photo name"
+            "photo hint"
+            "desc desc";
+        gap: 5px 20px;
+        margin-bottom: 80px;
+        align-items: center;
+    }
+
+    /* 2. "Apaga" os contentores virtuais para os filhos poderem ser movidos pelo Grid */
+    .eqp-foto-caixa,
+    .eqp-info {
+        display: contents !important;
+    }
+
+    /* 3. A Frase: Vai para o topo */
+    .eqp-citacao {
+        grid-area: quote;
+        text-align: left;
+        margin-bottom: 20px !important;
+        font-size: 1.1rem;
+        font-style: italic;
+        /* Dá um toque mais de citação */
+    }
+
+    /* 4. A Foto: Fica à esquerda */
+    .eqp-foto {
+        grid-area: photo;
+        width: 100% !important;
+        /* Preenche os 130px da coluna */
+        height: auto;
+        margin: 0 !important;
+        cursor: pointer;
+    }
+
+    /* 5. O Nome e a Dica: Ficam colados ao lado direito da foto */
+    .eqp-nome {
+        grid-area: name;
+        font-size: 1.6rem !important;
+        text-align: left !important;
+        margin: 0 !important;
+        align-self: end;
+        /* Encosta o nome mais para baixo para alinhar com o centro da foto */
+    }
+
+    .eqp-dica {
+        grid-area: hint;
+        text-align: left !important;
+        font-size: 0.75rem !important;
+        margin: 0 !important;
+        align-self: start;
+    }
+
+    /* 6. A Descrição (A Gaveta): Aparece por baixo de tudo */
+    .eqp-desc-wrapper {
+        grid-area: desc;
+        margin-top: 15px !important;
+        width: 100%;
+    }
+
+    .eqp-desc {
+        text-align: left !important;
+    }
+}
+
+/* ================================================================== */
+/* 📱 ADAPTAÇÃO TOTAL PARA MOBILE (Telemóvel) 📱                      */
+/* ================================================================== */
+/* ================================================================== */
+/* 📱 ADAPTAÇÃO TOTAL PARA MOBILE (Telemóvel) 📱                      */
+/* ================================================================== */
+/* ================================================================== */
+/* 📱 ADAPTAÇÃO TOTAL PARA MOBILE (Telemóvel) 📱                      */
+/* ================================================================== */
+@media (max-width: 768px) {
+
+    .eqp-cabecalho {
+        margin-bottom: 50px;
+    }
+
+    /* 1. Empilha os blocos principais na vertical e força o centro */
+    .eqp-membro,
+    .eqp-esq,
+    .eqp-dir {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100%;
+        margin-bottom: 80px !important;
+        gap: 0 !important;
+    }
+
+    /* 2. Bloco da Foto e Citação */
+    .eqp-foto-caixa {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        margin-bottom: 15px !important;
+        /* Espaço apertado antes do nome */
+    }
+
+    /* 3. A Frase: Letra mais pequena e largura controlada para quebrar bonito no centro */
+    .eqp-citacao {
+        order: 1 !important;
+        text-align: center !important;
+        margin: 0 auto 15px auto !important;
+        /* Margens limpas e automáticas nas laterais */
+        font-size: 1rem !important;
+        /* Letra reduzida */
+        font-style: italic;
+        padding: 0 15px;
+        max-width: 260px !important;
+        /* Força o texto a não se esticar, criando um bloco central */
+        line-height: 1.4 !important;
+    }
+
+    /* 4. A Foto: Ligeiramente mais pequena para o conjunto respirar */
+    .eqp-foto {
+        order: 2 !important;
+        width: 150px !important;
+        /* Reduzido de 180px para 150px */
+        height: auto !important;
+        margin: 0 auto !important;
+        cursor: pointer;
+    }
+
+    /* 5. Bloco de Texto (Nome, Dica, Descrição) */
+    .eqp-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* 6. O Nome: Fonte reduzida para acompanhar a nova escala */
+    .eqp-nome {
+        font-size: 1.6rem !important;
+        /* Reduzido de 1.8rem */
+        margin: 0 auto 5px auto !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* 7. A Letra Miúda (Dica) */
+    .eqp-dica {
+        font-size: 0.7rem !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* 8. A Descrição (A Gaveta) */
+    .eqp-desc-wrapper {
+        width: 100% !important;
+        margin-top: 15px !important;
+        display: flex;
+        justify-content: center;
+    }
+
+    .eqp-desc {
+        text-align: center !important;
+        margin: 0 auto !important;
+        padding: 0 20px !important;
+        font-size: 1.1rem !important;
+        max-width: 300px !important;
+    }
+}
