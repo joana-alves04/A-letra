@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+body {
+    background: #FEF8DD;
+    font-family: "Averia Serif Libre", serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+.page-ourique {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100dvh;
+    gap: 20px;
+}
+
+/* TV Retro */
+.tv-retro-wrapper {
+    background: #8a4a26;
+    padding: 15px;
+    border-radius: 12px;
+    width: 300px;
+}
+
+.tv-retro-screen {
+    background: #1a1a1a;
+    height: 150px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Mecânica */
+#barra-limite {
+    width: 90%;
+    height: 20px;
+    background: #333;
+    margin: 0 auto;
+    position: relative;
+}
+
+#ponteiro {
+    width: 5px;
+    height: 30px;
+    background: #fff;
+    position: absolute;
+    top: -5px;
+    left: 0;
+}
+
+#zona-resves {
+    width: 20px;
+    height: 20px;
+    background: #b33939;
+    position: absolute;
+    right: 10%;
+}
+
+.btn-tv {
+    padding: 15px 30px;
+    background-color: #6A3761;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-family: "Baloo 2", sans-serif;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}

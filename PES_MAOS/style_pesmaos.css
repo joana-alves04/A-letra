@@ -1,12 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
 
 * {
-    -webkit-tap-highlight-color: transparent !important;
-    -webkit-touch-callout: none !important;
-    outline: none !important;
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    outline: none;
+    -webkit-tap-highlight-color: transparent !important;
 }
 
 :root {
@@ -15,8 +14,6 @@
     --accent: #b33939;
     --font-serif: "Averia Serif Libre", Georgia, serif;
     --font-sans: "Baloo 2", system-ui, sans-serif;
-
-    /* Variáveis de posição controladas pelo JS */
     --cam-x: 0;
     --cam-y: 0;
 }
@@ -24,23 +21,16 @@
 body,
 html {
     width: 100%;
+    height: 100vh;
+    height: 100dvh;
     background-color: var(--bg-color);
-    font-family: var(--font-sans);
     color: var(--text-color);
-    -webkit-font-smoothing: antialiased;
-    /* Permitimos o scroll nativo vertical para a pista, mas bloqueamos o horizontal */
-    overflow-x: hidden;
+    font-family: var(--font-sans);
+    overflow: hidden;
+    user-select: none;
 }
 
-/* ── ESTRUTURA DA CÂMARA E MAPA ── */
-
-/* Dá uma altura de 400vh para permitir muito scroll (a nossa pista invisível) */
-#scroll-track {
-    height: 400vh;
-    width: 100%;
-}
-
-/* A câmara agora é FIXED! Fica trancada à janela, nunca falha no mobile */
+/* ── CÂMARA E MAPA ── */
 #camera {
     position: fixed;
     top: 0;
@@ -48,26 +38,61 @@ html {
     width: 100vw;
     height: 100vh;
     height: 100dvh;
-    /* Proteção anti-barras só na altura da janela */
     overflow: hidden;
     background-image: radial-gradient(rgba(44, 44, 84, 0.15) 2px, transparent 2px);
     background-size: 40px 40px;
-    /* Padrão de pontinhos para sentires o movimento */
 }
 
-/* O Mapa Gigante */
 #canvas-gigante {
     position: absolute;
     top: 0;
     left: 0;
     width: 300vw;
     height: 200vh;
-    /* O JS injeta o movimento suave nas variáveis */
     transform: translate(calc(var(--cam-x) * -100vw), calc(var(--cam-y) * -100vh));
     will-change: transform;
 }
 
-/* ── OS ECRÃS (As Zonas Parciais do Mapa) ── */
+/* ── ELEMENTOS CLICÁVEIS (Pegadas e Mãos) ── */
+.trilha {
+    position: absolute;
+    width: 8vw;
+    min-width: 60px;
+    max-width: 100px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    pointer-events: auto;
+    transform: rotate(var(--rot, 0deg));
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.15));
+    animation: pulsar-suave 2s infinite ease-in-out;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+@keyframes pulsar-suave {
+
+    0%,
+    100% {
+        transform: scale(1) rotate(var(--rot, 0deg));
+    }
+
+    50% {
+        transform: scale(1.08) rotate(var(--rot, 0deg));
+    }
+}
+
+.trilha:hover {
+    transform: scale(1.15) rotate(var(--rot, 0deg)) !important;
+}
+
+.trilha img {
+    width: 100%;
+    height: auto;
+    display: block;
+    pointer-events: none;
+}
+
+/* ── ECRÃS DE TEXTO ── */
 .screen {
     position: absolute;
     width: 100vw;
@@ -78,9 +103,9 @@ html {
     justify-content: center;
     padding: 0 10%;
     text-align: center;
+    pointer-events: none;
 }
 
-/* Posições Exatas de cada Ecrã no Mapa Z */
 #screen-1 {
     left: 0;
     top: 0;
@@ -101,19 +126,15 @@ html {
     top: 100vh;
 }
 
-/* ── TEXTOS E ELEMENTOS VISUAIS (TRILHA/IMAGENS) ── */
 .reveal-text {
     font-family: var(--font-serif);
     font-size: clamp(1.8rem, 4vw, 3rem);
-    font-weight: 400;
-    line-height: 1.4;
+    background: rgba(247, 241, 227, 0.85);
+    padding: 20px 30px;
+    border-radius: 15px;
     opacity: 0.3;
     transform: translateY(20px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-    background: var(--bg-color);
-    /* Fundo sólido para ler bem por cima da trilha */
-    padding: 15px;
-    border-radius: 12px;
+    transition: opacity 0.8s, transform 0.8s;
 }
 
 .reveal-text.is-visible {
@@ -121,65 +142,25 @@ html {
     transform: translateY(0);
 }
 
-.trilha {
-    position: absolute;
-    font-size: clamp(3rem, 8vw, 5rem);
-    opacity: 0.6;
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* CLÍMAX FINAL E BOTÕES */
+.caos-container {
+    pointer-events: auto;
 }
 
-/* Faz a imagem da pegada.png assumir o tamanho exato que os emojis tinham */
-.trilha img {
-    width: 1em;
-    height: 1em;
-    object-fit: contain;
-}
-
-.dica-scroll {
-    position: absolute;
-    bottom: 10vh;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.5;
-    animation: piscar 2s infinite;
-}
-
-@keyframes piscar {
-
-    0%,
-    100% {
-        opacity: 0.3;
-        transform: translateY(0);
-    }
-
-    50% {
-        opacity: 1;
-        transform: translateY(10px);
-    }
-}
-
-/* ── CLÍMAX E BOTÕES ── */
 .pre-title {
-    font-family: var(--font-sans);
     font-size: clamp(1rem, 2vw, 1.5rem);
     text-transform: uppercase;
     letter-spacing: 0.2em;
     opacity: 0.8;
-    margin: 0 0 15px 0;
+    margin-bottom: 10px;
 }
 
 .title-expressao {
     font-family: var(--font-serif);
     font-size: clamp(2.5rem, 6vw, 4.5rem);
-    font-weight: 700;
-    line-height: 1.1;
-    margin: 0 0 40px 0;
     color: var(--accent);
-    text-shadow: 0 10px 30px rgba(179, 57, 57, 0.2);
+    margin-bottom: 30px;
+    line-height: 1.1;
 }
 
 .end-buttons {
@@ -187,53 +168,41 @@ html {
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    width: 100%;
 }
 
 .final-btn {
-    border: none;
     border-radius: 50px;
-    cursor: pointer;
-    font-family: var(--font-sans);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    transition: all 0.3s ease;
     color: white !important;
     text-decoration: none;
+    padding: 18px 28px;
+    width: 100%;
+    max-width: 360px;
+    display: block;
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
+    transition: 0.3s;
 }
 
 .btn-top {
     background-color: var(--accent);
-    font-size: clamp(0.85rem, 1.5vw, 1.1rem);
-    width: 90%;
-    max-width: 360px;
-    padding: 18px 28px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 20px rgba(179, 57, 57, 0.3);
 }
 
 .btn-bottom {
     background-color: #2c2c54;
-    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
-    width: 75%;
     max-width: 260px;
-    padding: 14px 24px;
+    font-size: 0.85rem;
+    padding: 14px;
 }
 
 .final-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
-/* MOBILE AJUSTES FINAIS */
 @media (max-width: 768px) {
     #screen-4 {
-        padding-bottom: 12vh !important;
-        /* Proteção das Barras no último ecrã */
+        padding-bottom: 10vh !important;
     }
 }
