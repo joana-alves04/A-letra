@@ -459,20 +459,28 @@ a {
 }
 
 .sobre-botoes {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
+  /* Força os botões a ficarem empilhados */
+  align-items: flex-start !important;
   gap: 15px;
 }
 
 /* BOTÕES / TÍTULOS: Averia Serif, Bordeaux, Negrito */
 .btn-revela {
-  background: none;
-  border: none;
+  -webkit-appearance: none !important;
+  /* Corta o estilo padrão do iOS/Safari */
+  appearance: none !important;
+  /* Corta o estilo padrão do Android/Chrome */
+  background: transparent !important;
+  /* Remove fundos cinzentos */
+  border: none !important;
+  /* Remove bordas nativas */
   text-align: left;
   font-family: var(--font-serif);
   font-size: 1.4rem;
   font-weight: 700 !important;
-  color: var(--accent);
+  color: var(--accent) !important;
   cursor: pointer;
   transition: 0.3s;
   padding: 0;
