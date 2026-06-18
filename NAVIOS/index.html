@@ -2,10 +2,10 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Ficar a Ver Navios</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Baloo+2:wght@400&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@700&family=Baloo+2:wght@400;500;600&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -43,9 +43,10 @@
       z-index: 10;
     }
 
+    /* Alterado para empurrar o "FICASTE A VER NAVIOS!" um pouco para baixo */
     #sec-navios .hero {
       justify-content: flex-start;
-      padding-top: 80px;
+      padding-top: 130px; 
     }
 
     .hero h1 {
@@ -114,7 +115,7 @@
       align-items: flex-start;
       gap: 20px;
       z-index: 10;
-      transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1), top 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .card-origem      { left: 22%; }
@@ -144,11 +145,12 @@
     .card-origem .icone       { transform: scaleX(-1); }
     .card-origem .icone:hover { transform: scaleX(-1) scale(1.1); }
 
+    /* ── CONTEÚDO LATERAL / TRANSIÇÕES ────────────────────────── */
     .conteudo {
       position: fixed;
       top: 30%;
       height: fit-content;
-      max-width: 400px;
+      width: min(380px, 90vw);
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -156,9 +158,8 @@
     }
 
     .conteudo-origem {
-      left: -40%;
+      left: -45%;
       transition: left 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-      width: min(380px, 90vw);
     }
 
     .conteudo-origem .btn { width: 100%; text-align: center; }
@@ -223,7 +224,7 @@
 
     .btn-voltar-secao:hover { background-color: #2a7f8f; color: #ffffff; }
 
-    /* ── CONTEÚDO PÁGINAS (Sebastianismo, etc) ──────────── */
+    /* ── CONTEÚDO PÁGINAS INTERNAS ──────────────────── */
     .conteudo-pagina {
       position: fixed;
       top: 10%;
@@ -286,21 +287,13 @@
       display: block;
     }
 
-    .navio {
+    /* BARCOS POR CIMA DAS ONDAS */
+    .navio, .navio-desfocado {
       width: clamp(80px, 10vw, 130px);
       position: absolute;
-      bottom: 28%;
+      bottom: 45px; 
       right: 5%;
-      z-index: 3;
-      animation: balancar 3s ease-in-out infinite;
-    }
-
-    .navio-desfocado {
-      width: clamp(80px, 10vw, 130px);
-      position: absolute;
-      bottom: 28%;
-      right: 5%;
-      z-index: 3;
+      z-index: 5; 
       animation: balancar 3s ease-in-out infinite;
     }
 
@@ -309,7 +302,7 @@
       50%       { transform: rotate(1.5deg)  translateY(-5px); }
     }
 
-    /* ── ONDAS ───────────────────────────────────────────── */
+    /* ── ONDAS ─────────────────── */
     .waves-section {
       width: 100%;
       display: flex;
@@ -318,7 +311,7 @@
       position: absolute;
       bottom: 0;
       left: 0;
-      z-index: 2;
+      z-index: 2; 
     }
 
     .waves-section img {
@@ -329,17 +322,18 @@
 
     .wave-right { margin-left: -2px; }
 
-    /* ── RESPONSIVO ──────────────────────────────────────── */
+    /* ── RESPONSIVO ── */
     @media (max-width: 768px) {
       .hero {
         gap: 5px;
         padding: 30px 20px;
       }
 
-      #sec-navios .hero {
-        padding-top: 20px;
+      /* Ajuste proporcional para descer o título no ecrã do telemóvel */
+      #sec-navios .hero { 
+        padding-top: 140px; 
       }
-
+      
       .hero h1 { font-size: 1rem; }
 
       .btn-group {
@@ -362,91 +356,94 @@
         font-size: 0.6rem;
       }
 
+      /* Cards no Mobile */
       .card {
-        left: 0;
+        left: 50% !important;
         width: 100vw;
-        transform: none;
         align-items: center;
         margin: 0;
-        transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       .card h2 { font-size: 0.8rem; text-align: center; white-space: normal; }
       .card .icone { width: 60px; }
 
-      .card-origem      { top: 12%; bottom: auto; }
-      .card-significado { top: 50%; bottom: auto; align-items: center; }
+      .card-origem      { top: 15%; bottom: auto; transform: translateX(-50%); }
+      .card-significado { top: 52%; bottom: auto; align-items: center; transform: translateX(-50%); }
 
       .estado-origem .card-origem,
       .estado-significado .card-origem {
-        transform: translateY(-300%);
+        transform: translate(-50%, -300%);
       }
-
       .estado-origem .card-significado,
       .estado-significado .card-significado {
-        transform: translateY(300%);
+        transform: translate(-50%, 300%);
       }
 
+      /* Conteúdo Alinhado */
       .conteudo {
-        top: 12%;
-        left: 10%;
-        max-width: 80vw;
-        gap: 16px;
+        top: 22%;
+        left: 0 !important;
+        width: 100vw;
+        max-width: none;
+        padding: 0 10%;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .conteudo > div {
+        width: 100%;
+        max-width: 320px;
       }
 
       .conteudo-origem {
-        left: 50%;
-        transform: translateX(-150vw);
+        transform: translateX(-100vw);
         transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 80vw;
       }
-
-      .estado-origem .conteudo-origem { transform: translateX(-50%); }
+      .estado-origem .conteudo-origem { 
+        transform: translateX(0); 
+      }
 
       .conteudo-significado {
-        left: 10%;
-        transform: translateX(150vw);
+        transform: translateX(100vw);
         transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
       }
+      .estado-significado .conteudo-significado { 
+        transform: translateX(0); 
+      }
 
-      .estado-significado .conteudo-significado { transform: translateX(0); }
-
+      /* Páginas Internas */
       .conteudo-pagina {
         top: 8%;
         left: 5%;
         max-width: 70%;
       }
-
       .conteudo-pagina h1 { font-size: 1rem; }
       .conteudo-pagina p  { font-size: 0.72rem; }
 
       .ancora-btn { bottom: 25%; }
 
+      /* Barco por cima das ondas no mobile */
       .navio, .navio-desfocado {
-        width: clamp(50px, 15vw, 90px);
-        bottom: 25vh;
-        right: 3%;
+        width: clamp(65px, 15vw, 95px);
+        bottom: 35px; 
+        right: 5%;
+        z-index: 5;
       }
 
       .personagem { height: 40%; bottom: 22%; }
-
+      
       .waves-section {
-        height: 25vh;
-        background-image: url('imagens/ondas.png'), url('imagens/ondas.png');
-        background-size: 50% auto, 50% auto;
-        background-position: left bottom, right bottom;
-        background-repeat: no-repeat;
+        height: auto;
       }
-
-      .waves-section img { display: none; }
+      .waves-section img {
+        display: block;
+        width: 50%;
+        height: auto;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 1: ÍNDICE ──────────────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao ativa" id="sec-index">
     <div class="hero">
       <h1>O NAVIO CHEGA AGORA!</h1>
@@ -458,9 +455,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 2: LOADING 1 ───────────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-loading1">
     <div class="hero">
       <h1 id="loading1-texto">A AJUSTAR CONDIÇÕES CLIMATÉRICAS...</h1>
@@ -471,9 +465,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 3: FOCAR TELESCÓPIO ────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-focar">
     <div class="hero">
       <h1>CONSEGUES VER?</h1>
@@ -486,9 +477,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 4: LOADING 2 ───────────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-loading2">
     <div class="hero">
       <h1 id="loading2-texto">DEIXA O NEVOEIRO PASSAR...</h1>
@@ -499,9 +487,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 5: FICASTE A VER NAVIOS ────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-navios">
     <div class="hero">
       <h1>FICASTE A VER NAVIOS!</h1>
@@ -519,9 +504,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 6: ESCOLHA ─────────────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-escolha">
     <button class="btn-voltar-secao" onclick="irPara('sec-navios')">VOLTAR</button>
 
@@ -541,17 +523,17 @@
         <button class="btn" onclick="irPara('sec-descobrimentos')">DESCOBRIMENTOS</button>
         <button class="btn" onclick="irPara('sec-invasoes')">INVASÕES FRANCESAS</button>
       </div>
-      <button class="btn-voltar" style="align-self: flex-end;" onclick="voltar()">VOLTAR</button>
+      <button class="btn-voltar" style="margin-top: 10px;" onclick="voltar()">VOLTAR</button>
     </div>
 
     <div class="conteudo conteudo-significado">
-      <h3>SIGNIFICADO DA EXPRESSÃO</h3>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; flex-direction: column; gap: 8px; text-align: center;">
+        <h3>SIGNIFICADO DA EXPRESSÃO</h3>
         <p>Ficar à espera de alguém ou algo que nunca aparecerá.</p>
         <p>Ser enganado depois de ter confiado em algo ou alguém.</p>
         <p>Ficar decepcionado/a.</p>
       </div>
-      <button class="btn-voltar" onclick="voltar()">VOLTAR</button>
+      <button class="btn-voltar" style="margin-top: 10px;" onclick="voltar()">VOLTAR</button>
     </div>
 
     <div class="waves-section">
@@ -560,9 +542,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 7: SEBASTIANISMO ───────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-sebastianismo">
     <div class="conteudo-pagina">
       <h1>SEBASTIANISMO</h1>
@@ -583,9 +562,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 8: DESCOBRIMENTOS ──────────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-descobrimentos">
     <div class="conteudo-pagina">
       <h1>DESCOBRIMENTOS</h1>
@@ -602,9 +578,6 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════════════════════════════ -->
-  <!-- SECÇÃO 9: INVASÕES FRANCESAS ──────────────────────────── -->
-  <!-- ════════════════════════════════════════════════════════ -->
   <section class="secao" id="sec-invasoes">
     <div class="conteudo-pagina">
       <h1>INVASÕES FRANCESAS</h1>
@@ -624,17 +597,14 @@
   <script>
     let estadoEscolha = '';
 
-    // ── NAVEGAÇÃO ENTRE SECÇÕES ────────────────────────────
     function irPara(secaoId) {
       document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
       document.getElementById(secaoId).classList.add('ativa');
       
-      // Inicia timers se necessário
       if (secaoId === 'sec-loading1') iniciarLoading1();
       if (secaoId === 'sec-loading2') iniciarLoading2();
     }
 
-    // ── LOADING 1 ──────────────────────────────────────────
     function iniciarLoading1() {
       const elem = document.getElementById('loading1-texto');
       elem.textContent = 'A AJUSTAR CONDIÇÕES CLIMATÉRICAS...';
@@ -648,7 +618,6 @@
       }, 12000);
     }
 
-    // ── LOADING 2 ──────────────────────────────────────────
     function iniciarLoading2() {
       const elem = document.getElementById('loading2-texto');
       elem.textContent = 'DEIXA O NEVOEIRO PASSAR...';
@@ -666,7 +635,6 @@
       }, 18000);
     }
 
-    // ── ESCOLHA CARDS ANIMAÇÃO ─────────────────────────────
     function abrir(qual) {
       estadoEscolha = qual;
       document.body.classList.add('estado-' + qual);
