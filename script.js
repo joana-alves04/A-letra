@@ -55,6 +55,29 @@ function initHomeVideoControls() {
   }
 }
 
+// ── MOTOR DA PÁGINA SOBRE NÓS (CLIQUE LATERAL) ────────────────────────────
+function initSobreRevela() {
+  document.querySelectorAll('.sobre-conteudo-grid').forEach(grid => {
+    const botoes = grid.querySelectorAll('.btn-revela');
+    const paineis = grid.querySelectorAll('.painel-item');
+
+    botoes.forEach(btn => {
+      btn.onclick = function () {
+        const targetId = this.getAttribute('data-target');
+
+        // Remove estado ativo de todos os botões e painéis deste bloco
+        botoes.forEach(b => b.classList.remove('ativo-btn'));
+        paineis.forEach(p => p.classList.remove('ativo'));
+
+        // Ativa apenas o botão clicado e o seu painel
+        this.classList.add('ativo-btn');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) targetPanel.classList.add('ativo');
+      };
+    });
+  });
+}
+
 // ── MOTOR DO ESTENDAL ─────────────────────────────────────────────────────
 function initEstendalScrollytelling() {
   const page = document.querySelector('.estendal-page-scrolly');
@@ -122,7 +145,6 @@ function initEstendalScrollytelling() {
       if (window.innerWidth > 768) initEstendalScrollytelling();
     };
     window.addEventListener('resize', window.calculateEstendalDimensions);
-
     return;
   }
 
@@ -254,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initObservers();
   initEstendalScrollytelling();
   initHomeVideoControls();
+  initSobreRevela();
 
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
@@ -262,34 +285,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// ── SISTEMA DE NAVEGAÇÃO SUAVE E EVENTOS GLOBAIS ─────────────────────────
+// ── SISTEMA DE NAVEGAÇÃO SUAVE GERAL ──────────────────────────────────────
 document.addEventListener("click", async (e) => {
 
-  // 1. SOLUÇÃO DEFINITIVA DA EQUIPA (Event Delegation)
-  // Ouve globalmente os cliques. Agora deteta se clicas no NOME ou na FOTO!
+  // EVENT DELEGATION PARA EQUIPA
   const btnEquipa = e.target.closest('.eqp-nome, .eqp-foto');
-
   if (btnEquipa) {
-    // Procura o contentor principal (.eqp-membro) para encontrar a gaveta certa
     const membroGeral = btnEquipa.closest('.eqp-membro');
     const gavetaDescricao = membroGeral.querySelector('.eqp-desc-wrapper');
     const dicaTexto = membroGeral.querySelector('.eqp-dica');
 
     if (gavetaDescricao) {
       gavetaDescricao.classList.toggle('aberto');
-
       if (gavetaDescricao.classList.contains('aberto')) {
         if (dicaTexto) { dicaTexto.style.opacity = '0'; dicaTexto.style.transform = 'translateY(-10px)'; }
       } else {
         if (dicaTexto) { dicaTexto.style.opacity = '0.7'; dicaTexto.style.transform = 'translateY(0)'; }
       }
     }
-    return; // Pára aqui para que o Router Ajax não tente processar o clique
+    return;
   }
 
-  // 2. LÓGICA DO ROUTER AJAX
+  // ROUTER AJAX
   const link = e.target.closest('a');
-
   if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname || link.classList.contains('link-direto')) return;
 
   e.preventDefault();
@@ -307,7 +325,6 @@ document.addEventListener("click", async (e) => {
   }
 
   try {
-    // MAGIA AQUI: { cache: 'no-cache' } garante que vais sempre buscar o HTML novo
     const response = await fetch(targetUrl, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Erro');
 
@@ -344,10 +361,10 @@ document.addEventListener("click", async (e) => {
         container.style.transform = 'translateX(0vw)';
       }
 
-      // Reinicializa todos os scripts nas páginas injetadas dinamicamente
       initObservers();
       initEstendalScrollytelling();
       initHomeVideoControls();
+      initSobreRevela();
       isAnimating = false;
     }, 800);
 
