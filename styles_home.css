@@ -311,7 +311,7 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LAYOUT INTERIOR DAS PÁGINAS GERAL
+   LAYOUT INTERIOR DAS PÁGINAS GERAL (Sobre nós / Equipa)
    ═══════════════════════════════════════════════════════════════════════════ */
 .inner-page {
   display: flex;
@@ -430,9 +430,100 @@ a {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   EXPRESSÕES — SCROLLYTELLING (O ESTENDAL UNIFICADO E PERFEITO)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.estendal-page-scrolly {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  background: var(--background);
+  overscroll-behavior: none;
+}
+
+.sticky-ecra-scrolly {
+  position: sticky;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.facade-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fachada-scrolly-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.scrollytelling-total-spacer {
+  width: 100%;
+  height: 800vh;
+  position: relative;
+  pointer-events: none;
+}
+
+.clothesline-track-scrolly {
+  position: absolute;
+  top: 65.4%;
+  left: 0;
+  transform: translateX(0);
+  display: flex;
+  gap: 8vw;
+  padding-left: 41.5vw;
+  padding-right: 41.5vw;
+  align-items: flex-start;
+  z-index: 2;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.clothesline-track-scrolly.cards-visible {
+  opacity: 1;
+}
+
+.estendal-card-scrolly {
+  display: block;
+  flex-shrink: 0;
+  width: 17vw;
+  min-width: 150px;
+  max-width: 250px;
+  margin-top: -35px;
+  transform-origin: top center;
+  transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.4s ease;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.15)) brightness(0.85);
+}
+
+.estendal-card-scrolly.is-active {
+  transform: scale(1.10);
+  filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.35)) brightness(1);
+  z-index: 10;
+}
+
+.estendal-card-scrolly img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
    PÁGINA SOBRE NÓS: CLIQUE LATERAL E AFINAÇÕES DE GRID
    ═══════════════════════════════════════════════════════════════════════════ */
-/* ── REDUZIR ESPAÇOS MORTOS PARA EVITAR "MINI SCROLL" NO DESKTOP ── */
 @media (min-width: 769px) {
   .inner-page.com-botao-voltar {
     padding-top: 60px !important;
@@ -461,7 +552,6 @@ a {
 .sobre-botoes {
   display: flex !important;
   flex-direction: column !important;
-  /* Força os botões a ficarem empilhados */
   align-items: flex-start !important;
   gap: 15px;
 }
@@ -469,13 +559,9 @@ a {
 /* BOTÕES / TÍTULOS: Averia Serif, Bordeaux, Negrito */
 .btn-revela {
   -webkit-appearance: none !important;
-  /* Corta o estilo padrão do iOS/Safari */
   appearance: none !important;
-  /* Corta o estilo padrão do Android/Chrome */
   background: transparent !important;
-  /* Remove fundos cinzentos */
   border: none !important;
-  /* Remove bordas nativas */
   text-align: left;
   font-family: var(--font-serif);
   font-size: 1.4rem;
@@ -531,6 +617,7 @@ a {
 .painel-placeholder {
   font-style: italic !important;
   color: var(--muted-fg) !important;
+  font-size: 1rem !important;
 }
 
 /* Garante que a dica só tem opacidade quando está ativada. */
@@ -538,12 +625,6 @@ a {
   opacity: 0.8 !important;
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
-   ═══════════════════════════════════════════════════════════════════════════ */
-/* ═══════════════════════════════════════════════════════════════════════════
-   ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
-   ═══════════════════════════════════════════════════════════════════════════ */
 /* ═══════════════════════════════════════════════════════════════════════════
    ADAPTAÇÕES PARA TELEMÓVEL UNIFICADAS (MOBILE RESPONSIVE)
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -607,7 +688,7 @@ a {
 
   .inner-section {
     grid-template-columns: 1fr;
-    padding: 25px 0 !important;
+    padding: 35px 0 !important;
     align-items: flex-start !important;
     gap: 15px !important;
   }
@@ -620,9 +701,7 @@ a {
 
   .sobre-botoes {
     border-bottom: none !important;
-    /* ⚡ REMOVIDA A RISCA DO MEIO */
     padding-bottom: 5px !important;
-    /* ⚡ Ajustado para o texto ficar mais próximo */
     margin-bottom: 0 !important;
     gap: 12px !important;
   }
@@ -636,8 +715,6 @@ a {
     display: block !important;
     position: relative;
   }
-
-  /* A Dica "(Seleciona um tópico...)" volta a aparecer, herdando os estilos do desktop! */
 
   .painel-item {
     position: absolute !important;
@@ -653,21 +730,8 @@ a {
     position: relative !important;
     visibility: visible;
     margin-top: 10px !important;
-    /* ⚡ Pequeno respiro antes do texto */
     transform: translateY(0) !important;
     transition: opacity 0.4s ease 0.2s, transform 0.4s ease 0.2s, visibility 0s !important;
-  }
-
-  /* Estilo para a Dica Inicial da página Sobre Nós */
-  .painel-placeholder {
-    font-style: italic !important;
-    color: var(--muted-fg) !important;
-    font-size: 13px !important;
-  }
-
-  /* Garante que a dica só tem opacidade quando está ativada. */
-  .painel-placeholder.ativo {
-    opacity: 0.8 !important;
   }
 
   /* ── SCROLLYTELLING (ESTENDAL) ── */
