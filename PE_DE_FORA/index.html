@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expressão: Acordar com os pés de fora - HARD</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300;400;700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --font-serif: "Averia Serif Livre", Georgia, serif;
+    --font-sans: "Baloo 2", sans-serif;
+}
+
+body{
+    margin:0;
+    min-height:100dvh;
+    width:100vw;
+    overflow:hidden;
+    font-family:var(--font-sans);
+    background-image: url("../imgs/quarto.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position:fixed;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+}
+
+@media (max-width: 768px) {
+    body {
+        background-image: url("../imgs/quarto_telemovel.jpg");
+    }
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.40);
+    pointer-events:none;
+    z-index:1;
+}
+
+#timer{
+    position:fixed;
+    top:clamp(10px, 2vw, 20px);
+    left:clamp(10px, 2vw, 20px);
+    color:white;
+    font-size:clamp(18px, 4vw, 30px);
+    font-weight:bold;
+    z-index:10;
+    text-shadow:0 0 10px black;
+    font-family:var(--font-sans);
+}
+
+#stressWrapper{
+    position:fixed;
+    top:clamp(10px, 2vw, 20px);
+    right:clamp(10px, 2vw, 20px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    z-index:10;
+}
+
+#stressLabel{
+    color:white;
+    font-weight:bold;
+    letter-spacing:2px;
+    font-size:clamp(10px, 2vw, 16px);
+    font-family:var(--font-sans);
+}
+
+#stressContainer{
+    width:clamp(20px, 4vw, 35px);
+    height:clamp(120px, 20vh, 240px);
+    background:rgba(255,255,255,0.2);
+    border-radius:12px;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+}
+
+#stressBar{
+    width:100%;
+    height:0%;
+    background:red;
+    transition:height 0.2s;
+}
+
+#msg{
+    position:fixed;
+    top:32%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    color:white;
+    font-size:clamp(22px, 5vw, 42px);
+    display:none;
+    text-align:center;
+    z-index:12;
+    font-family:var(--font-serif);
+    width:90%;
+    max-width:500px;
+    line-height:1.3;
+    padding:0 10px;
+}
+
+#msg img{
+    width:clamp(120px, 30vw, 220px);
+    border-radius:10px;
+    margin-top:12px;
+}
+
+#ruido{
+    position:fixed;
+    bottom:clamp(15px, 3vh, 30px);
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:clamp(16px, 4vw, 34px);
+    font-weight:900;
+    text-shadow:0 0 15px black;
+    z-index:10;
+    padding:0 10px;
+    pointer-events:none;
+}
+
+#objetivo{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,0.88);
+    color:white;
+    padding:clamp(14px, 3vw, 24px) clamp(16px, 4vw, 28px);
+    border-radius:12px;
+    text-align:center;
+    z-index:20;
+    width:90%;
+    max-width:360px;
+    font-family:var(--font-serif);
+    font-size:clamp(13px, 2.5vw, 16px);
+    line-height:1.6;
+}
+
+#botoesFinal{
+    position:fixed;
+    top:62%;
+    left:50%;
+    transform:translateX(-50%);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+    z-index:12;
+    width:90%;
+    max-width:440px;
+}
+
+.botaoFinal{
+    font-family: var(--font-sans);
+    background-color: transparent;
+    border: 1.5px solid #FFD32C;
+    color: #FFD32C;
+    padding: 8px 24px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    width: clamp(220px, 50vw, 320px);
+}
+
+.botaoFinal:hover{
+    background-color: #FFD32C;
+    color: #111;
+    transform: translateY(-2px);
+}
+
+.botaoFinal:active{
+    transform: scale(0.97);
+}
+
+.botaoFinal.amarelo{
+    background-color: #FFD32C;
+    color: #111;
+}
+
+.botaoFinal.amarelo:hover{
+    background-color: #FFD32C;
+    color: #111;
+    transform: none;
+}
+
+#significadoBox{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:rgba(0,0,0,0.90);
+    color:white;
+    padding:clamp(16px, 3vw, 24px);
+    border-radius:12px;
+    width:90%;
+    max-width:420px;
+    text-align:center;
+    display:none;
+    z-index:20;
+    font-family:var(--font-serif);
+    font-size:clamp(13px, 2.5vw, 16px);
+    line-height:1.7;
+}
+
+#btnVoltarSignificado{
+    margin-top:16px;
+    font-family: var(--font-sans);
+    background-color: transparent;
+    border: 1.5px solid #FFD32C;
+    color: #FFD32C;
+    padding: 8px 24px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    width: clamp(220px, 50vw, 320px);
+}
+
+#btnVoltarSignificado:hover{
+    background-color: #FFD32C;
+    color: #111;
+    transform: translateY(-2px);
+}
+
+#cama{
+    position:fixed;
+    bottom:clamp(20px, 5vh, 60px);
+    left:50%;
+    transform:translateX(-50%);
+    width:clamp(180px, 50vw, 260px);
+    height:clamp(70px, 12vh, 120px);
+    background:#FFD32C;
+    color:#111;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:clamp(14px, 3.5vw, 20px);
+    border-radius:10px;
+    z-index:10;
+    user-select:none;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing:1px;
+}
+
+#cama:active{
+    transform:translateX(-50%) scale(0.97);
+}
+
+.objeto{
+    position:fixed;
+    width:clamp(55px, 12vw, 90px);
+    cursor:pointer;
+    transition:transform 0.15s;
+    z-index:9;
+    touch-action:none;
+    user-select:none;
+    -webkit-user-drag:none;
+}
+
+.objeto:hover{ transform:scale(1.1); }
+.objeto:active{ transform:scale(0.95); }
+
+#contador{
+    position:fixed;
+    top:clamp(10px, 2vw, 20px);
+    left:50%;
+    transform:translateX(-50%);
+    color:white;
+    font-size:clamp(12px, 2.5vw, 18px);
+    font-weight:bold;
+    z-index:10;
+    text-shadow:0 0 8px black;
+    font-family:var(--font-sans);
+    text-align:center;
+    white-space:nowrap;
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="timer">Tempo: 35</div>
+<div id="contador" style="display:none"></div>
+
+<div id="stressWrapper">
+    <div id="stressLabel">STRESS</div>
+    <div id="stressContainer">
+        <div id="stressBar"></div>
+    </div>
+</div>
+
+<div id="msg"></div>
+<div id="ruido"></div>
+
+<div id="objetivo">
+    Olá, acabaste de acordar atrasado e tens de te arrumar o mais rápido possível para não faltares à tua reunião.
+
+    <br><br>
+
+    <b>Objetivo:</b><br>
+    — Levantar-te da cama<br>
+    — Encontrar todos os objetos<br>
+    — Não chegar ao stress máximo<br><br>
+
+    Clica em ACORDAR para começar
+</div>
+
+<div id="botoesFinal">
+    <button class="botaoFinal amarelo" id="meaningBtn">Saber mais sobre a expressão</button>
+    <button class="botaoFinal" id="retryBtn">Voltar à experiência</button>
+    <button class="botaoFinal" id="homeBtn">Página Inicial</button>
+</div>
+
+<div id="significadoBox">
+    <div id="significadoTexto"></div>
+    <button id="btnVoltarSignificado">Voltar</button>
+</div>
+
+<div id="cama">ACORDAR</div>
+
+<script>
+
+const cama           = document.getElementById("cama");
+const timerEl        = document.getElementById("timer");
+const contadorEl     = document.getElementById("contador");
+const msg            = document.getElementById("msg");
+const ruido          = document.getElementById("ruido");
+const stressBar      = document.getElementById("stressBar");
+const objetivo       = document.getElementById("objetivo");
+const botoesFinal    = document.getElementById("botoesFinal");
+const retryBtn       = document.getElementById("retryBtn");
+const meaningBtn     = document.getElementById("meaningBtn");
+const homeBtn        = document.getElementById("homeBtn");
+const significadoBox = document.getElementById("significadoBox");
+const significadoTexto = document.getElementById("significadoTexto");
+const btnVoltarSignificado = document.getElementById("btnVoltarSignificado");
+
+let tempo  = 35;
+let stress = 0;
+let jogo   = false;
+let jogoAtivo = false;
+
+const tarefas = ["despertador","roupa","cafe","chaves","escova"];
+let feitas    = 0;
+
+let timer, caos, caosRapido, ruidoInterval, stressInterval;
+
+function getZona(){
+    const margem  = 60;
+    const imgSize = Math.min(window.innerWidth * 0.12, 90);
+    return {
+        minX: margem,
+        maxX: Math.max(margem + 10, window.innerWidth  - imgSize - margem),
+        minY: margem + 50,
+        maxY: Math.max(margem + 60, window.innerHeight - imgSize - margem - 60)
+    };
+}
+
+cama.onclick = iniciar;
+
+function iniciar(){
+    if(jogo) return;
+    jogo      = true;
+    jogoAtivo = true;
+
+    cama.style.display       = "none";
+    objetivo.style.display   = "none";
+    contadorEl.style.display = "block";
+
+    atualizarContador();
+    criarTodos();
+
+    timer = setInterval(() => {
+        tempo--;
+        timerEl.textContent = "Tempo: " + tempo;
+        if(tempo <= 15) timerEl.style.color = "red";
+        if(tempo <= 0)  fim(false);
+    }, 1000);
+
+    caos       = setInterval(moverTudo, 2000);
+    caosRapido = setInterval(moverTudo, 700);
+
+    ruidoInterval = setInterval(() => {
+        const frases = [
+            "LEVANTA-TE AGORA",
+            "ESTÁS ATRASADO",
+            "CAFÉ!!!",
+            "ACORDA!!!",
+            "NÃO PENSES, CORRE"
+        ];
+        ruido.textContent = frases[Math.floor(Math.random() * frases.length)];
+    }, 700);
+
+    stressInterval = setInterval(() => {
+        stress += 2.5;
+        if(stress > 100) stress = 100;
+        stressBar.style.height = stress + "%";
+        if(stress >= 100) fim(false);
+    }, 500);
+}
+
+function criarTodos(){
+    tarefas.forEach(t => criar(t));
+}
+
+function criar(tipo){
+    const el = document.createElement("img");
+    el.classList.add("objeto");
+
+    const icons = {
+        despertador: "../imgs/relogio.png",
+        roupa:       "../imgs/tshirt.png",
+        cafe:        "../imgs/cafe.png",
+        chaves:      "../imgs/chaves.png",
+        escova:      "../imgs/escova_de_dentes.png"
+    };
+
+    el.src = icons[tipo];
+    el.dataset.tipo = tipo;
+    el.draggable = false;
+
+    posicionarAleatorio(el);
+
+    el.addEventListener("click", () => coletarObjeto(el));
+    el.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        if(!el._movendo) coletarObjeto(el);
+    }, { passive:false });
+
+    el.addEventListener("mousedown", (e) => iniciarDrag(e, el, "mouse"));
+    el.addEventListener("touchstart", (e) => {
+        el._movendo = false;
+        iniciarDrag(e.touches[0], el, "touch", e);
+    }, { passive:false });
+
+    document.body.appendChild(el);
+}
+
+function coletarObjeto(el){
+    if(!jogoAtivo) return;
+    if(!el.parentNode) return;
+    el.remove();
+    feitas++;
+    stress -= 18;
+    if(stress < 0) stress = 0;
+    stressBar.style.height = stress + "%";
+    atualizarContador();
+    if(feitas === tarefas.length) fim(true);
+}
+
+function atualizarContador(){
+    const restam = tarefas.length - feitas;
+    contadorEl.textContent = restam > 0 ? `Objetos restantes: ${restam}` : "";
+}
+
+function posicionarAleatorio(el){
+    const z = getZona();
+    el.style.left = Math.random() * (z.maxX - z.minX) + z.minX + "px";
+    el.style.top  = Math.random() * (z.maxY - z.minY) + z.minY + "px";
+}
+
+function moverTudo(){
+    if(!jogoAtivo) return;
+    document.querySelectorAll(".objeto").forEach(o => posicionarAleatorio(o));
+}
+
+function iniciarDrag(e, el, tipo, originalEvent){
+    if(!jogoAtivo) return;
+
+    const startX   = e.clientX;
+    const startY   = e.clientY;
+    const elStartX = parseInt(el.style.left) || 0;
+    const elStartY = parseInt(el.style.top)  || 0;
+    let arrastou   = false;
+
+    function moverEl(cx, cy){
+        const dx = cx - startX;
+        const dy = cy - startY;
+        if(Math.abs(dx) > 4 || Math.abs(dy) > 4){
+            arrastou = true;
+            el._movendo = true;
+        }
+        const z = getZona();
+        const imgSize = el.offsetWidth || 70;
+        const novoX = Math.min(Math.max(elStartX + dx, z.minX), z.maxX);
+        const novoY = Math.min(Math.max(elStartY + dy, z.minY), z.maxY + imgSize);
+        el.style.left = novoX + "px";
+        el.style.top  = novoY + "px";
+    }
+
+    if(tipo === "mouse"){
+        function onMove(e){ moverEl(e.clientX, e.clientY); }
+        function onUp(){
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup",   onUp);
+            if(!arrastou) coletarObjeto(el);
+        }
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup",   onUp);
+    } else {
+        if(originalEvent) originalEvent.preventDefault();
+        function onMove(e){
+            e.preventDefault();
+            moverEl(e.touches[0].clientX, e.touches[0].clientY);
+        }
+        function onEnd(){
+            document.removeEventListener("touchmove", onMove);
+            document.removeEventListener("touchend",  onEnd);
+        }
+        document.addEventListener("touchmove", onMove, { passive:false });
+        document.addEventListener("touchend",  onEnd);
+    }
+}
+
+function fim(vitoria){
+    jogoAtivo = false;
+    clearInterval(timer);
+    clearInterval(caos);
+    clearInterval(caosRapido);
+    clearInterval(ruidoInterval);
+    clearInterval(stressInterval);
+
+    document.querySelectorAll(".objeto").forEach(o => o.remove());
+    ruido.textContent        = "";
+    contadorEl.style.display = "none";
+
+    msg.style.display         = "block";
+    botoesFinal.style.display = "flex";
+
+    if(vitoria){
+        msg.innerHTML = `
+            <div>Sobreviveste à manhã... milagrosamente.</div>
+            <img src="../imgs/gato_feliz.gif" alt="gato feliz">
+        `;
+    } else {
+        msg.textContent = "Acordaste com os pés de fora.";
+    }
+}
+
+retryBtn.onclick  = () => location.reload();
+homeBtn.onclick   = () => location.href = '../expressoes.html';
+
+meaningBtn.onclick = () => {
+    msg.style.display            = "none";
+    botoesFinal.style.display    = "none";
+    significadoTexto.innerHTML   = `A expressão <b>"acordar com os pés de fora"</b> significa começar o dia em stress, desorganizado ou atrasado, como se tudo já tivesse corrido mal desde o início.`;
+    significadoBox.style.display = "block";
+};
+
+btnVoltarSignificado.onclick = () => {
+    significadoBox.style.display = "none";
+    msg.style.display            = "block";
+    botoesFinal.style.display    = "flex";
+};
+
+document.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+}, { passive: false });
+
+</script>
+
+</body>
+</html>
