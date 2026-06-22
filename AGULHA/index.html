@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expressão: Encontrar uma agulha num palheiro</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@300;400;700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+:root{
+    --font-serif: "Averia Serif Libre", Georgia, serif;
+    --font-sans: "Baloo 2", sans-serif;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    height:100vh;
+    background-image:url("../imgs/palha.png");
+    background-size:cover;
+    background-position:center;
+    font-family:var(--font-sans);
+}
+
+.agulha{
+    position:absolute;
+    width:clamp(50px, 8vw, 80px);
+    cursor:pointer;
+    transition:opacity 0.3s, transform 0.2s;
+}
+.agulha:hover{ transform:scale(1.1); }
+
+#overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:10;
+    cursor:pointer;
+}
+
+#caixa-central{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    z-index:11;
+    text-align:center;
+    pointer-events:none;
+    font-family:var(--font-serif);
+    width:90vw;
+}
+
+#label-objeto{
+    font-family:var(--font-serif);
+    font-size:clamp(1rem, 3vw, 1.5rem);
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#fff;
+    text-shadow:0 2px 8px rgba(0,0,0,0.7);
+    margin-bottom:16px;
+}
+
+#imagem-central{
+    max-width:min(55vw, 90%);
+    max-height:55vh;
+    border-radius:8px;
+    display:block;
+    margin:0 auto;
+}
+
+#titulo-final{
+    display:none;
+    position:fixed;
+    top: clamp(16px, 4vh, 40px);
+    width:100%;
+    text-align:center;
+    font-family:var(--font-serif);
+    font-size:clamp(1.1rem, 4vw, 2.2rem);
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#fff;
+    z-index:12;
+    padding:0 16px;
+    box-sizing:border-box;
+    text-shadow:
+        0 0 18px rgba(255,200,50,0.9),
+        0 0 40px rgba(255,160,0,0.6),
+        0 3px 8px rgba(0,0,0,0.9),
+        0 6px 20px rgba(0,0,0,0.7);
+}
+
+#botoes-finais{
+    display:none;
+    position:fixed;
+    top: 0;
+    bottom: auto;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    flex-direction:column;
+    align-items:center;
+    justify-content: flex-start;
+    padding-top: clamp(80px, 14vh, 130px);
+    gap:clamp(8px, 1.5vh, 14px);
+    z-index:11;
+    box-sizing:border-box;
+}
+
+#imagem-puto{
+    width:clamp(110px, 18vw, 180px);
+    margin-bottom:clamp(2px, 1vh, 10px);
+}
+
+.btn-final{
+    font-family: var(--font-sans);
+    background-color: #FFD32C;
+    border: 1.5px solid #FFD32C;
+    color: #fff;
+    padding: 8px 24px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    width: clamp(220px, 50vw, 320px);
+}
+
+.btn-final:hover{
+    background-color: #e6bb00;
+    border-color: #e6bb00;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+#significado{
+    display:none;
+    position:fixed;
+    bottom:clamp(16px, 4vh, 40px);
+    left:50%;
+    transform:translateX(-50%);
+    width:min(90%, 700px);
+    background:rgba(0,0,0,0.75);
+    color:white;
+    padding:clamp(12px, 2vh, 18px);
+    border-radius:10px;
+    font-family:var(--font-serif);
+    font-size:clamp(0.85rem, 2vw, 1.1rem);
+    text-align:center;
+    z-index:20;
+    box-sizing:border-box;
+}
+
+@media (max-width: 480px) {
+    .agulha { width: 48px; }
+    #imagem-puto { width: clamp(90px, 32vw, 130px); }
+    .btn-final { width: 85vw; font-size: 0.72rem; }
+    #titulo-final { font-size: 1rem; }
+    #botoes-finais { padding-top: clamp(60px, 11vh, 100px); }
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="overlay"></div>
+
+<div id="caixa-central">
+    <div id="label-objeto"></div>
+    <img id="imagem-central" src="">
+</div>
+
+<div id="titulo-final">Encontraste a agulha no palheiro!</div>
+
+<div id="botoes-finais">
+    <img id="imagem-puto" src="../imgs/imagem_do_puto com_a_lupa.png" alt="Puto com lupa">
+    <button class="btn-final" onclick="mostrarSignificado()">Saber mais sobre a expressão</button>
+    <button class="btn-final" onclick="location.reload()">Voltar à experiência</button>
+    <button class="btn-final" onclick="location.href='../expressoes.html'">Página Inicial</button>
+</div>
+
+<div id="significado"></div>
+
+<script>
+
+const resultados = [
+    { src: "../imgs/pa.png",        nome: "Encontraste uma pá!" },
+    { src: "../imgs/foice.png",     nome: "Encontraste uma foice!" },
+    { src: "../imgs/forquilha.png", nome: "Encontraste uma forquilha!" },
+    { src: "../imgs/picareta.png",  nome: "Encontraste uma picareta!" },
+    { src: "../imgs/agulha.png",    nome: "Encontraste a agulha!" }
+];
+
+const overlay       = document.getElementById("overlay");
+const caixaCentral  = document.getElementById("caixa-central");
+const labelObjeto   = document.getElementById("label-objeto");
+const imagemCentral = document.getElementById("imagem-central");
+const botoesFinais  = document.getElementById("botoes-finais");
+const tituloFinal   = document.getElementById("titulo-final");
+const significado   = document.getElementById("significado");
+
+let index = 0;
+
+overlay.addEventListener("click", () => {
+    overlay.style.display = "none";
+    caixaCentral.style.display = "none";
+});
+
+function criarAgulha(){
+    const img = document.createElement("img");
+    img.src = "../imgs/agulha.png";
+    img.classList.add("agulha");
+
+    const size = window.innerWidth < 480 ? 48 : 80;
+    img.style.left = Math.random() * (window.innerWidth  - size) + "px";
+    img.style.top  = Math.random() * (window.innerHeight - size) + "px";
+
+    img.addEventListener("click", () => {
+        img.remove();
+
+        const objeto = resultados[index];
+        index++;
+
+        if(objeto.nome === "Encontraste a agulha!"){
+            tituloFinal.style.display = "block";
+            botoesFinais.style.display = "flex";
+        } else {
+            labelObjeto.textContent = objeto.nome;
+            imagemCentral.src = objeto.src;
+            caixaCentral.style.display = "block";
+            overlay.style.display = "block";
+        }
+    });
+
+    document.body.appendChild(img);
+}
+
+for(let i = 0; i < 5; i++){
+    criarAgulha();
+}
+
+function mostrarSignificado(){
+    significado.style.display = "block";
+    significado.innerHTML = `
+        <b>Agulha no palheiro</b><br><br>
+        Esta expressão significa algo extremamente difícil de encontrar devido à sua pequena dimensão ou raridade num contexto muito grande ou confuso.<br><br>
+        É usada quando uma tarefa parece quase impossível por causa da quantidade de coisas irrelevantes à volta.
+    `;
+}
+
+</script>
+
+</body>
+</html>
