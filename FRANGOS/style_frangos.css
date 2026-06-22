@@ -2,11 +2,8 @@
 
 * {
     -webkit-tap-highlight-color: transparent !important;
-    /* Remove o flash azul ao clicar no mobile */
     -webkit-touch-callout: none !important;
-    /* Remove o menu de opções ao ficar a pressionar */
     outline: none !important;
-    /* Remove o contorno ao focar no desktop */
 }
 
 :root {
@@ -31,7 +28,6 @@ body {
     user-select: none;
     transition: background 0.8s ease;
     -webkit-user-select: none;
-    user-select: none;
 }
 
 body.galinha-mode {
@@ -49,7 +45,7 @@ body.insane {
     align-items: center;
 }
 
-/* JOGO DO FRANGO - BLINDADO CONTRA TREMORES DE IMAGEM */
+/* JOGO DO FRANGO */
 .frango {
     width: clamp(200px, 40vw, 350px);
     height: clamp(200px, 40vw, 350px);
@@ -59,7 +55,7 @@ body.insane {
     justify-content: center;
     align-items: center;
     margin: 0 auto;
-    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .animal {
@@ -85,7 +81,6 @@ body.insane {
     letter-spacing: 0.1em;
     cursor: pointer;
     transition: all 0.2s ease;
-    outline: none !important;
 }
 
 #turnBtn:hover {
@@ -93,21 +88,12 @@ body.insane {
     color: white;
 }
 
-#turnBtn:active {
-    transform: none !important;
-}
-
-/* ========================================= */
-/* TEXTO DO CONTADOR (BLINDADO CONTRA O SALTO) */
-/* ========================================= */
+/* TEXTO DO CONTADOR */
 h1 {
     margin-top: 30px;
     font-family: var(--font-serif);
     font-weight: 400;
     font-size: 2rem;
-
-    /* A MAGIA ACONTECE AQUI: Reserva 120px de altura desde o início. 
-       Quando o texto passar a duas linhas, vai preencher este espaço sem empurrar o botão para cima! */
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -136,23 +122,67 @@ h1 {
 }
 
 /* ========================================= */
-/* BOTÕES FINAIS (DESIGN SÓLIDO TIPO BARRIGA) */
+/* NOVA IMAGEM & PROTEÇÃO ANTI-CLIQUE ACIDENTAL */
 /* ========================================= */
+
+.imagem-final-frango {
+    /* Mínimo de 240px no mobile, escala com 55% da largura do ecrã e tranca no máximo de 360px no desktop */
+    width: clamp(240px, 55vw, 360px);
+    margin-bottom: 35px;
+    /* Aumentado ligeiramente para manter a distância ideal dos botões */
+    object-fit: contain;
+    animation: popInFrango 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popInFrango {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
 
 .end-buttons {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    animation: fadeIn 0.8s ease;
-    margin-top: 30px;
+    margin-top: 10px;
     width: 100%;
+    /* Ativa a barreira temporal contra cliques rápidos */
+    animation: protecaoClique 1.2s forwards;
 }
 
+@keyframes protecaoClique {
+    0% {
+        pointer-events: none;
+        /* Rato/Toque totalmente desativados */
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    80% {
+        pointer-events: none;
+        /* Mantém bloqueado enquanto surge no ecrã */
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        pointer-events: auto;
+        /* Liberta os botões para clique seguro */
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* FORMATO DAS CÁPSULAS FINAIS */
 .end-buttons a,
-.end-buttons button,
-.final-btn,
-.btn-voltar {
+.final-btn {
     border: none !important;
     border-radius: 50px !important;
     cursor: pointer;
@@ -166,14 +196,11 @@ h1 {
     text-align: center;
     box-sizing: border-box;
     display: inline-block;
-    outline: none !important;
 }
 
-/* O botão principal (Cápsula Maior: Laranja Escuro) */
+/* Botão Superior (Saber Mais) */
 .end-buttons a:first-child,
-.end-buttons button:first-child,
-.final-btn:first-child,
-.btn-voltar:first-child {
+.final-btn:first-child {
     background-color: #B86508 !important;
     font-size: 1.1rem;
     width: 340px;
@@ -181,11 +208,9 @@ h1 {
     max-width: 90vw;
 }
 
-/* O botão secundário (Cápsula Menor: Laranja Claro) */
+/* Botão Inferior (Página Inicial) */
 .end-buttons a:last-child,
-.end-buttons button:last-child,
-.final-btn:last-child,
-.btn-voltar:last-child {
+.final-btn:last-child {
     background-color: #E89C53 !important;
     font-size: 0.95rem;
     width: 250px;
@@ -194,25 +219,11 @@ h1 {
 }
 
 .end-buttons a:hover,
-.end-buttons button:hover,
-.final-btn:hover,
-.btn-voltar:hover {
+.final-btn:hover {
     transform: translateY(-3px);
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- SCROLLYTELLING (Narrativa e Vídeo) --- */
+/* --- SCROLLYTELLING (Mantido igual) --- */
 .page-sobre {
     background-color: var(--bg-color) !important;
     overflow-y: auto !important;
@@ -281,4 +292,100 @@ h1 {
     font-size: 1.2rem;
     opacity: 0.7;
     font-style: italic;
+}
+
+/* ================================================================== */
+/* BOTÃO DE VOLTAR FLUTUANTE (GLASSMORPHISM) - GERAL MOBILE           */
+/* ================================================================== */
+
+/* 1. Esconde o contentor inteiro no computador/tablet */
+.wrapper-btn-back {
+    display: none;
+}
+
+/* 2. O Botão de Vidro Universal (Estado Normal) */
+.btn-back {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+
+    /* Correção do alinhamento ótico do símbolo "<" */
+    padding: 0 3px 1px 0 !important;
+
+    color: #fff !important;
+    font-size: 20px !important;
+    font-family: "Baloo 2", sans-serif !important;
+    text-decoration: none;
+
+    /* Efeito Vidro com a cor #911F27 a 20% */
+    background: rgba(145, 31, 39, 0.2) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    /* Reflexos de luz na borda */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+
+    /* Sombra para descolar do fundo */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3. Efeito ao passar o rato (Hover) */
+.btn-back:hover {
+    background: rgba(145, 31, 39, 0.4) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 35px rgba(145, 31, 39, 0.2) !important;
+}
+
+/* 4. Efeito ao clicar/tocar (Active) */
+.btn-back:active {
+    background: rgba(145, 31, 39, 0.6) !important;
+    transform: translateY(1px) scale(0.95);
+    box-shadow: 0 4px 15px rgba(145, 31, 39, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ── REGRAS EXCLUSIVAS PARA O TELEMÓVEL ── */
+@media (max-width: 768px) {
+    .wrapper-btn-back {
+        display: block !important;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        /* Garante que fica por cima dos jogos, vídeos e textos */
+        pointer-events: none;
+        /* Deixa clicar apenas no botão redondo em si */
+    }
+}
+
+/* ========================================= */
+/* AJUSTES ESPECÍFICOS PARA MOBILE (TELEMÓVEL) */
+/* ========================================= */
+@media (max-width: 768px) {
+
+    /* Botão Superior (Saber Mais) */
+    .end-buttons a:first-child,
+    .final-btn:first-child {
+        font-size: 0.95rem;
+        width: 280px;
+        padding: 14px 20px;
+    }
+
+    /* Botão Inferior (Página Inicial) */
+    .end-buttons a:last-child,
+    .final-btn:last-child {
+        font-size: 0.85rem;
+        width: 220px;
+        padding: 12px 20px;
+    }
 }

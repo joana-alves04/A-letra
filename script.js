@@ -17,6 +17,67 @@ function initObservers() {
   }
 }
 
+// ── CONTROLOS DO VÍDEO DA HOMEPAGE ────────────────────────────────────────
+function initHomeVideoControls() {
+  const video = document.getElementById("meuVideo");
+  const btnPlay = document.getElementById("btnPlay");
+  const btnSound = document.getElementById("btnSound");
+  const imgPlay = document.getElementById("imgPlay");
+  const imgSound = document.getElementById("imgSound");
+
+  if (video && btnPlay && btnSound) {
+
+    function atualizarIconePlay() {
+      if (video.paused) imgPlay.src = "imgs/play.png";
+      else imgPlay.src = "imgs/pause.png";
+    }
+
+    function atualizarIconeSom() {
+      if (video.muted) imgSound.src = "imgs/som_off.png";
+      else imgSound.src = "imgs/som_on.png";
+    }
+
+    atualizarIconePlay();
+    atualizarIconeSom();
+
+    btnPlay.onclick = () => {
+      if (video.paused) video.play().catch(err => console.log("Erro ao dar play:", err));
+      else video.pause();
+    };
+
+    btnSound.onclick = () => {
+      video.muted = !video.muted;
+    };
+
+    video.addEventListener('play', atualizarIconePlay);
+    video.addEventListener('pause', atualizarIconePlay);
+    video.addEventListener('volumechange', atualizarIconeSom);
+  }
+}
+
+// ── MOTOR DA PÁGINA SOBRE NÓS (CLIQUE LATERAL) ────────────────────────────
+function initSobreRevela() {
+  document.querySelectorAll('.sobre-conteudo-grid').forEach(grid => {
+    const botoes = grid.querySelectorAll('.btn-revela');
+    const paineis = grid.querySelectorAll('.painel-item');
+
+    botoes.forEach(btn => {
+      btn.onclick = function () {
+        const targetId = this.getAttribute('data-target');
+
+        // Remove estado ativo de todos os botões e painéis deste bloco
+        botoes.forEach(b => b.classList.remove('ativo-btn'));
+        paineis.forEach(p => p.classList.remove('ativo'));
+
+        // Ativa apenas o botão clicado e o seu painel
+        this.classList.add('ativo-btn');
+        const targetPanel = document.getElementById(targetId);
+        if (targetPanel) targetPanel.classList.add('ativo');
+      };
+    });
+  });
+}
+
 // ── MOTOR DO ESTENDAL ─────────────────────────────────────────────────────
 function initEstendalScrollytelling() {
   const page = document.querySelector('.estendal-page-scrolly');
@@ -24,7 +85,6 @@ function initEstendalScrollytelling() {
 
   if (!page || !track) return;
 
-  // Limpeza de eventos antigos para evitar duplicações se o router for ativado
   if (window.handleEstendalScroll) {
     page.removeEventListener('scroll', window.handleEstendalScroll);
     window.removeEventListener('resize', window.calculateEstendalDimensions);
@@ -37,12 +97,11 @@ function initEstendalScrollytelling() {
 
   const isMobile = window.innerWidth <= 768;
 
-  // ====================================================================
-  // COMPORTAMENTO MOBILE: Deslize horizontal nativo (CSS Scroll Snap)
-  // ====================================================================
   if (isMobile) {
-    track.style.transform = 'none'; // Liberta o track do controlo JS
+    track.style.transform = 'none';
     track.classList.add('cards-visible');
+
+    let mobileScrollTimeout;
 
     window.handleMobileScroll = function () {
       const cards = track.querySelectorAll('.estendal-card-scrolly');
@@ -50,7 +109,6 @@ function initEstendalScrollytelling() {
       let centerIndex = 0;
       let minDistance = Infinity;
 
-      // Descobre qual é o cartão que está mais ao centro do ecrã
       cards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
         const cardCenter = rect.left + rect.width / 2;
@@ -61,32 +119,40 @@ function initEstendalScrollytelling() {
         }
       });
 
-      // Aplica a classe is-active ao cartão central
       cards.forEach(c => c.classList.remove('is-active'));
       if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
+
+      clearTimeout(mobileScrollTimeout);
+      mobileScrollTimeout = setTimeout(() => {
+        if (isAnimating) return;
+        const activeCard = cards[centerIndex];
+        if (!activeCard) return;
+
+        const rect = activeCard.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const diff = cardCenter - targetScreenCenter;
+
+        if (Math.abs(diff) > 2) {
+          track.scrollBy({ left: diff, behavior: 'smooth' });
+        }
+      }, 150);
     };
 
     track.addEventListener('scroll', window.handleMobileScroll, { passive: true });
-    setTimeout(window.handleMobileScroll, 100); // Disparo inicial
+    setTimeout(window.handleMobileScroll, 100);
 
-    // Recalcula caso o utilizador vire o telemóvel deitado (passando a desktop)
     window.calculateEstendalDimensions = function () {
       if (window.innerWidth > 768) initEstendalScrollytelling();
     };
     window.addEventListener('resize', window.calculateEstendalDimensions);
-
-    return; // Sai da função para não executar o código do Desktop
+    return;
   }
 
-  // ====================================================================
-  // COMPORTAMENTO DESKTOP: Scrollytelling (Scroll vertical -> Horizontal)
-  // ====================================================================
   let horizontalMoveMax = 0;
   let viewportWidth = window.innerWidth;
   let scrollTimeout;
   let isSnapping = false;
   let snapAnimationId;
-  const ajusteHorizontal = 0;
 
   function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
@@ -99,9 +165,14 @@ function initEstendalScrollytelling() {
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
       const percentage = Math.min(progress / duration, 1);
+
       page.scrollTop = start + distance * easeOutCubic(percentage);
-      if (progress < duration) snapAnimationId = requestAnimationFrame(step);
-      else isSnapping = false;
+
+      if (progress < duration) {
+        snapAnimationId = requestAnimationFrame(step);
+      } else {
+        isSnapping = false;
+      }
     }
     cancelAnimationFrame(snapAnimationId);
     snapAnimationId = requestAnimationFrame(step);
@@ -120,7 +191,7 @@ function initEstendalScrollytelling() {
   window.calculateEstendalDimensions = function () {
     viewportWidth = window.innerWidth;
     if (viewportWidth <= 768) {
-      initEstendalScrollytelling(); // Muda para modo mobile se a janela encolher
+      initEstendalScrollytelling();
       return;
     }
     setTimeout(() => {
@@ -135,11 +206,8 @@ function initEstendalScrollytelling() {
     if (docHeight <= 0) return;
     let scrollPercent = scrollTop / docHeight;
 
-    if (scrollTop <= 5) {
-      track.classList.remove('cards-visible');
-    } else {
-      track.classList.add('cards-visible');
-    }
+    if (scrollTop <= 5) track.classList.remove('cards-visible');
+    else track.classList.add('cards-visible');
 
     const moveStart = 0.15;
     let hPercent = 0;
@@ -148,13 +216,13 @@ function initEstendalScrollytelling() {
     }
     hPercent = Math.min(1, Math.max(0, hPercent));
 
-    const currentX = Math.floor(hPercent * horizontalMoveMax);
+    const currentX = hPercent * horizontalMoveMax;
     track.style.transform = `translateX(-${currentX}px)`;
 
     const cards = track.querySelectorAll('.estendal-card-scrolly');
     let centerIndex = 0;
     let minDistance = Infinity;
-    const targetScreenCenter = (viewportWidth / 2) + ajusteHorizontal;
+    const targetScreenCenter = viewportWidth / 2;
 
     cards.forEach((card, index) => {
       const rect = card.getBoundingClientRect();
@@ -169,25 +237,32 @@ function initEstendalScrollytelling() {
     cards.forEach(c => c.classList.remove('is-active'));
     if (cards[centerIndex]) cards[centerIndex].classList.add('is-active');
 
-    if (!isSnapping && horizontalMoveMax > 0 && scrollTop > 5) {
+    if (!isSnapping && horizontalMoveMax > 0 && scrollPercent >= moveStart) {
       clearTimeout(scrollTimeout);
+
       scrollTimeout = setTimeout(() => {
-        if (isAnimating) return;
+        if (isAnimating || isSnapping) return;
         const activeCard = cards[centerIndex];
         if (!activeCard) return;
-        const rect = activeCard.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const diff = cardCenter - targetScreenCenter;
-        if (Math.abs(diff) > 2 && scrollPercent >= moveStart) {
+
+        const trackRect = track.getBoundingClientRect();
+        const cardRect = activeCard.getBoundingClientRect();
+        const cardCenterInTrack = (cardRect.left - trackRect.left) + (cardRect.width / 2);
+
+        let desiredTranslateX = cardCenterInTrack - targetScreenCenter;
+        desiredTranslateX = Math.max(0, Math.min(desiredTranslateX, horizontalMoveMax));
+
+        const diffX = Math.abs(currentX - desiredTranslateX);
+
+        if (diffX > 2) {
           isSnapping = true;
-          let targetX = currentX + diff;
-          targetX = Math.max(0, Math.min(targetX, horizontalMoveMax));
-          let targetHPercent = targetX / horizontalMoveMax;
+          let targetHPercent = desiredTranslateX / horizontalMoveMax;
           let targetScrollPercent = (targetHPercent * (1 - moveStart)) + moveStart;
           let targetScrollTop = targetScrollPercent * docHeight;
-          customSmoothScroll(targetScrollTop, 800);
+
+          customSmoothScroll(targetScrollTop, 600);
         }
-      }, 150);
+      }, 250);
     }
   };
 
@@ -196,10 +271,12 @@ function initEstendalScrollytelling() {
   window.calculateEstendalDimensions();
 }
 
-// ── SISTEMA DE NAVEGAÇÃO SUAVE ────────────────────────────────────────────
+// ── INICIALIZAÇÃO GERAL DA PÁGINA ─────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   initObservers();
   initEstendalScrollytelling();
+  initHomeVideoControls();
+  initSobreRevela();
 
   const savedScroll = sessionStorage.getItem('scroll_' + window.location.pathname);
   if (savedScroll !== null) {
@@ -208,9 +285,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// ── SISTEMA DE NAVEGAÇÃO SUAVE GERAL ──────────────────────────────────────
 document.addEventListener("click", async (e) => {
-  const link = e.target.closest('a');
 
+  // EVENT DELEGATION PARA EQUIPA
+  const btnEquipa = e.target.closest('.eqp-nome, .eqp-foto');
+  if (btnEquipa) {
+    const membroGeral = btnEquipa.closest('.eqp-membro');
+    const gavetaDescricao = membroGeral.querySelector('.eqp-desc-wrapper');
+    const dicaTexto = membroGeral.querySelector('.eqp-dica');
+
+    if (gavetaDescricao) {
+      gavetaDescricao.classList.toggle('aberto');
+      if (gavetaDescricao.classList.contains('aberto')) {
+        if (dicaTexto) { dicaTexto.style.opacity = '0'; dicaTexto.style.transform = 'translateY(-10px)'; }
+      } else {
+        if (dicaTexto) { dicaTexto.style.opacity = '0.7'; dicaTexto.style.transform = 'translateY(0)'; }
+      }
+    }
+    return;
+  }
+
+  // ROUTER AJAX
+  const link = e.target.closest('a');
   if (!link || !link.href || link.target === '_blank' || link.hostname !== window.location.hostname || link.classList.contains('link-direto')) return;
 
   e.preventDefault();
@@ -228,7 +325,7 @@ document.addEventListener("click", async (e) => {
   }
 
   try {
-    const response = await fetch(targetUrl);
+    const response = await fetch(targetUrl, { cache: 'no-cache' });
     if (!response.ok) throw new Error('Erro');
 
     const htmlText = await response.text();
@@ -266,6 +363,8 @@ document.addEventListener("click", async (e) => {
 
       initObservers();
       initEstendalScrollytelling();
+      initHomeVideoControls();
+      initSobreRevela();
       isAnimating = false;
     }, 800);
 
