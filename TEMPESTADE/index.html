@@ -202,9 +202,69 @@
       #puzzle-hint { bottom: 190px; white-space: normal; text-align: center; width: 90vw; }
       .ejected { font-size: 10px; }
     }
+
+    /* ================================================================== */
+    /* BOTÃO DE VOLTAR FLUTUANTE                                           */
+    /* ================================================================== */
+
+    .wrapper-btn-back {
+      display: none;
+    }
+
+    .btn-back {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      padding: 0 3px 1px 0;
+      color: #fff;
+      font-size: 20px;
+      font-family: 'Baloo 2', sans-serif;
+      text-decoration: none;
+      background: rgba(145, 31, 39, 0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-top: 1px solid rgba(255, 255, 255, 0.4);
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-back:hover {
+      background: rgba(145, 31, 39, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 35px rgba(145, 31, 39, 0.2);
+    }
+
+    .btn-back:active {
+      background: rgba(145, 31, 39, 0.6);
+      transform: translateY(1px) scale(0.95);
+      box-shadow: 0 4px 15px rgba(145, 31, 39, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .wrapper-btn-back {
+        display: block;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        pointer-events: none;
+      }
+    }
   </style>
 </head>
 <body>
+
+<header class="wrapper-btn-back">
+  <a href="../expressoes.html" class="btn-back">&#10094;</a>
+</header>
 
 <video id="bg-video" autoplay loop muted playsinline>
   <source src="tempestade.mp4" type="video/mp4">
@@ -380,26 +440,41 @@ function startReveal(){
 
 let ejectedEls=[], nextTarget=0;
 
-function buildSlots(count) {
-  const TOP_PAD  = 64;
-  const BOT_PAD  = 270;
-  const SIDE_PAD = 28;
+function buildSlots(count, sizes) {
+  const isMobile = window.innerWidth <= 480;
+  const TOP_PAD  = isMobile ? 56 : 64;
+  const BOT_PAD  = isMobile ? 250 : 270;
+  const SIDE_PAD = isMobile ? 16 : 28;
+  const GAP      = isMobile ? 8 : 14;
+
   const areaTop   = TOP_PAD;
   const areaBot   = window.innerHeight - BOT_PAD;
   const areaLeft  = SIDE_PAD;
   const areaRight = window.innerWidth - SIDE_PAD;
   const areaW     = areaRight - areaLeft;
-  const areaH     = areaBot   - areaTop;
+  const areaH     = Math.max(areaBot - areaTop, 80);
 
-  const MIN_ROW_H = 58;
-  const MAX_ROW_H = 115;
-  let rows = Math.round(areaH / ((MIN_ROW_H + MAX_ROW_H) / 2));
-  rows = Math.max(2, Math.min(rows, Math.floor(areaH / MIN_ROW_H)));
-  let cols = Math.ceil(count / rows);
-  rows = Math.ceil(count / cols);
+  const avgW = sizes.reduce((a,s)=>a+s.w,0) / sizes.length;
+  const avgH = sizes.reduce((a,s)=>a+s.h,0) / sizes.length;
+  const minRowH = avgH + GAP;
+
+  const colWidthNeeded = avgW + GAP;
+  let cols = Math.max(1, Math.floor(areaW / colWidthNeeded));
+
+  let rows, cellH;
+  while (true) {
+    rows  = Math.ceil(count / cols);
+    cellH = areaH / rows;
+    if (cellH >= minRowH || cols <= 1) break;
+    cols--;
+  }
+
+  if (cellH < minRowH) {
+    rows  = Math.ceil(count / cols);
+    cellH = minRowH;
+  }
 
   const cellW = areaW / cols;
-  const cellH = areaH / rows;
 
   const cells = [];
   for(let r=0; r<rows; r++){
@@ -424,20 +499,21 @@ function startEject(){
   }
   answerBar.classList.add('visible');
 
-  const TOTAL = 20;
+  const isMobile = window.innerWidth <= 480;
+  const TOTAL = isMobile ? 14 : 20;
   const shuffledFillers=[...FILLER_DATA].sort(()=>Math.random()-0.5)
                         .slice(0, TOTAL - TARGET_DATA.length);
   const toEject=[...TARGET_DATA,...shuffledFillers];
   shuffleArray(toEject);
-
-  const slots = buildSlots(toEject.length);
 
   const ruler = document.createElement('span');
   ruler.style.cssText='position:fixed;visibility:hidden;left:-9999px;top:-9999px;white-space:nowrap;font-family:Georgia,serif;line-height:1.7;pointer-events:none;';
   document.body.appendChild(ruler);
 
   const fontVariants = toEject.map(()=> {
-    return (12 + Math.random() * 3).toFixed(1) + 'px';
+    return isMobile
+      ? (10 + Math.random() * 1.5).toFixed(1) + 'px'
+      : (12 + Math.random() * 3).toFixed(1) + 'px';
   });
 
   const sizes = toEject.map((d, i) => {
@@ -448,6 +524,8 @@ function startEject(){
   });
   document.body.removeChild(ruler);
 
+  const slots = buildSlots(toEject.length, sizes);
+
   const rotations = toEject.map(()=> {
     const mag = Math.random() * Math.random() * 6;
     return (Math.random() < 0.5 ? 1 : -1) * mag;
@@ -457,8 +535,9 @@ function startEject(){
     const { w, h } = sizes[i];
     const freeX = Math.max(0, slot.cellW - w);
     const freeY = Math.max(0, slot.cellH - h);
-    const jx = (Math.random() - 0.5) * freeX * 0.7;
-    const jy = (Math.random() - 0.5) * freeY * 0.7;
+    const jitterFactor = isMobile ? 0.35 : 0.7;
+    const jx = (Math.random() - 0.5) * freeX * jitterFactor;
+    const jy = (Math.random() - 0.5) * freeY * jitterFactor;
     let x = slot.cx - w/2 + jx;
     let y = slot.cy - h/2 + jy;
     x = Math.max(28, Math.min(window.innerWidth  - w - 28, x));
