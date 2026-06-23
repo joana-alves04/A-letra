@@ -3,29 +3,81 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resvés Campo de Ourique</title>
     <link rel="stylesheet" href="style_ourique.css">
 </head>
 
 <body>
-    <main class="page-ourique">
-        <h1 class="titulo-expressao">RESVÉS CAMPO DE OURIQUE</h1>
 
-        <div class="tv-retro-wrapper">
-            <div class="tv-retro-screen" id="ecra-jogo">
-                <div id="barra-limite">
-                    <div id="ponteiro"></div>
-                    <div id="zona-resves"></div>
+    <header class="wrapper-btn-back">
+    <a href="../expressoes.html" class="nav-link-back btn-back">&#10094;</a>
+  </header>
+
+    <main class="page-ourique">
+
+        <div id="scroll-narrativa">
+
+            <section class="slide-narrativa">
+                <h2 class="texto-historia"><span class="texto-tremor">1 de Novembro de 1755.</span></h2>
+                <p class="texto-secundario">A terra tremeu e Lisboa ruiu.</p>
+                <p class="dica-scroll">Faz scroll para descer</p>
+            </section>
+
+            <section class="slide-narrativa">
+                <h2 class="texto-historia"><span class="texto-tremor">Mas o verdadeiro teste...</span></h2>
+                <p class="texto-secundario">...vinha do mar.</p>
+            </section>
+
+            <section class="slide-narrativa">
+                <h2 class="texto-historia"><span class="texto-tremor">Um maremoto gigante.</span></h2>
+                <p class="texto-secundario">As águas engoliram a cidade, subindo até à colina de Campo de Ourique.</p>
+            </section>
+
+            <section class="slide-narrativa" id="slide-jogo">
+                <header class="header-jogo">
+                    <h1 class="titulo-expressao"><span class="texto-tremor">RESVÉS CAMPO DE OURIQUE</span></h1>
+                    <p class="instrucao">Mantém premido para a água subir. Larga <strong>exatamente na linha
+                            tracejada</strong> antes que a onda engula o bairro!</p>
+                </header>
+
+                <div id="game-arena">
+                    <div class="arena-wrapper">
+
+                        <img src="../imgs/edificio.png" alt="Igreja de Campo de Ourique" class="ilustracao-edificio">
+
+                        <div class="mascara-agua">
+                            <div id="agua" class="agua">
+                                <div class="onda onda-tras"></div>
+                                <div class="onda onda-frente"></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="controlos">
+                    <button id="btn-encher" class="btn-tv btn-top">PRESSIONA E MANTÉM</button>
+                </div>
+            </section>
+        </div>
+
+        <div id="feedback-overlay" class="escondido">
+            <h2 id="feedback-titulo"></h2>
+            <p id="feedback-texto"></p>
+
+            <div class="feedback-botoes">
+                <button id="btn-tentar-novamente" class="btn-tv btn-bottom escondido">TENTAR NOVAMENTE</button>
+
+                <div id="botoes-vitoria" class="escondido">
+                    <a href="sobre_ourique.html" class="final-btn">Saber a Origem da Expressão</a>
+                    <a href="../index.html" class="final-btn">Voltar à Página Inicial</a>
                 </div>
             </div>
         </div>
 
-        <button id="btn-stop" class="btn-tv">PARAR NO LIMITE</button>
-
-        <div id="mensagem-final" class="hidden">
-            <h2 id="texto-res"></h2>
-        </div>
     </main>
+
     <script src="script.js"></script>
 </body>
 
