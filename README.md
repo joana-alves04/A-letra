@@ -23,9 +23,6 @@ git status
 # colocar na main o conteúdo
 
 ## primeira opção
-
-mudam da branch para a main - git checkout main
-
 git pull
 
 mudam da main para a branch - git checkout [nome da branch]

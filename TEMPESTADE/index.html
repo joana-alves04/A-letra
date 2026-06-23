@@ -39,10 +39,7 @@
       z-index: 20; white-space: nowrap; transition: opacity 0.4s ease;
     }
     #intro-ui.hidden { opacity: 0; pointer-events: none; }
-    #click-hint {
-      font-size: clamp(11px, 1.5vw, 13px); letter-spacing: 0.05em;
-      font-family: 'Inter', sans-serif; font-weight: 500; color: #C9D7E4;
-    }
+    
     #progress-bar-wrap {
       width: clamp(140px, 40vw, 220px); height: 10px; background: rgba(201,215,228,0.2);
       border-radius: 99px; overflow: hidden;
@@ -139,6 +136,10 @@
     #ending-inner {
       display: flex; flex-direction: column; align-items: center;
       text-align: center; max-width: min(680px, 92vw);
+      transition: transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #ending-inner.shifted {
+      transform: translateY(-6vh);
     }
 
     #ending-phrase {
@@ -146,10 +147,11 @@
       font-size: clamp(15px, 3.5vw, 28px);
       color: #E6E9ED; letter-spacing: 0.10em; text-align: center;
       opacity: 0; transform: translateY(16px);
-      transition: opacity 2.5s ease, transform 2.5s ease;
+      transition: opacity 2.5s ease, transform 2.5s ease, font-size 1.8s cubic-bezier(0.22, 1, 0.36, 1);
       white-space: normal; word-break: break-word;
     }
     #ending-phrase.visible { opacity: 1; transform: translateY(0); }
+    #ending-phrase.compact { font-size: clamp(13px, 2.6vw, 20px); }
 
     #ending-meaning {
       width: 100%; text-align: center;
@@ -188,6 +190,7 @@
       opacity: 0; transform: translateY(8px);
       transition: opacity 1.8s ease, transform 1.8s ease;
       pointer-events: none; display: flex; justify-content: center;
+      gap: 16px;
     }
     #ending-btn.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
 
@@ -207,9 +210,8 @@
   <source src="tempestade.mp4" type="video/mp4">
 </video>
 
-<div id="cup-anchor"><img src="copo.png" alt="copo" draggable="false"/></div>
+<div id="cup-anchor"><img src="../imgs/copo.png" alt="copo" draggable="false"/></div>
 <div id="intro-ui">
-  <div id="click-hint">clica no copo</div>
   <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
 </div>
 <div id="puzzle-hint"></div>
@@ -221,7 +223,8 @@
     <div id="ending-phrase"></div>
     <div id="ending-meaning"></div>
     <div id="ending-btn">
-      <a href="#" class="btn btn-outline">página inicial</a>
+      <a href="../expressoes.html" class="btn btn-outline">Página inicial</a>
+      <a href="" class="btn btn-outline">Voltar à experiência</a>
     </div>
   </div>
 </div>
@@ -236,6 +239,7 @@ const stageEl      = document.getElementById('stage');
 const answerBar    = document.getElementById('answer-bar');
 const puzzleHint   = document.getElementById('puzzle-hint');
 const endingEl     = document.getElementById('ending');
+const endingInner  = document.getElementById('ending-inner');
 const endingPhrase = document.getElementById('ending-phrase');
 const endingMeaning= document.getElementById('ending-meaning');
 const endingBtn    = document.getElementById('ending-btn');
@@ -376,14 +380,6 @@ function startReveal(){
 
 let ejectedEls=[], nextTarget=0;
 
-/* ══════════════════════════════════════════════════════════════
-   PLACEMENT SYSTEM
-   — grelha invisível garante separação mínima entre frases
-   — cada frase fica deslocada aleatoriamente dentro da sua célula
-   — rotação aleatória suave (-6° a +6°) para aspeto orgânico
-   — tamanho de fonte varia ligeiramente entre frases
-   — só a atribuição de frase a célula é aleatória
-══════════════════════════════════════════════════════════════ */
 function buildSlots(count) {
   const TOP_PAD  = 64;
   const BOT_PAD  = 270;
@@ -395,7 +391,6 @@ function buildSlots(count) {
   const areaW     = areaRight - areaLeft;
   const areaH     = areaBot   - areaTop;
 
-  // min row height so lines never collapse on top of each other
   const MIN_ROW_H = 58;
   const MAX_ROW_H = 115;
   let rows = Math.round(areaH / ((MIN_ROW_H + MAX_ROW_H) / 2));
@@ -437,14 +432,11 @@ function startEject(){
 
   const slots = buildSlots(toEject.length);
 
-  // measure sizes
   const ruler = document.createElement('span');
   ruler.style.cssText='position:fixed;visibility:hidden;left:-9999px;top:-9999px;white-space:nowrap;font-family:Georgia,serif;line-height:1.7;pointer-events:none;';
   document.body.appendChild(ruler);
 
-  // each phrase gets a slightly different font size for organic feel
   const fontVariants = toEject.map(()=> {
-    // base 13px ±1.5px
     return (12 + Math.random() * 3).toFixed(1) + 'px';
   });
 
@@ -456,17 +448,13 @@ function startEject(){
   });
   document.body.removeChild(ruler);
 
-  // each phrase gets a random rotation: small, max ±6deg
-  // biased toward smaller values so most are subtle
   const rotations = toEject.map(()=> {
-    const mag = Math.random() * Math.random() * 6; // quadratic bias → mostly small
+    const mag = Math.random() * Math.random() * 6;
     return (Math.random() < 0.5 ? 1 : -1) * mag;
   });
 
-  // convert cell centre → top-left, with generous jitter inside cell
   const destinations = slots.map((slot, i) => {
     const { w, h } = sizes[i];
-    // jitter: up to 35% of the free space inside the cell
     const freeX = Math.max(0, slot.cellW - w);
     const freeY = Math.max(0, slot.cellH - h);
     const jx = (Math.random() - 0.5) * freeX * 0.7;
@@ -507,12 +495,11 @@ function startEject(){
 function launchPhrase(el, from, to){
   const dur = 650 + Math.random()*350;
   const startT = performance.now();
-  // spin during flight, then settle to final rotation
   const spinAmt = (Math.random()-0.5)*28;
   const scaleFrom = 0.15 + Math.random()*0.2;
   const midX = (from.x+to.x)/2 + (Math.random()-0.5)*180;
   const midY = Math.min(from.y,to.y) - 70 - Math.random()*100;
-  const finalRot = to.rot; // settle to the pre-assigned organic rotation
+  const finalRot = to.rot;
 
   function qb(t,p0,p1,p2){return (1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
   function eOut(t){return 1-(1-t)*(1-t)*(1-t);}
@@ -522,7 +509,6 @@ function launchPhrase(el, from, to){
     const t   = eOut(raw);
     const x   = qb(t, from.x, midX, to.x);
     const y   = qb(t, from.y, midY, to.y);
-    // rotation: spins during flight then blends into finalRot
     const rot = raw < 0.75
       ? spinAmt * Math.sin(raw * Math.PI)
       : spinAmt * Math.sin(0.75*Math.PI) * (1-(raw-0.75)/0.25) + finalRot * ((raw-0.75)/0.25);
@@ -534,7 +520,6 @@ function launchPhrase(el, from, to){
     if(raw < 1){
       requestAnimationFrame(frame);
     } else {
-      // landed: position via left/top, rotation via transform only
       el.style.transform = `rotate(${finalRot.toFixed(2)}deg)`;
       el.style.left = to.x+'px';
       el.style.top  = to.y+'px';
@@ -595,6 +580,8 @@ function onComplete(){
   setTimeout(()=>{
     endingMeaning.innerHTML=buildMeaningHTML(MEANING_TEXT)
       .split('\n\n').map(p=>`<p>${p}</p>`).join('');
+    endingInner.classList.add('shifted');
+    endingPhrase.classList.add('compact');
     setTimeout(()=>{
       endingMeaning.classList.add('visible');
       setTimeout(()=>endingBtn.classList.add('visible'), 1400);

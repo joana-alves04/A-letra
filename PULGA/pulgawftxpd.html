@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expressão: Ter a Pulga Atrás da Orelha</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        :root {
+            --font-serif: "Averia Serif Libre", Georgia, serif;
+            --font-sans: "Baloo 2", system-ui, sans-serif;
+            --text-color: #111;
+            --bg-dynamic: rgb(244, 235, 216);
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background: #f0f0f0;
+            color: var(--text-color);
+            font-family: var(--font-serif);
+            overflow: hidden;
+            width: 100vw; height: 100vh;
+        }
+
+        #stage {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(30px, 6vw, 100px);
+        }
+
+        #text-block {
+            max-width: 900px;
+            font-size: clamp(0.85rem, 1.6vw, 1.2rem);
+            line-height: 2.1;
+            text-align: center;
+            font-family: var(--font-serif);
+        }
+
+        .word {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            margin: 0 0.18em;
+        }
+
+        .word.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #flea {
+            position: fixed;
+            width: 28px;
+            height: 28px;
+            z-index: 9999;
+            cursor: pointer;
+        }
+
+        #flea img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+        }
+
+        .btn {
+            font-family: var(--font-sans);
+            background-color: transparent;
+            border: 1.5px solid #111;
+            color: #111;
+            padding: 8px 24px;
+            font-size: 0.65rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 30px;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn:hover {
+            background-color: #111;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        #nav-buttons {
+            position: absolute;
+            bottom: clamp(30px, 6vh, 60px);
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            pointer-events: none;
+        }
+        #nav-buttons.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (max-width: 600px) {
+            #text-block {
+                font-size: clamp(0.95rem, 4vw, 1.3rem);
+            }
+
+            .btn {
+                padding: 11px 20px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+
+            #nav-buttons {
+                gap: 10px;
+                width: 92vw;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="stage">
+        <div id="text-block"></div>
+        <div id="nav-buttons">
+            <a href="javascript:history.back()" class="btn">voltar à experiência</a>
+            <a href="../expressoes.html" class="btn">página inicial</a>
+        </div>
+    </div>
+
+    <div id="flea"><img src="../imgs/pulga1.png" alt=""></div>
+
+    <script>
+        const TEXT = `A expressão "ter a pulga atrás da orelha" significa ficar desconfiado ou com uma dúvida persistente sobre algo. A sua origem está associada à presença de pulgas, que antigamente eram comuns no quotidiano das pessoas. Uma pulga atrás da orelha seria especialmente incómoda, já que é uma zona difícil de alcançar e o inseto provoca uma sensação constante de irritação sem que se consiga ver facilmente a causa. Essa ideia passou então a ser usada de forma figurada para representar uma suspeita ou dúvida que incomoda, mas que não é clara nem fácil de resolver, permanecendo na mente da pessoa.`;
+
+        const textBlock = document.getElementById('text-block');
+        const fleaEl = document.getElementById('flea');
+        let started = false;
+
+        const rawWords = TEXT.split(/\s+/);
+        const wordSpans = [];
+
+        rawWords.forEach((w) => {
+            const span = document.createElement('span');
+            span.className = 'word';
+            span.textContent = w;
+            textBlock.appendChild(span);
+            wordSpans.push(span);
+        });
+
+        function getWordCenter(span) {
+            const r = span.getBoundingClientRect();
+            return { x: r.left + r.width / 2, y: r.top };
+        }
+
+        let currentIdx = 0;
+        const WORD_DELAY = 217;
+        const JUMP_DURATION = 180;
+
+        function jumpTo(span) {
+            const target = getWordCenter(span);
+            const startX = parseFloat(fleaEl.style.left) || target.x;
+            const startY = parseFloat(fleaEl.style.top) || target.y;
+
+            const endX = target.x - 14;
+            const endY = target.y - 30;
+
+            const midX = (startX + endX) / 2;
+            const midY = Math.min(startY, endY) - 18;
+
+            const startTime = performance.now();
+
+            function step(now) {
+                const t = Math.min((now - startTime) / JUMP_DURATION, 1);
+                const ease = t * (2 - t);
+                const x = (1 - ease) * (1 - ease) * startX + 2 * (1 - ease) * ease * midX + ease * ease * endX;
+                const y = (1 - ease) * (1 - ease) * startY + 2 * (1 - ease) * ease * midY + ease * ease * endY;
+                fleaEl.style.left = x + 'px';
+                fleaEl.style.top = y + 'px';
+                if (t < 1) requestAnimationFrame(step);
+            }
+            requestAnimationFrame(step);
+        }
+
+        function revealNext() {
+            if (currentIdx >= wordSpans.length) {
+                setTimeout(() => {
+                    document.getElementById('nav-buttons').classList.add('visible');
+                }, 800);
+                return;
+            }
+            const span = wordSpans[currentIdx];
+            span.classList.add('visible');
+            jumpTo(span);
+            currentIdx++;
+            setTimeout(revealNext, WORD_DELAY);
+        }
+
+        function positionFleaAtStart() {
+            const first = getWordCenter(wordSpans[0]);
+            const offset = Math.min(50, first.x * 0.3);
+            fleaEl.style.left = Math.max(20, first.x - offset) + 'px';
+            fleaEl.style.top = (first.y - 30) + 'px';
+        }
+
+        function startSequence() {
+            if (started) return;
+            started = true;
+            setTimeout(revealNext, 400);
+        }
+
+        fleaEl.addEventListener('click', startSequence);
+
+        document.addEventListener('DOMContentLoaded', positionFleaAtStart);
+        if (document.readyState !== 'loading') positionFleaAtStart();
+
+        window.addEventListener('resize', () => {
+            if (!started) positionFleaAtStart();
+        });
+    </script>
+</body>
+</html>
