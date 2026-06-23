@@ -1,73 +1,815 @@
 @import url('https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Baloo+2:wght@400;500;600;700&display=swap');
 
-body {
-    background: #FEF8DD;
-    font-family: "Averia Serif Libre", serif;
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    user-select: none;
+}
+
+:root {
+    --intensidade-tremor: 0px;
+}
+
+body,
+html {
+    height: 100dvh;
+    background: #0A2342;
+    font-family: "Baloo 2", sans-serif;
+    color: #FEF8DD;
     overflow: hidden;
+    transition: background 0.6s ease;
 }
 
 .page-ourique {
+    height: 100%;
+    position: relative;
+}
+
+/* ── NARRATIVA SCROLL E TERRAMOTO ── */
+#scroll-narrativa {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+#scroll-narrativa::-webkit-scrollbar {
+    display: none;
+}
+
+.slide-narrativa {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.texto-historia {
+    font-family: "Averia Serif Libre", serif;
+    font-size: clamp(2rem, 5vw, 4rem);
+    color: #FEF8DD;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.texto-secundario {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    opacity: 0.8;
+    color: #a8c1d1;
+}
+
+.dica-scroll {
+    font-family: "Baloo 2", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    animation: pisca 2s infinite;
+    margin-top: 40px;
+    color: rgba(254, 248, 221, 0.5);
+    font-weight: bold;
+}
+
+@keyframes pisca {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(5px);
+    }
+}
+
+.texto-tremor {
+    display: inline-block;
+    transform: translate(0, 0);
+}
+
+.a-tremer {
+    animation: terramoto 0.1s infinite alternate;
+}
+
+@keyframes terramoto {
+    0% {
+        transform: translate(calc(var(--intensidade-tremor) * -1), var(--intensidade-tremor));
+    }
+
+    100% {
+        transform: translate(var(--intensidade-tremor), calc(var(--intensidade-tremor) * -1));
+    }
+}
+
+/* ── O JOGO COM A TUA ILUSTRAÇÃO NÍTIDA ── */
+.header-jogo {
+    margin-bottom: 15px;
+    z-index: 10;
+}
+
+.titulo-expressao {
+    font-family: "Averia Serif Libre", serif;
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    margin-bottom: 5px;
+    line-height: 1;
+    color: #FEF8DD;
+}
+
+.instrucao {
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto;
+    opacity: 0.8;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+#game-arena {
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* ── CENTRAR A TORRE ── */
+.arena-wrapper {
+    position: relative;
+    display: inline-block;
+    transform: translateX(12%);
+    animation: flutuarOrganico 6s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes flutuarOrganico {
+
+    0%,
+    100% {
+        transform: translateY(0) translateX(12%);
+    }
+
+    50% {
+        transform: translateY(-10px) translateX(12%);
+    }
+}
+
+/* 1. A tua Imagem Nítida */
+.ilustracao-edificio {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 400px;
+    max-height: 45vh;
+    z-index: 1;
+}
+
+/* 2. O Contentor da Água */
+.mascara-agua {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    /* A Máscara com o caminho atualizado para imgs */
+    -webkit-mask-image: url('../imgs/edificio.png');
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-image: url('../imgs/edificio.png');
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+
+    z-index: 2;
+    mix-blend-mode: multiply;
+}
+
+/* 3. A Água em si */
+.agua {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: rgba(26, 95, 122, 0.9);
+    transition: height 0.05s linear;
+}
+
+/* As Ondas */
+.onda {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background-repeat: repeat-x;
+    background-size: 100px 30px;
+}
+
+.onda-tras {
+    top: -25px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='30' viewBox='0 0 100 30'%3E%3Cpath d='M0,15 Q25,30 50,15 T100,15 L100,30 L0,30 Z' fill='%2313465a'/%3E%3C/svg%3E");
+    animation: moverOndas 3s linear infinite reverse;
+    z-index: 1;
+    opacity: 0.8;
+}
+
+.onda-frente {
+    top: -15px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='30' viewBox='0 0 100 30'%3E%3Cpath d='M0,15 Q25,30 50,15 T100,15 L100,30 L0,30 Z' fill='%231A5F7A'/%3E%3C/svg%3E");
+    animation: moverOndas 2s linear infinite;
+    z-index: 2;
+}
+
+@keyframes moverOndas {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 100px 0;
+    }
+}
+
+/* ── BOTÕES DA UI (Jogo Ativo) ── */
+.controlos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    z-index: 20;
+}
+
+.btn-tv {
+    padding: 18px 30px;
+    border: none;
+    color: #fff;
+    font-family: "Baloo 2", sans-serif;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-top {
+    background-color: #911F27;
+    width: 90%;
+    max-width: 360px;
+    letter-spacing: 1px;
+    font-size: 1.2rem;
+}
+
+.btn-bottom {
+    background-color: #FEF8DD;
+    color: #0A2342;
+    width: 100%;
+    max-width: 260px;
+    padding: 12px 25px;
+}
+
+.btn-tv:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.escondido {
+    display: none !important;
+}
+
+/* ── EFEITO DE DERROTA ── */
+body.inundou {
+    background: #030b14;
+}
+
+body.inundou .arena-wrapper {
+    animation: none;
+    transform: translateY(10px) translateX(12%);
+}
+
+.shake {
+    animation: shakeScreen 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes shakeScreen {
+
+    10%,
+    90% {
+        transform: translate3d(-5px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(5px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-10px, -5px, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(10px, 10px, 0);
+    }
+}
+
+/* ── FEEDBACK OVERLAY ── */
+#feedback-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 35, 66, 0.95);
+    z-index: 100;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100dvh;
-    gap: 20px;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.4s;
 }
 
-/* TV Retro */
-.tv-retro-wrapper {
-    background: #8a4a26;
-    padding: 15px;
-    border-radius: 12px;
-    width: 300px;
+#feedback-titulo {
+    font-family: "Averia Serif Libre", serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin-bottom: 10px;
+    color: #911F27;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-.tv-retro-screen {
-    background: #1a1a1a;
-    height: 150px;
-    position: relative;
+body.vitoria #feedback-titulo {
+    color: #4CAF50;
+}
+
+body.inundou #feedback-titulo {
+    color: #e74c3c;
+}
+
+#feedback-texto {
+    font-size: 1.3rem;
+    margin-bottom: 40px;
+    max-width: 500px;
+    color: #FEF8DD;
+}
+
+.feedback-botoes {
     display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
     align-items: center;
 }
 
-/* Mecânica */
-#barra-limite {
-    width: 90%;
-    height: 20px;
-    background: #333;
-    margin: 0 auto;
-    position: relative;
+#botoes-vitoria {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
 }
 
-#ponteiro {
-    width: 5px;
-    height: 30px;
-    background: #fff;
-    position: absolute;
-    top: -5px;
-    left: 0;
+/* ── BOTÕES FINAIS (Saber Mais / Voltar Início) ── */
+.final-btn {
+    border: none !important;
+    border-radius: 50px !important;
+    cursor: pointer !important;
+    font-family: var(--font-sans, "Baloo 2", sans-serif) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.1em !important;
+    transition: all 0.3s ease !important;
+    color: white !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding: 16px 30px !important;
+    font-size: 1rem !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
 }
 
-#zona-resves {
-    width: 20px;
-    height: 20px;
-    background: #b33939;
-    position: absolute;
-    right: 10%;
+/* O TEU CÓDIGO COM AS CORES E TAMANHOS EXATOS */
+.final-btn:first-child {
+    background-color: #1F5CA6 !important;
+    width: 360px !important;
+    max-width: 450px !important;
 }
 
-.btn-tv {
-    padding: 15px 30px;
-    background-color: #6A3761;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    font-family: "Baloo 2", sans-serif;
-    cursor: pointer;
+/* Cor do Voltar ao Início (Página) */
+.final-btn:last-child {
+    background-color: #6EA0DE !important;
+    width: 300px !important;
+    max-width: 300px !important;
 }
 
-.hidden {
+/* Efeito ao passar o rato */
+.final-btn:hover {
+    transform: scale(1.05) !important;
+    filter: brightness(1.1) !important;
+}
+
+
+/* 1. Esconde o contentor inteiro no computador/tablet */
+.wrapper-btn-back {
     display: none;
+}
+
+/* 2. O Botão de Vidro Universal (Estado Normal) */
+.btn-back {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+
+    /* Correção do alinhamento ótico do símbolo "<" */
+    padding: 0 3px 1px 0 !important;
+
+    color: #fff !important;
+    font-size: 20px !important;
+    font-family: "Baloo 2", sans-serif !important;
+    text-decoration: none;
+
+    /* Efeito Vidro com a cor #911F27 a 20% */
+    background: rgba(145, 31, 39, 0.2) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    /* Reflexos de luz na borda */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
+
+    /* Sombra para descolar do fundo */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 3. Efeito ao passar o rato (Hover) */
+.btn-back:hover {
+    background: rgba(145, 31, 39, 0.4) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 35px rgba(145, 31, 39, 0.2) !important;
+}
+
+/* 4. Efeito ao clicar/tocar (Active) */
+.btn-back:active {
+    background: rgba(145, 31, 39, 0.6) !important;
+    transform: translateY(1px) scale(0.95);
+    box-shadow: 0 4px 15px rgba(145, 31, 39, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* ── REGRAS EXCLUSIVAS PARA O TELEMÓVEL ── */
+@media (max-width: 768px) {
+    .wrapper-btn-back {
+        display: block !important;
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        /* Garante que fica por cima dos jogos, vídeos e textos */
+        pointer-events: none;
+        /* Deixa clicar apenas no botão redondo em si */
+    }
+}
+
+/* AJUSTES AOS BOTÕES AZUIS NO TELEMÓVEL - Para não saírem do ecrã */
+.final-btn:first-child,
+.final-btn:last-child {
+    width: 100% !important;
+    max-width: 320px !important;
+    font-size: 0.9rem !important;
+    padding: 14px 20px !important;
+}
+
+.final-btn:last-child {
+    max-width: 275px !important;
+}
+
+#feedback-titulo {
+    font-size: 2.2rem !important;
+    line-height: 1.1;
+}
+
+#feedback-texto {
+    font-size: 1.1rem !important;
+    margin-bottom: 25px !important;
+    padding: 0 15px;
+}
+
+.ilustracao-edificio {
+    max-height: 40vh;
+}
+
+.btn-top {
+    font-size: 1.1rem !important;
+    padding: 16px 20px !important;
+    max-width: 300px !important;
+}
+
+
+
+/* ================================================================== */
+/* PÁGINA SOBRE A EXPRESSÃO (ACORDEÃO E ONDAS)                        */
+/* ================================================================== */
+
+/* 1. Permite fazer scroll nesta página */
+body.body-sobre {
+    overflow-y: auto !important;
+}
+
+.page-sobre {
+    padding-bottom: 80px;
+}
+
+.header-sobre {
+    text-align: center;
+    padding: 80px 20px 40px;
+}
+
+.header-sobre .pre-titulo {
+    font-family: "Baloo 2", sans-serif;
+    font-size: 1.2rem;
+    color: #6EA0DE;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.header-sobre .titulo-principal {
+    font-family: "Averia Serif Libre", serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin-top: 10px;
+    color: #FEF8DD;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* 2. O Contentor do Acordeão */
+.accordion-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.accordion-item {
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: #FEF8DD;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border: 2px solid #1A5F7A;
+    overflow: hidden;
+}
+
+/* 3. Os Botões de cada Tema */
+.accordion-header {
+    width: 100%;
+    padding: 25px 30px;
+    background: #FEF8DD;
+    color: #0A2342;
+    border: none;
+    text-align: left;
+    font-size: 1.6rem;
+    font-family: "Averia Serif Libre", serif;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.accordion-header:hover {
+    background: #f5eed0;
+}
+
+.acc-title {
+    flex-grow: 1;
+    font-weight: bold;
+}
+
+.acc-arrow {
+    font-family: "Baloo 2", sans-serif;
+    font-size: 2.5rem;
+    line-height: 1;
+    transition: transform 0.4s;
+    color: #1F5CA6;
+}
+
+/* Estado aberto do botão */
+.accordion-item.active .accordion-header {
+    background: #1A5F7A;
+    color: #FEF8DD;
+    border-bottom: 2px solid #0A2342;
+}
+
+.accordion-item.active .acc-arrow {
+    color: #FEF8DD;
+    transform: rotate(45deg);
+}
+
+/* 4. A Animação da Água */
+.accordion-body {
+    position: relative;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease 0.4s;
+}
+
+.accordion-item.active .accordion-body {
+    max-height: 1200px;
+    transition: max-height 0.4s ease 0s;
+}
+
+.wave-wipe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1A5F7A;
+    z-index: 5;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+}
+
+.accordion-item.active .wave-wipe {
+    transform: translateY(105%);
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.4s;
+}
+
+/* 5. Formatação do Texto (Sem Emojis) */
+.accordion-content {
+    padding: 30px;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #0A2342;
+    background: #FEF8DD;
+}
+
+.accordion-content p {
+    margin-bottom: 15px;
+}
+
+.subtitulo {
+    font-family: "Averia Serif Libre", serif;
+    color: #1F5CA6;
+    font-size: 1.5rem;
+    margin: 25px 0 10px;
+}
+
+.exemplos-box {
+    background: #eadecd;
+    padding: 20px;
+    border-left: 5px solid #911F27;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.exemplos-box p {
+    color: #0A2342;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.grid-teorias {
+    display: grid;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.card-teoria {
+    background: #eadecd;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px dashed #1A5F7A;
+}
+
+.card-teoria h4 {
+    font-family: "Averia Serif Libre", serif;
+    font-size: 1.4rem;
+    color: #1A5F7A;
+    margin-bottom: 10px;
+}
+
+.lista-curiosidades {
+    list-style: none;
+}
+
+.lista-curiosidades li {
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+/* Bolinha elegante para substituir o Emoji de localização */
+.lista-curiosidades li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    background-color: #911F27;
+    border-radius: 50%;
+}
+
+/* ── SECÇÃO DO VÍDEO ── */
+.video-section {
+    max-width: 800px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.subtitulo-video {
+    font-family: "Averia Serif Libre", serif;
+    color: #6EA0DE;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 2px solid #1A5F7A;
+    background: #030b14;
+    display: flex;
+}
+
+.video-wrapper video {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+/* Adaptações Mobile */
+@media (max-width: 768px) {
+    .accordion-header {
+        padding: 20px;
+        font-size: 1.3rem;
+    }
+
+    .accordion-content {
+        padding: 20px;
+        font-size: 1.05rem;
+    }
+
+    .header-sobre {
+        padding: 75px 20px 30px;
+    }
+
+    .subtitulo-video {
+        font-size: 1.6rem;
+    }
+}
+
+
+/* ── BOTÕES FINAIS NA PÁGINA "SOBRE" (Desktop) ── */
+.botoes-sobre-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
+    margin-top: 60px;
+    margin-bottom: 40px; /* Impede que fiquem colados ao fim da página */
+}
+
+/* ── AJUSTES MOBILE PARA A CAIXA DOS BOTÕES ── */
+@media (max-width: 768px) {
+    .botoes-sobre-footer {
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
 }
